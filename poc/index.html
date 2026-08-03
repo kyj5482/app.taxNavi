@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="toss">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>taxNavi PoC — 김가장 가구 세금 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ═══════════ 공통 기반 ═══════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: var(--bg); color: var(--text);
+  font-feature-settings: "tnum";
+  line-height: 1.55;
+  transition: background .25s, color .25s;
+}
+.wrap { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
+.num { font-variant-numeric: tabular-nums; }
+a { color: var(--primary); }
+
+/* ═══════════ 테마 1: Toss 스타일 ═══════════ */
+[data-theme="toss"] {
+  --primary: #3182F6; --primary-strong: #1B64DA;
+  --bg: #F2F4F6; --surface: #FFFFFF; --surface-sub: #F9FAFB;
+  --text: #191F28; --text-sub: #4E5968; --text-muted: #8B95A1;
+  --border: #E5E8EB;
+  --danger: #F04452; --danger-bg: #FDEDEE;
+  --warning: #E8890C; --warning-bg: #FFF4E5;
+  --success: #14893C; --success-bg: #E6F5EC;
+  --info-bg: #EAF2FE;
+  --gain: #F04452; --loss: #3182F6;   /* 한국 관례: 상승=빨강 */
+  --radius-card: 16px; --radius-control: 12px; --radius-badge: 999px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,.04);
+  --card-border: none;
+  --pad-card: 24px;
+  --table-row-h: 48px;
+}
+[data-theme="toss"] .card { border: none; }
+[data-theme="toss"] h2 { font-weight: 800; }
+
+/* ═══════════ 테마 2: Civic Clarity (GOV.UK × USWDS) ═══════════ */
+[data-theme="civic"] {
+  --primary: #1d70b8; --primary-strong: #162e51;
+  --bg: #f4f8fb; --surface: #FFFFFF; --surface-sub: #f3f2f1;
+  --text: #0b0c0c; --text-sub: #484949; --text-muted: #6f777b;
+  --border: #b1b4b6;
+  --danger: #ca3535; --danger-bg: #f9e7e7;
+  --warning: #B45606; --warning-bg: #fff4e4;
+  --success: #0f7a52; --success-bg: #e7f3ee;
+  --info-bg: #e8f1f8;
+  --gain: #ca3535; --loss: #1d70b8;
+  --radius-card: 0px; --radius-control: 0px; --radius-badge: 0px;
+  --shadow-card: none;
+  --card-border: 1px solid var(--border);
+  --pad-card: 20px;
+  --table-row-h: 44px;
+}
+[data-theme="civic"] .card { border-left: 4px solid var(--primary); }
+[data-theme="civic"] .card.plain { border-left: 1px solid var(--border); }
+[data-theme="civic"] h1, [data-theme="civic"] h2 { font-weight: 700; }
+[data-theme="civic"] .badge { border: 1px solid currentColor; font-weight: 700; text-transform: none; }
+[data-theme="civic"] button:focus-visible, [data-theme="civic"] summary:focus-visible {
+  outline: 3px solid #ffdd00; outline-offset: 0; box-shadow: inset 0 0 0 1px var(--text);
+}
+
+/* ═══════════ 테마 3: Stripe-grade Ledger ═══════════ */
+[data-theme="ledger"] {
+  --primary: #635BFF; --primary-strong: #0A2540;
+  --bg: #F6F8FA; --surface: #FFFFFF; --surface-sub: #F6F8FA;
+  --text: #30313D; --text-sub: #6A7383; --text-muted: #87909F;
+  --border: #EBEEF1;
+  --danger: #DF1B41; --danger-bg: #FEE9EC;
+  --warning: #A85B00; --warning-bg: #FBF3D9;
+  --success: #217005; --success-bg: #E4F7D4;
+  --info-bg: #EFF4FF;
+  --gain: #DF1B41; --loss: #2F5CDE;
+  --radius-card: 8px; --radius-control: 6px; --radius-badge: 4px;
+  --shadow-card: 0 1px 1px rgba(0,0,0,.03), 0 3px 6px rgba(0,0,0,.04), 0 0 0 1px rgba(10,37,64,.06);
+  --card-border: none;
+  --pad-card: 18px;
+  --table-row-h: 40px;
+}
+[data-theme="ledger"] body, [data-theme="ledger"] { font-size: 15px; }
+[data-theme="ledger"] .section-title { text-transform: uppercase; letter-spacing: .04em; font-size: .78rem; color: var(--text-sub); }
+[data-theme="ledger"] h1 { color: var(--primary-strong); }
+
+/* ═══════════ 컴포넌트 ═══════════ */
+header.top {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+}
+h1 { font-size: 1.5rem; font-weight: 800; }
+.sub { color: var(--text-sub); font-size: .875rem; }
+
+.theme-switch { display: flex; gap: 6px; background: var(--surface); padding: 5px;
+  border-radius: var(--radius-control); box-shadow: var(--shadow-card); border: var(--card-border); }
+.theme-switch button {
+  font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer;
+  padding: 7px 14px; border: none; background: transparent; color: var(--text-sub);
+  border-radius: calc(var(--radius-control) - 4px);
+}
+.theme-switch button.active { background: var(--primary); color: #fff; }
+
+.grid { display: grid; gap: 16px; }
+.grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+
+.card {
+  background: var(--surface); border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card); border: var(--card-border);
+  padding: var(--pad-card);
+}
+.section-title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 32px 0 12px; display:flex; align-items:center; gap:8px; }
+.section-title .cnt { color: var(--text-muted); font-weight: 500; font-size: .8rem; }
+
+/* 스탯 타일 */
+.stat .label { font-size: .8rem; color: var(--text-muted); margin-bottom: 6px; }
+.stat .value { font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; }
+.stat .value small { font-size: .9rem; font-weight: 600; color: var(--text-sub); }
+.stat .foot { font-size: .78rem; color: var(--text-sub); margin-top: 6px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .72rem; font-weight: 700; padding: 3px 9px;
+  border-radius: var(--radius-badge); vertical-align: middle;
+}
+.badge.danger { background: var(--danger-bg); color: var(--danger); }
+.badge.warning { background: var(--warning-bg); color: var(--warning); }
+.badge.success { background: var(--success-bg); color: var(--success); }
+.badge.info { background: var(--info-bg); color: var(--primary); }
+.badge.neutral { background: var(--surface-sub); color: var(--text-sub); }
+
+.gain { color: var(--gain); font-weight: 700; }
+.loss { color: var(--loss); font-weight: 700; }
+
+/* 경고 배너 */
+.alert { display: flex; gap: 10px; padding: 14px 16px; border-radius: var(--radius-control);
+  font-size: .875rem; margin-bottom: 10px; align-items: baseline; }
+.alert .ic { font-weight: 900; flex: none; }
+.alert.critical { background: var(--danger-bg); color: var(--text); }
+.alert.critical .ic { color: var(--danger); }
+.alert.warning { background: var(--warning-bg); }
+.alert.warning .ic { color: var(--warning); }
+.alert.info { background: var(--info-bg); }
+.alert.info .ic { color: var(--primary); }
+[data-theme="civic"] .alert { border-left: 6px solid; border-radius: 0; background: var(--surface); }
+[data-theme="civic"] .alert.critical { border-color: var(--danger); }
+[data-theme="civic"] .alert.warning { border-color: var(--warning); }
+[data-theme="civic"] .alert.info { border-color: var(--primary); }
+.alert .dday { margin-left: auto; font-weight: 800; white-space: nowrap; }
+
+/* 타임라인 */
+.timeline { list-style: none; position: relative; padding-left: 22px; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.timeline li { position: relative; padding: 0 0 14px 8px; font-size: .86rem; }
+.timeline li::before { content: ""; position: absolute; left: -19px; top: 5px; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--text-muted); outline: 3px solid var(--surface); }
+.timeline li.key::before { background: var(--primary); }
+.timeline li.future::before { background: var(--surface); border: 2px solid var(--danger); width: 6px; height: 6px; }
+.timeline .d { color: var(--text-muted); font-size: .76rem; display: block; }
+.timeline b { font-weight: 700; }
+
+/* 테이블 */
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th { text-align: left; font-size: .74rem; font-weight: 600; color: var(--text-sub);
+  padding: 8px 10px; border-bottom: 1px solid var(--border); }
+td { padding: 0 10px; height: var(--table-row-h); border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-sub); }
+th.r, td.r { text-align: right; }
+td .tk { font-weight: 700; }
+tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
+
+/* 진행바 */
+.meter { margin-top: 10px; }
+.meter .bar { height: 8px; background: var(--surface-sub); border: 1px solid var(--border); border-radius: var(--radius-badge); overflow: hidden; }
+.meter .fill { height: 100%; background: var(--primary); border-radius: inherit; }
+.meter .fill.ok { background: var(--success); }
+.meter .cap { display: flex; justify-content: space-between; font-size: .74rem; color: var(--text-sub); margin-top: 5px; }
+
+/* 계산 근거 (explanation trace) */
+details.trace { margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px; }
+details.trace summary { cursor: pointer; font-size: .82rem; font-weight: 700; color: var(--primary); list-style: none; }
+details.trace summary::before { content: "▸ "; }
+details.trace[open] summary::before { content: "▾ "; }
+.trace-steps { margin-top: 10px; font-size: .82rem; }
+.trace-steps .step { display: flex; justify-content: space-between; gap: 12px; padding: 7px 10px; border-radius: var(--radius-control); }
+.trace-steps .step:nth-child(odd) { background: var(--surface-sub); }
+.trace-steps .step .rule { color: var(--text-sub); font-size: .74rem; }
+.law-quote { margin-top: 12px; padding: 12px 14px; background: var(--surface-sub); border-left: 3px solid var(--primary);
+  border-radius: var(--radius-control); font-size: .78rem; color: var(--text-sub); }
+.law-quote .src { display: block; margin-top: 8px; font-size: .7rem; color: var(--text-muted); word-break: break-all; }
+
+/* 차트 */
+.chart-wrap { margin-top: 8px; }
+.chart-wrap svg { width: 100%; height: auto; display: block; }
+.chart-note { font-size: .74rem; color: var(--text-muted); margin-top: 4px; }
+
+/* 원문 카드 */
+.law-doc { display: flex; flex-direction: column; gap: 8px; }
+.law-doc .meta-row { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: var(--text-sub); }
+.law-doc .meta-row b { color: var(--text); }
+.hash { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .72rem; color: var(--text-muted); word-break: break-all; }
+
+footer.disclaimer { margin-top: 48px; padding: 16px; text-align: center; font-size: .76rem; color: var(--text-muted);
+  border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1>taxNavi <span style="font-weight:400;color:var(--text-muted);font-size:1rem">PoC</span></h1>
+    <div class="sub">김가장 가구 · 기준일 2026-08-03 · 세대원 3인 (본인·배우자·자녀)</div>
+  </div>
+  <div class="theme-switch" role="tablist" aria-label="디자인 테마 선택">
+    <button data-t="toss" class="active">① Toss 스타일</button>
+    <button data-t="civic">② Civic Clarity</button>
+    <button data-t="ledger">③ Stripe Ledger</button>
+  </div>
+</header>
+
+<!-- ═══ D-day 알림 ═══ -->
+<div class="alert critical"><span class="ic">⚠</span>
+  <span><b>일시적 2주택 특례 — 종전주택(마포 A아파트) 처분기한.</b> 신규주택 취득일(2026-02-28)부터 <b>3년 이내</b> 양도해야 1세대 1주택으로 보아 비과세가 적용됩니다.</span>
+  <span class="dday num">2029-02-28 · D-940</span>
+</div>
+<div class="alert warning"><span class="ic">!</span>
+  <span>재산세 2기분 납부기간이 시작됩니다. (주택분 ½ + 토지분)</span>
+  <span class="dday num">2026-09-16 · D-44</span>
+</div>
+<div class="alert info"><span class="ic">i</span>
+  <span>2026년 귀속 해외주식 양도소득세 확정신고 기간 (2027년 5월)</span>
+  <span class="dday num">2027-05-31 · D-301</span>
+</div>
+
+<!-- ═══ 요약 스탯 ═══ -->
+<div class="section-title">한눈에 보기</div>
+<div class="grid cols-3">
+  <div class="card stat">
+    <div class="label">해외주식 올해 실현손익</div>
+    <div class="value num gain">+201.7<small>만원</small></div>
+    <div class="foot">기본공제 250만원 이내 → 예상 세액 <b>0원</b></div>
+  </div>
+  <div class="card stat">
+    <div class="label">추가 익절 가능 (비과세 한도)</div>
+    <div class="value num">48.3<small>만원</small></div>
+    <div class="foot">연내 이 금액까지 실현해도 양도세 없음</div>
+  </div>
+  <div class="card stat">
+    <div class="label">마포 A아파트 지금 팔면 (15억 가정)</div>
+    <div class="value num">1,167<small>만원</small></div>
+    <div class="foot"><span class="badge success">비과세 요건 충족</span> 고가주택 초과분만 과세</div>
+  </div>
+</div>
+
+<!-- ═══ 부동산 ═══ -->
+<div class="section-title">부동산 <span class="cnt">2건 · 세대 합산 2주택 (일시적 2주택)</span></div>
+<div class="grid cols-2">
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <b>마포 A아파트</b>
+      <span><span class="badge info">종전주택</span> <span class="badge success">비과세 요건 충족</span></span>
+    </div>
+    <div class="sub" style="margin:2px 0 14px">서울 마포구 · 취득 당시 조정대상지역 · 지분 100%</div>
+    <ul class="timeline">
+      <li class="key"><span class="d num">2019-06-15</span><b>매매계약 체결</b> · 8억 2,000만원</li>
+      <li class="key"><span class="d num">2019-09-20</span><b>잔금 지급 = 취득일</b></li>
+      <li><span class="d num">2019-10-01</span>전입 (거주 개시)</li>
+      <li><span class="d num">현재</span>보유 <b class="num">6년 10개월</b> · 거주 <b class="num">6년 10개월</b></li>
+      <li class="future"><span class="d num">2029-02-28</span><b style="color:var(--danger)">처분기한</b> (일시적 2주택 특례)</li>
+    </ul>
+    <div class="meter">
+      <div class="bar"><div class="fill ok" style="width:100%"></div></div>
+      <div class="cap"><span>보유 2년 + 거주 2년 (조정지역 취득)</span><span>충족 ✓</span></div>
+    </div>
+
+    <details class="trace">
+      <summary>지금 팔면 양도세 1,167만원 — 왜 이 금액인가</summary>
+      <div class="trace-steps num">
+        <div class="step"><span>양도가액 (가정)</span><span>1,500,000,000</span></div>
+        <div class="step"><span>− 취득가액</span><span>820,000,000</span></div>
+        <div class="step"><span>= 양도차익</span><span>680,000,000</span></div>
+        <div class="step"><span>× 고가주택 과세비율 <span class="rule">(15억−12억)/15억 = 20%</span></span><span>136,000,000</span></div>
+        <div class="step"><span>− 장기보유특별공제 48% <span class="rule">보유 6년×4% + 거주 6년×4%</span></span><span>−65,280,000</span></div>
+        <div class="step"><span>− 기본공제</span><span>−2,500,000</span></div>
+        <div class="step"><span>= 과세표준</span><span>68,220,000</span></div>
+        <div class="step"><span>× 기본세율 (누진)</span><span>10,612,800</span></div>
+        <div class="step"><span>+ 지방소득세 10%</span><span>1,061,280</span></div>
+        <div class="step"><b>= 총 예상세액</b><b>11,674,080</b></div>
+      </div>
+      <div class="law-quote">
+        <b>근거 원문 — 소득세법 시행령 제154조(1세대1주택의 범위) ①</b><br>
+        "…해당 주택의 보유기간이 2년 이상인 것[취득 당시에 「주택법」 제63조의2제1항제1호에 따른 조정대상지역에 있는 주택의 경우에는 해당 주택의 보유기간이 2년 이상이고 그 보유기간 중 거주기간이 2년 이상인 것]을 말한다…"
+        <span class="src num">출처: 대통령령 제36343호 (공포 2026-05-22 · 시행 2026-07-01) · law.go.kr 수집본 SHA-256 1c3498022847bad1… · confidence: drafted</span>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <b>성남 B아파트</b>
+      <span><span class="badge warning">신규주택</span> <span class="badge neutral">임대중 (전세)</span></span>
+    </div>
+    <div class="sub" style="margin:2px 0 14px">경기 성남시 분당구 · 취득 당시 비조정지역 · 지분 100%</div>
+    <ul class="timeline">
+      <li class="key"><span class="d num">2025-11-10</span><b>매매계약 체결</b> · 9억 5,000만원</li>
+      <li class="key"><span class="d num">2026-02-28</span><b>잔금 지급 = 취득일</b></li>
+      <li><span class="d num">2026-03-15</span><b>임대차(전세) 계약</b> · 보증금 5억 5,000만원 · ~2028-03-14</li>
+      <li class="future"><span class="d num">2028-03-14</span>임대차 만기 (갱신요구권 행사 가능)</li>
+    </ul>
+    <div class="meter">
+      <div class="bar"><div class="fill" style="width:16.5%"></div></div>
+      <div class="cap"><span>종전주택 처분기한 경과 (3년 중 5개월)</span><span class="num">D-940</span></div>
+    </div>
+    <details class="trace">
+      <summary>일시적 2주택 특례 판정 근거</summary>
+      <div class="trace-steps">
+        <div class="step"><span>종전주택 취득 후 1년 경과 뒤 신규주택 취득?</span><span class="num">2019-09-20 → 2026-02-28 ✓</span></div>
+        <div class="step"><span>신규주택 취득일부터 3년 이내 종전주택 양도?</span><span class="num">기한 2029-02-28 (진행중)</span></div>
+      </div>
+      <div class="law-quote">
+        <b>근거 원문 — 소득세법 시행령 제155조(1세대1주택의 특례) ①</b><br>
+        "…종전의 주택을 취득한 날부터 1년 이상이 지난 후 신규 주택을 취득하고 신규 주택을 취득한 날부터 3년 이내에 종전의 주택을 양도하는 경우…에는 이를 1세대1주택으로 보아 제154조제1항을 적용한다."
+        <span class="src num">출처: 대통령령 제36343호 (공포 2026-05-22 · 시행 2026-07-01) · law.go.kr 수집본 SHA-256 1c3498022847bad1… · confidence: drafted</span>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ═══ 주식 ═══ -->
+<div class="section-title">주식 · 계좌 <span class="cnt">일반계좌 + 중개형 ISA</span></div>
+
+<div class="card plain" style="margin-bottom:16px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+    <b>일반 위탁계좌 <span class="sub">OO증권</span></b>
+    <span class="badge info">해외주식 양도세 과세대상</span>
+  </div>
+  <table style="margin-top:12px">
+    <thead><tr>
+      <th>종목</th><th class="r">보유수량</th><th class="r">평균매수가</th><th class="r">올해 매도</th><th class="r">실현손익 (원)</th>
+    </tr></thead>
+    <tbody class="num">
+      <tr><td class="tk">NVDA</td><td class="r">27주</td><td class="r">$680.00</td><td class="r">3주 @ $1,150</td><td class="r gain">+2,047,800</td></tr>
+      <tr><td class="tk">AAPL</td><td class="r">5주</td><td class="r">$190.00</td><td class="r">5주 @ $175.50</td><td class="r loss">−31,070</td></tr>
+    </tbody>
+    <tfoot class="num"><tr><td colspan="4">2026년 실현손익 합계 (손익통산)</td><td class="r gain">+2,016,730</td></tr></tfoot>
+  </table>
+  <div class="meter">
+    <div class="bar"><div class="fill" style="width:80.7%"></div></div>
+    <div class="cap"><span>해외주식 기본공제 250만원 중 사용</span><span class="num">2,016,730 / 2,500,000 · 잔여 483,270원</span></div>
+  </div>
+
+  <div class="chart-wrap">
+    <svg viewBox="0 0 720 150" role="img" aria-label="2026년 월별 실현손익 막대 차트. 4월 플러스 204만 7800원, 5월 마이너스 3만 1070원, 나머지 달은 0원.">
+      <line x1="40" y1="110" x2="700" y2="110" stroke="var(--border)" stroke-width="1"/>
+      <text x="34" y="114" text-anchor="end" font-size="10" fill="var(--text-muted)">0</text>
+      <!-- 4월 +2,047,800 → h=88 -->
+      <rect x="330" y="22" width="36" height="88" rx="3" fill="var(--gain)"/>
+      <text x="348" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="var(--gain)">+204.8만</text>
+      <!-- 5월 −31,070 → h=4 (최소 표시) -->
+      <rect x="426" y="110" width="36" height="4" rx="2" fill="var(--loss)"/>
+      <text x="444" y="128" text-anchor="middle" font-size="10" font-weight="700" fill="var(--loss)">−3.1만</text>
+      <!-- 월 라벨 -->
+      <g font-size="10" fill="var(--text-muted)" text-anchor="middle">
+        <text x="60" y="142">1월</text><text x="156" y="142">2월</text><text x="252" y="142">3월</text>
+        <text x="348" y="142">4월</text><text x="444" y="142">5월</text><text x="540" y="142">6월</text><text x="636" y="142">7월</text>
+      </g>
+    </svg>
+    <div class="chart-note">2026년 월별 실현손익 (매도 체결 기준, 결제일 환율 적용)</div>
+  </div>
+</div>
+
+<div class="grid cols-2">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <b>중개형 ISA <span class="sub">OO증권 · 일반형</span></b>
+      <span class="badge success">의무가입기간 충족</span>
+    </div>
+    <div class="sub num" style="margin:2px 0 12px">가입 2023-06-20 · 만기 2028-06-20 (D-687)</div>
+    <table>
+      <thead><tr><th>종목</th><th class="r">수량</th><th class="r">평균단가</th></tr></thead>
+      <tbody class="num">
+        <tr><td class="tk">TIGER 미국S&amp;P500 <span class="badge neutral">국내상장 해외ETF</span></td><td class="r">350좌</td><td class="r">18,500</td></tr>
+        <tr><td class="tk">삼성전자</td><td class="r">200주</td><td class="r">71,300</td></tr>
+      </tbody>
+    </table>
+    <div class="meter">
+      <div class="bar"><div class="fill" style="width:44%"></div></div>
+      <div class="cap"><span>납입한도 (총 1억)</span><span class="num">4,400만 / 1억</span></div>
+    </div>
+    <div class="meter">
+      <div class="bar"><div class="fill" style="width:67%"></div></div>
+      <div class="cap"><span>비과세 한도 (200만) 사용</span><span class="num">134만 / 200만</span></div>
+    </div>
+    <details class="trace">
+      <summary>ISA 안이라 뭐가 다른가</summary>
+      <div class="trace-steps">
+        <div class="step"><span>국내상장 해외ETF 매매차익</span><span>계좌 내 손익통산 후 비과세 한도 적용</span></div>
+        <div class="step"><span>비과세 한도 초과분</span><span>9.9% 저율 분리과세</span></div>
+        <div class="step"><span>만기 시 선택지</span><span>연장 · 해지 후 재가입 · 연금계좌 이전(추가 세액공제)</span></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <b>금융소득 종합과세 모니터</b>
+    <div class="sub" style="margin:2px 0 12px">배당 + 이자, 2026년 누계</div>
+    <div class="stat">
+      <div class="value num">186<small>만원</small> <span class="sub" style="font-size:.8rem">/ 2,000만원</span></div>
+    </div>
+    <div class="meter">
+      <div class="bar"><div class="fill ok" style="width:9.3%"></div></div>
+      <div class="cap"><span>종합과세 기준까지 여유</span><span class="num">1,814만원</span></div>
+    </div>
+    <div class="law-quote" style="margin-top:16px">
+      연 2,000만원 초과 시 다른 소득과 합산해 누진세율로 종합과세됩니다. 현재 추세로는 올해 기준 초과 가능성이 낮습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 규칙 데이터의 원천 ═══ -->
+<div class="section-title">이 계산의 원천 — 수집된 정부 원문</div>
+<div class="card law-doc">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+    <b>소득세법 시행령</b>
+    <span><span class="badge info">대통령령 제36343호</span> <span class="badge neutral">일부개정</span></span>
+  </div>
+  <div class="meta-row num">
+    <span>공포 <b>2026-05-22</b></span>
+    <span>시행 <b>2026-07-01</b></span>
+    <span>수집 <b>2026-08-03</b></span>
+    <span>조문 <b>468개</b> 파싱</span>
+    <span>소관 <b>재정경제부</b></span>
+  </div>
+  <div class="hash">SHA-256 1c3498022847bad1… (law-archive 불변 보관본) · 원문: law.go.kr Open API (XML)</div>
+  <div class="sub">이 대시보드의 부동산 판정(§154 비과세 요건, §155 일시적 2주택)은 위 보관본의 조문에서 추출한 규칙 초안(confidence: drafted)을 사용했습니다. 검증(verified) 승격 전이며, 세율표·공제표 수치는 PoC용 예시입니다.</div>
+</div>
+
+<footer class="disclaimer">
+  ⚠ 본 화면은 PoC이며 모든 계산은 참고용입니다. 세무 자문을 대체하지 않으며, 실제 의사결정 전 반드시 세무 전문가와 상담하세요.<br>
+  디자인 테마: ① Toss 스타일(한국 핀테크 관용어) · ② Civic Clarity(GOV.UK/HMRC + USWDS 검증 토큰) · ③ Stripe Ledger(고밀도 원장 + Intuit 점진적 공개)
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.theme-switch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.documentElement.dataset.theme = btn.dataset.t;
+    document.querySelectorAll('.theme-switch button').forEach(b => b.classList.toggle('active', b === btn));
+  });
+});
+</script>
+</body>
+</html>

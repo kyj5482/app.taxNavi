@@ -1,0 +1,115 @@
+{
+  "profile": {
+    "name": "김가장",
+    "household": ["본인", "배우자", "자녀 1"],
+    "asOf": "2026-08-03"
+  },
+  "realEstate": [
+    {
+      "id": "re-A",
+      "name": "마포 A아파트",
+      "kind": "house",
+      "region": "서울 마포구",
+      "adjustedAreaAtAcquisition": true,
+      "ownershipShare": 1.0,
+      "events": [
+        { "type": "re.purchase_contract", "date": "2019-06-15", "price": 820000000 },
+        { "type": "re.balance_payment", "date": "2019-09-20", "note": "취득일" },
+        { "type": "re.move_in", "date": "2019-10-01" }
+      ],
+      "derived": {
+        "acquisitionDate": "2019-09-20",
+        "holdingYears": 6.87,
+        "residenceYears": 6.84,
+        "expectedSalePrice": 1500000000
+      }
+    },
+    {
+      "id": "re-B",
+      "name": "성남 B아파트",
+      "kind": "house",
+      "region": "경기 성남시 분당구",
+      "adjustedAreaAtAcquisition": false,
+      "ownershipShare": 1.0,
+      "events": [
+        { "type": "re.purchase_contract", "date": "2025-11-10", "price": 950000000 },
+        { "type": "re.balance_payment", "date": "2026-02-28", "note": "취득일" },
+        { "type": "re.lease_contract", "date": "2026-03-15", "deposit": 550000000, "monthlyRent": 0, "end": "2028-03-14", "note": "전세" }
+      ],
+      "derived": {
+        "acquisitionDate": "2026-02-28",
+        "temporaryTwoHouseDeadline": "2029-02-28"
+      }
+    }
+  ],
+  "accounts": [
+    {
+      "id": "acct-general", "type": "general", "broker": "OO증권", "name": "일반 위탁계좌",
+      "holdings": [
+        {
+          "ticker": "NVDA", "market": "US", "currency": "USD",
+          "buys": [{ "date": "2024-02-15", "qty": 30, "price": 680.0, "fx": 1330 }],
+          "sells": [{ "date": "2026-04-10", "qty": 3, "price": 1150.0, "fx": 1380, "realizedKrw": 2047800 }],
+          "remainingQty": 27
+        },
+        {
+          "ticker": "AAPL", "market": "US", "currency": "USD",
+          "buys": [{ "date": "2023-08-10", "qty": 10, "price": 190.0, "fx": 1300 }],
+          "sells": [{ "date": "2026-05-22", "qty": 5, "price": 175.5, "fx": 1372, "realizedKrw": -31070 }],
+          "remainingQty": 5
+        }
+      ]
+    },
+    {
+      "id": "acct-isa", "type": "isa", "isaSubtype": "general", "broker": "OO증권", "name": "중개형 ISA",
+      "openedAt": "2023-06-20", "maturityAt": "2028-06-20",
+      "mandatoryPeriodMet": "2026-06-20",
+      "totalDeposit": 44000000, "depositLimitTotal": 100000000,
+      "taxFreeLimit": 2000000, "taxFreeUsed": 1340000,
+      "holdings": [
+        { "ticker": "TIGER 미국S&P500", "market": "KRX", "securityType": "etf_domestic_overseas", "qty": 350, "avgPrice": 18500 },
+        { "ticker": "삼성전자", "market": "KRX", "securityType": "stock", "qty": 200, "avgPrice": 71300 }
+      ]
+    }
+  ],
+  "taxSummary2026": {
+    "overseasRealizedGain": 2016730,
+    "overseasBasicDeduction": 2500000,
+    "overseasDeductionRemaining": 483270,
+    "overseasEstimatedTax": 0,
+    "dividendInterestYtd": 1860000,
+    "comprehensiveTaxThreshold": 20000000,
+    "monthlyRealized": [
+      { "month": "2026-01", "gain": 0 },
+      { "month": "2026-02", "gain": 0 },
+      { "month": "2026-03", "gain": 0 },
+      { "month": "2026-04", "gain": 2047800 },
+      { "month": "2026-05", "gain": -31070 },
+      { "month": "2026-06", "gain": 0 },
+      { "month": "2026-07", "gain": 0 }
+    ]
+  },
+  "capitalGainsSimulation": {
+    "assetId": "re-A",
+    "assumption": "양도가 15억 원, 2026-08 중 양도, 일시적 2주택 특례 적용",
+    "salePrice": 1500000000,
+    "acquisitionPrice": 820000000,
+    "grossGain": 680000000,
+    "highValueThreshold": 1200000000,
+    "taxableRatio": 0.2,
+    "taxableGain": 136000000,
+    "ltHoldingDeductionRate": 0.48,
+    "ltHoldingDeduction": 65280000,
+    "basicDeduction": 2500000,
+    "taxBase": 68220000,
+    "incomeTax": 10612800,
+    "localIncomeTax": 1061280,
+    "totalTax": 11674080
+  },
+  "ddays": [
+    { "label": "재산세 2기분 납부 시작", "date": "2026-09-16", "dday": 44, "severity": "warning" },
+    { "label": "해외주식 양도세 확정신고 (2026년 귀속)", "date": "2027-05-31", "dday": 301, "severity": "info" },
+    { "label": "ISA 만기", "date": "2028-06-20", "dday": 687, "severity": "info" },
+    { "label": "종전주택(마포 A) 처분기한 — 일시적 2주택 특례", "date": "2029-02-28", "dday": 940, "severity": "critical" }
+  ]
+}
