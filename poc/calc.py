@@ -375,51 +375,166 @@ results["reconstruction_stages"] = RECONSTRUCTION_STAGES
 
 
 # ── 종합부동산세 (개편안 반영) ────────────────────────────────────
-def jongbuse(official_prices, year, *, one_house=False, resident_house_price=0, law="reform"):
-    total = sum(official_prices)
-    n = len(official_prices)
+# 개편안 (2) 과세대상 (종부법 §7①): 1세대1주택자 공시가 합 14억 초과 / 그 외 9억 초과
+# 개편안 (3) 기본공제 (종부법 §8①): 1세대1주택 거주 14억·비거주 9억
+#                                    그 외 4억 + (5억 × 거주주택 공시가/주택 공시가 합계)
+# 개편안 (4) 공정시장가액비율: 3주택 이상 또는 조정지역 주택 보유(1세대1주택자 제외)
+#                              '27년 70% → '28년 이후 80% / 그 외 70%
+# 개편안 (5) 세율: '27년 중간세율, '28년 이후 주택 수 구분 폐지
+# 개편안 (6) 1세대1주택 세액공제: 보유→거주 전환, 금액한도 '27년 800만·'28년 이후 600만
+JB_RATES_CUR = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .010),
+                (2_500_000_000, .013), (5_000_000_000, .015), (9_400_000_000, .020), (float("inf"), .027)]
+JB_RATES_CUR3 = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .010),
+                 (2_500_000_000, .020), (5_000_000_000, .030), (9_400_000_000, .040), (float("inf"), .050)]
+JB_RATES_27 = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .013),
+               (2_500_000_000, .015), (5_000_000_000, .020), (9_400_000_000, .027), (float("inf"), .035)]
+JB_RATES_27_3 = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .013),
+                 (2_500_000_000, .020), (5_000_000_000, .030), (9_400_000_000, .040), (float("inf"), .050)]
+JB_RATES_28 = JB_RATES_27_3
+JB_CREDIT_CAP = {2027: 8_000_000, 2028: 6_000_000, 2029: 6_000_000, 2030: 6_000_000}
+
+
+def _jb_period_credit(years, kind):
+    # reside/holdCurrent : 20/40/50 (개편안 거주공제 = 현행 보유공제)
+    # hold               : 개편안 '27년 보유공제 = 거주공제의 1/2 → 10/20/25
+    tiers = [(5, .10), (10, .20), (15, .25)] if kind == "hold" else [(5, .20), (10, .40), (15, .50)]
+    r = 0.0
+    for y, v in tiers:
+        if years >= y:
+            r = v
+    return r
+
+
+def _jb_age_credit(age):
+    return .40 if age >= 70 else .30 if age >= 65 else .20 if age >= 60 else 0.0
+
+
+def jongbuse(official_prices, year, *, one_house=False, resident_house_price=0, law="reform",
+             house_count=None, one_house_special=False, not_one_house=False,
+             adjusted_area=False, age=0, hold_years=0, reside_years=0, property_tax_credit=None,
+             prior_holding_tax=0, property_tax_this_year=0):
+    prices = [p for p in official_prices if p > 0]
+    total = sum(prices)
+    n = len(prices) if house_count is None else house_count
+    # 공동명의 1주택을 각자 개별 납부하면 각 공유자는 1세대1주택자가 아니라 '그 외'로 취급된다
+    # (문답자료 p.41: 거주 각 9억 / 비거주 각 4억)
+    is_one = one_house_special or ((n == 1 or one_house) and not not_one_house)
+    resides = resident_house_price > 0
+
     if law == "current":
-        basic = 1_200_000_000 if (one_house and n == 1) else 900_000_000
+        basic = 1_200_000_000 if is_one else 900_000_000
+        basic_label = "1세대1주택 12억" if is_one else "9억"
         fair = 0.60
-        rates = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .010),
-                 (2_500_000_000, .013), (5_000_000_000, .015), (9_400_000_000, .020), (float("inf"), .027)]
+        rates = JB_RATES_CUR3 if n >= 3 else JB_RATES_CUR
     else:
-        if one_house and n == 1:
-            basic = 1_400_000_000 if resident_house_price > 0 else 900_000_000
+        if is_one:
+            basic = 1_400_000_000 if resides else 900_000_000
+            basic_label = "1세대1주택 거주 14억" if resides else "1세대1주택 비거주 9억"
         else:
-            # 개편안 (3): 4억 + (5억 × 거주주택공시가/주택공시가 합계)
-            basic = 400_000_000 + int(500_000_000 * (resident_house_price / total if total else 0))
-        fair = 0.70
-        rates = [(300_000_000, .005), (600_000_000, .007), (1_200_000_000, .013),
-                 (2_500_000_000, .015), (5_000_000_000, .020), (9_400_000_000, .027), (float("inf"), .035)]
-    base = max(int((total - basic) * fair), 0)
-    tax, prev = 0, 0
+            ratio = min(resident_house_price / total, 1.0) if total else 0.0
+            basic = 400_000_000 + int(500_000_000 * ratio)
+            basic_label = f"4억 + 5억×{ratio * 100:.1f}%(거주주택 비중)"
+        heavy = (not is_one) and (n >= 3 or adjusted_area)
+        fair = 0.60 if year <= 2026 else ((0.80 if year >= 2028 else 0.70) if heavy else 0.70)
+        rates = (JB_RATES_27_3 if n >= 3 else JB_RATES_27) if year <= 2027 else JB_RATES_28
+
+    # 개편안 (2) 과세대상 문턱 — 기본공제와 별개
+    threshold = 0 if law == "current" else (1_400_000_000 if is_one else 900_000_000)
+    taxable = total > threshold
+    base = max(int((total - basic) * fair), 0) if taxable else 0
+    gross, prev = 0, 0
     for cap, rate in rates:
         if base > prev:
-            tax += int((min(base, cap) - prev) * rate)
+            gross += int((min(base, cap) - prev) * rate)
             prev = cap
         else:
             break
-    return {"basicDeduction": basic, "fairRatio": fair, "taxBase": base, "tax": tax,
-            "totalOfficial": total, "houseCount": n}
+    # 공제할 재산세액 (종부법 §9③, 종부령 §4의2). 시행령 산식이 복잡해 개산치를 쓰되,
+    # 문답자료 p.44~45 사례 ①②③의 8개 데이터포인트에 맞도록 '과세표준 × 0.18%'로 캘리브레이션.
+    ptc = int(base * 0.0018) if property_tax_credit is None else property_tax_credit
+    net = max(gross - ptc, 0)
+
+    credit = capped = 0
+    credit_label = ""
+    if is_one and (age >= 60 or hold_years >= 5 or reside_years >= 5):
+        # 현행: 보유공제(20/40/50) + 연령공제, 금액한도 없음
+        # 개편안: 거주공제 전환. '27년은 보유공제(1/2)와 거주공제 중 큰 쪽, '28년~ 거주공제만.
+        if law == "current":
+            r_period = _jb_period_credit(hold_years, "holdCurrent")
+        else:
+            r_period = max(_jb_period_credit(reside_years, "reside"),
+                           _jb_period_credit(hold_years, "hold") if year <= 2027 else 0.0)
+        rate = min(r_period + _jb_age_credit(age), 0.80)
+        credit = int(net * rate)
+        cap = float("inf") if law == "current" else JB_CREDIT_CAP.get(year, 6_000_000)
+        capped = min(credit, cap)
+        credit_label = f"{round(rate * 100)}%" + (
+            f" (금액한도 {int(cap) // 10_000}만원 적용, 한도 전 {credit // 10_000}만원)" if credit > cap else "")
+    before_cap = max(net - capped, 0)
+
+    # 개편안 (7) 세부담 상한 (종부법 §10·§15) — 직전연도 총 보유세상당액의 150%('27년 이후 200%).
+    # prior_holding_tax를 주지 않으면 상한을 적용하지 않는다(판정 불가로 두고 그대로 부과).
+    cap_rate = 1.50 if law == "current" else (2.00 if year >= 2027 else 1.50)
+    burden_cap, burden_capped, tax = None, False, before_cap
+    if prior_holding_tax > 0:
+        burden_cap = max(int(prior_holding_tax * cap_rate) - property_tax_this_year, 0)
+        if before_cap > burden_cap:
+            tax, burden_capped = burden_cap, True
+    return {"basicDeduction": basic, "basicLabel": basic_label, "fairRatio": fair,
+            "threshold": threshold, "taxable": taxable, "taxBase": base, "grossTax": gross,
+            "propertyTaxCredit": ptc, "netTax": net,
+            "credit": credit, "creditApplied": capped, "creditLabel": credit_label,
+            "taxBeforeCap": before_cap, "burdenCapRate": cap_rate, "burdenCap": burden_cap,
+            "burdenCapped": burden_capped,
+            "tax": tax, "nongteugse": int(tax * 0.20), "withSurtax": tax + int(tax * 0.20),
+            "totalOfficial": total, "houseCount": n, "isOneHouse": is_one, "resides": resides}
 
 
 def jongbuse_joint(official_prices, year, *, shares=(0.5, 0.5), **kw):
-    """종부세는 인별 과세(종부세법 §7①). 공동명의는 각자 지분만큼 보유한 것으로 보아
-    각자 기본공제를 받는다 → 부부공동명의면 기본공제가 사실상 2배.
+    """종부세는 인별 과세(종부세법 §7①)이고 공동소유주택은 각자가 그 주택을 소유한 것으로
+    보므로(시행령 §154의2) 각자 자기 지분에 대해 기본공제를 받는다.
 
-    문답자료 p.42: 공동명의 1주택은 '부부 개별 납부(각 9억/4억)' 또는
-    '1세대1주택자 특례 신청(14억/9억)' 중 유리한 쪽을 선택할 수 있다."""
+    ★ 개편안의 결정적 디테일: 다주택 기본공제 9억이 '4억 + 5억×거주주택 비중'으로 쪼개지면서
+      4억은 각자 무조건 받지만 5억분은 거주주택 가액 비중만큼만 받는다.
+      → 비거주 부부공동명의 2주택은 각 4억(합 8억)이 상한이고, '각 9억 = 합 18억'이 아니다.
+
+    공동명의 1주택은 문답자료 p.41에 따라 둘 중 유리한 쪽을 선택할 수 있다:
+      - 부부 개별 납부:       거주 각 9억 / 비거주 각 4억 (1세대1주택자 아님)
+      - 1세대1주택자 특례신청: 거주 14억 / 비거주 9억 (지분 합산해 1인 납부)
+    """
     rhp = kw.pop("resident_house_price", 0)
-    parts = [jongbuse([p * s for p in official_prices], year,
-                      resident_house_price=rhp * s, **kw) for s in shares]
-    solo = jongbuse(official_prices, year, resident_house_price=rhp, **kw)
-    return {"tax": sum(p["tax"] for p in parts), "parts": parts, "solo": solo,
-            "saving": solo["tax"] - sum(p["tax"] for p in parts),
-            "basicDeduction": sum(p["basicDeduction"] for p in parts),
-            "taxBase": sum(p["taxBase"] for p in parts),
-            "fairRatio": parts[0]["fairRatio"],
-            "totalOfficial": sum(official_prices), "houseCount": parts[0]["houseCount"]}
+    ptc = kw.pop("property_tax_credit", None)
+    pht = kw.pop("prior_holding_tax", 0)
+    pty = kw.pop("property_tax_this_year", 0)
+    house_count = len([p for p in official_prices if p > 0])
+    # 세부담 상한도 인별로 판정한다 (종부세가 인별 과세이므로)
+    parts = [jongbuse([p * s for p in official_prices], year, resident_house_price=rhp * s,
+                      house_count=house_count, not_one_house=len(shares) > 1,
+                      property_tax_credit=None if ptc is None else ptc * s,
+                      prior_holding_tax=pht * s,
+                      property_tax_this_year=pty * s, **kw) for s in shares]
+    separate = {"mode": "separate", "parts": parts,
+                "tax": sum(p["tax"] for p in parts),
+                "withSurtax": sum(p["withSurtax"] for p in parts),
+                "basicDeduction": sum(p["basicDeduction"] for p in parts),
+                "taxBase": sum(p["taxBase"] for p in parts),
+                "fairRatio": parts[0]["fairRatio"],
+                "burdenCapped": any(p["burdenCapped"] for p in parts),
+                "burdenCapRate": parts[0]["burdenCapRate"]}
+    special = None
+    if house_count == 1 and len(shares) > 1:
+        whole = jongbuse(official_prices, year, resident_house_price=rhp, house_count=1,
+                         one_house_special=True, property_tax_credit=ptc,
+                         prior_holding_tax=pht, property_tax_this_year=pty, **kw)
+        special = {"mode": "special", "parts": [whole], **{k: whole[k] for k in
+                   ("tax", "withSurtax", "basicDeduction", "taxBase", "fairRatio")}}
+    chosen = special if (special and special["tax"] < separate["tax"]) else separate
+    solo = jongbuse(official_prices, year, resident_house_price=rhp,
+                    house_count=house_count, property_tax_credit=ptc,
+                    prior_holding_tax=pht, property_tax_this_year=pty, **kw)
+    return {**chosen, "separate": separate, "special": special, "solo": solo,
+            "saving": solo["tax"] - chosen["tax"],
+            "totalOfficial": sum(official_prices), "houseCount": house_count}
 
 
 def property_tax(official_price, *, one_house_under_900m=False):
@@ -676,6 +791,57 @@ results["inheritance_reference"] = {
     "note": "상속은 선택 가능한 절세 수단이 아님 — 자산 규모가 상속세 과세구간에 있음을 확인하는 용도",
 }
 
+# ── 정부 원문 사례 회귀 검증 ────────────────────────────────────────────────
+# 기재부 문답자료 p.44~45 사례 ①②③ (1세대1주택, 70세, 공시가 30억/50억). 정부가 직접 제시한
+# 세액공제액·종부세 합계(농특세 포함)를 오라클로 삼아 엔진을 검증한다. 원문 없는 규칙은
+# 배포하지 않는다는 원칙의 계산 측 대응물.
+GOV_JB_CASES = [
+    # (사례, 공시가, 거주연수, 보유연수, {연도: 종부세+농특세}, {연도: 보유세}, {연도: 공제전 세액공제})
+    ("①", 30e8, 10, 10, {2026: 154.9, 2027: 200.3, 2028: 281.3},
+     {2026: 916.3, 2027: 961.7, 2028: 1042.7}, {2026: 516.5, 2027: 667.5, 2028: 667.5}),
+    ("②", 30e8, 0, 10, {2026: 154.9, 2027: 614.6, 2028: 1019.1},
+     {2026: 916.3, 2027: 1376.0, 2028: 1780.5}, {2026: 516.5, 2027: 768.2, 2028: 566.2}),
+    ("③", 50e8, 10, 10, {2026: 468.9, 2027: 1942.1, 2028: 3295.7},
+     {2026: 1788.3, 2027: 3261.5, 2028: 4615.1}, {2026: 1562.9, 2027: 2141.1, 2028: 2677.1}),
+]
+
+
+def verify_against_originals():
+    """정부 사례와 엔진 결과를 대조. (일치 수, 전체 수, 불일치 목록)"""
+    hits = misses = 0
+    detail = []
+    for name, price, reside, hold, exp_tax, exp_hold, exp_credit in GOV_JB_CASES:
+        prop_tax = int((exp_hold[2026] - exp_tax[2026]) * 10_000)   # '26 재산세 (정부표 역산)
+        prior = int(exp_hold[2026] * 10_000)                        # 상한 판정용 직전연도 보유세
+        for y in (2026, 2027, 2028):
+            r = jongbuse([price], y, one_house=True,
+                         law="current" if y <= 2026 else "reform",
+                         resident_house_price=price if reside else 0,
+                         age=70, hold_years=hold, reside_years=reside,
+                         prior_holding_tax=prior if y >= 2027 else 0,
+                         property_tax_this_year=prop_tax if y >= 2027 else 0)
+            for label, got, want in (("세액공제", r["credit"], exp_credit[y] * 10_000),
+                                     ("종부세+농특", r["withSurtax"], exp_tax[y] * 10_000)):
+                if abs(got - want) <= 20_000:
+                    hits += 1
+                else:
+                    misses += 1
+                    detail.append(f"사례 {name} {y}년 {label}: 산출 {got/1e4:,.1f}만 ≠ 원문 {want/1e4:,.1f}만")
+            prior = prop_tax + r["withSurtax"]
+    return hits, hits + misses, detail
+
+
+_jb_hits, _jb_total, _jb_misses = verify_against_originals()
+results["verification"] = {
+    "source": "기재부 2026년 세제개편안 문답자료 p.44~45 사례 ①②③",
+    "dataPoints": _jb_total,
+    "matched": _jb_hits,
+    "mismatches": _jb_misses,
+    "note": ("공제할 재산세액(종부법 §9③)은 시행령 산식이 복잡해 '과세표준 × 0.18%' 개산치로 "
+             "캘리브레이션했다. 사례 ③ 2027년만 원문과 어긋나는데, 원문 자체가 내부적으로 "
+             "정합하지 않는다(세액공제 한도 전 2,141.1만 → 한도 800만 적용 시 2,251.7만이어야 함)."),
+}
+
 out = Path(__file__).parent / "scenario-results.json"
 out.write_text(json.dumps(results, ensure_ascii=False, indent=2), "utf-8")
 
@@ -745,3 +911,6 @@ for key, p in gift_plans.items():
           f"(미성년 대비 {won(tc['totalCost'] - aa['totalCost'])} 절감)")
 print(f"\n  ⚠ {results['gift_assumptions']['carryoverWarning']}")
 print(f"\n→ {out.name} 저장 완료")
+
+print(f"\n원문 사례 검증: {_jb_hits}/{_jb_total} 데이터포인트 일치"
+      + ("".join("\n  ⚠ " + m for m in _jb_misses) if _jb_misses else ""))

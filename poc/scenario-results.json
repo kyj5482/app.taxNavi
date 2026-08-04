@@ -991,51 +991,153 @@
     ],
     "current_2026": {
       "basicDeduction": 900000000,
+      "basicLabel": "9억",
       "fairRatio": 0.6,
+      "threshold": 0,
+      "taxable": true,
       "taxBase": 480000000,
-      "tax": 2760000,
+      "grossTax": 2760000,
+      "propertyTaxCredit": 864000,
+      "netTax": 1896000,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 1896000,
+      "burdenCapRate": 1.5,
+      "burdenCap": null,
+      "burdenCapped": false,
+      "tax": 1896000,
+      "nongteugse": 379200,
+      "withSurtax": 2275200,
       "totalOfficial": 1700000000,
-      "houseCount": 2
+      "houseCount": 2,
+      "isOneHouse": false,
+      "resides": false
     },
     "reform_2027_no_residence": {
       "basicDeduction": 400000000,
+      "basicLabel": "4억 + 5억×0.0%(거주주택 비중)",
       "fairRatio": 0.7,
+      "threshold": 900000000,
+      "taxable": true,
       "taxBase": 910000000,
-      "tax": 7630000,
+      "grossTax": 7630000,
+      "propertyTaxCredit": 1638000,
+      "netTax": 5992000,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 5992000,
+      "burdenCapRate": 2.0,
+      "burdenCap": null,
+      "burdenCapped": false,
+      "tax": 5992000,
+      "nongteugse": 1198400,
+      "withSurtax": 7190400,
       "totalOfficial": 1700000000,
-      "houseCount": 2
+      "houseCount": 2,
+      "isOneHouse": false,
+      "resides": false
     },
     "reform_2027_if_living_in_gwacheon": {
       "basicDeduction": 723529411,
+      "basicLabel": "4억 + 5억×64.7%(거주주택 비중)",
       "fairRatio": 0.7,
+      "threshold": 900000000,
+      "taxable": true,
       "taxBase": 683529412,
-      "tax": 4685882,
+      "grossTax": 4685882,
+      "propertyTaxCredit": 1230352,
+      "netTax": 3455530,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 3455530,
+      "burdenCapRate": 2.0,
+      "burdenCap": null,
+      "burdenCapped": false,
+      "tax": 3455530,
+      "nongteugse": 691106,
+      "withSurtax": 4146636,
       "totalOfficial": 1700000000,
-      "houseCount": 2
+      "houseCount": 2,
+      "isOneHouse": false,
+      "resides": true
     },
     "reform_2027_one_house_resident": {
       "basicDeduction": 1400000000,
+      "basicLabel": "1세대1주택 거주 14억",
       "fairRatio": 0.7,
+      "threshold": 1400000000,
+      "taxable": false,
       "taxBase": 0,
+      "grossTax": 0,
+      "propertyTaxCredit": 0,
+      "netTax": 0,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 0,
+      "burdenCapRate": 2.0,
+      "burdenCap": null,
+      "burdenCapped": false,
       "tax": 0,
+      "nongteugse": 0,
+      "withSurtax": 0,
       "totalOfficial": 1100000000,
-      "houseCount": 1
+      "houseCount": 1,
+      "isOneHouse": true,
+      "resides": true
     },
     "reform_2027_gwacheon_only_nonresident": {
       "basicDeduction": 900000000,
+      "basicLabel": "1세대1주택 비거주 9억",
       "fairRatio": 0.7,
-      "taxBase": 140000000,
-      "tax": 700000,
+      "threshold": 1400000000,
+      "taxable": false,
+      "taxBase": 0,
+      "grossTax": 0,
+      "propertyTaxCredit": 0,
+      "netTax": 0,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 0,
+      "burdenCapRate": 2.0,
+      "burdenCap": null,
+      "burdenCapped": false,
+      "tax": 0,
+      "nongteugse": 0,
+      "withSurtax": 0,
       "totalOfficial": 1100000000,
-      "houseCount": 1
+      "houseCount": 1,
+      "isOneHouse": true,
+      "resides": false
     },
     "reform_after_demolition_nonresident": {
       "basicDeduction": 900000000,
+      "basicLabel": "1세대1주택 비거주 9억",
       "fairRatio": 0.7,
-      "taxBase": 140000000,
-      "tax": 700000,
+      "threshold": 1400000000,
+      "taxable": false,
+      "taxBase": 0,
+      "grossTax": 0,
+      "propertyTaxCredit": 0,
+      "netTax": 0,
+      "credit": 0,
+      "creditApplied": 0,
+      "creditLabel": "",
+      "taxBeforeCap": 0,
+      "burdenCapRate": 2.0,
+      "burdenCap": null,
+      "burdenCapped": false,
+      "tax": 0,
+      "nongteugse": 0,
+      "withSurtax": 0,
       "totalOfficial": 1100000000,
-      "houseCount": 1
+      "houseCount": 1,
+      "isOneHouse": true,
+      "resides": false
     }
   },
   "holding_tax_timeline": [
@@ -1058,12 +1160,12 @@
           0,
           0
         ],
-        "soloIfSingleName_twoHouse_nonresident": 2760000,
-        "jointSaving_twoHouse_nonresident": 2760000
+        "soloIfSingleName_twoHouse_nonresident": 1896000,
+        "jointSaving_twoHouse_nonresident": 1896000
       },
       "total_twoHouse_nonresident": 4812000,
       "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 7572000
+      "total_twoHouse_nonresident_ifSingleName": 6708000
     },
     {
       "year": 2027,
@@ -1074,22 +1176,22 @@
         "bothTotal": 4812000
       },
       "jongbuse": {
-        "twoHouse_nonresident": 3210000,
-        "twoHouse_livingInGwacheon": 885294,
+        "twoHouse_nonresident": 0,
+        "twoHouse_livingInGwacheon": 0,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1605000,
-          1605000
+          0,
+          0
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7630000,
-        "jointSaving_twoHouse_nonresident": 4420000
+        "soloIfSingleName_twoHouse_nonresident": 5992000,
+        "jointSaving_twoHouse_nonresident": 5992000
       },
-      "total_twoHouse_nonresident": 8022000,
+      "total_twoHouse_nonresident": 4812000,
       "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 12442000
+      "total_twoHouse_nonresident_ifSingleName": 10804000
     },
     {
       "year": 2028,
@@ -1100,22 +1202,22 @@
         "bothTotal": 4812000
       },
       "jongbuse": {
-        "twoHouse_nonresident": 3210000,
-        "twoHouse_livingInGwacheon": 885294,
+        "twoHouse_nonresident": 0,
+        "twoHouse_livingInGwacheon": 0,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1605000,
-          1605000
+          0,
+          0
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7630000,
-        "jointSaving_twoHouse_nonresident": 4420000
+        "soloIfSingleName_twoHouse_nonresident": 5992000,
+        "jointSaving_twoHouse_nonresident": 5992000
       },
-      "total_twoHouse_nonresident": 8022000,
+      "total_twoHouse_nonresident": 4812000,
       "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 12442000
+      "total_twoHouse_nonresident_ifSingleName": 10804000
     },
     {
       "year": 2029,
@@ -1126,22 +1228,22 @@
         "bothTotal": 4812000
       },
       "jongbuse": {
-        "twoHouse_nonresident": 3210000,
-        "twoHouse_livingInGwacheon": 885294,
+        "twoHouse_nonresident": 0,
+        "twoHouse_livingInGwacheon": 0,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1605000,
-          1605000
+          0,
+          0
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7630000,
-        "jointSaving_twoHouse_nonresident": 4420000
+        "soloIfSingleName_twoHouse_nonresident": 5992000,
+        "jointSaving_twoHouse_nonresident": 5992000
       },
-      "total_twoHouse_nonresident": 8022000,
+      "total_twoHouse_nonresident": 4812000,
       "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 12442000
+      "total_twoHouse_nonresident_ifSingleName": 10804000
     }
   ],
   "sale_order_scenarios": {
@@ -2628,5 +2730,14 @@
     "deductionAssumed": 1000000000,
     "taxBase": 1460000000,
     "note": "상속은 선택 가능한 절세 수단이 아님 — 자산 규모가 상속세 과세구간에 있음을 확인하는 용도"
+  },
+  "verification": {
+    "source": "기재부 2026년 세제개편안 문답자료 p.44~45 사례 ①②③",
+    "dataPoints": 18,
+    "matched": 17,
+    "mismatches": [
+      "사례 ③ 2027년 종부세+농특: 산출 2,251.7만 ≠ 원문 1,942.1만"
+    ],
+    "note": "공제할 재산세액(종부법 §9③)은 시행령 산식이 복잡해 '과세표준 × 0.18%' 개산치로 캘리브레이션했다. 사례 ③ 2027년만 원문과 어긋나는데, 원문 자체가 내부적으로 정합하지 않는다(세액공제 한도 전 2,141.1만 → 한도 800만 적용 시 2,251.7만이어야 함)."
   }
 }

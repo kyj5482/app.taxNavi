@@ -384,20 +384,38 @@ function sTwo(year) {
   });
   return { ...r, stage: st };
 }
-function holding(year) {
+/* prior: 직전연도 보유세(재산세+종부세). 개편안 (7) 세부담 상한 200% 판정에 쓰인다.
+   상한은 "직전연도 총 보유세상당액 × 상한율"을 당해연도 보유세 총액의 천장으로 두므로
+   연도별 계산이 앞 연도 결과에 의존한다 → holdingRows()로 순차 계산한다. */
+function holding(year, prior = { total: 0, oneHouseTotal: 0, soloTotal: 0 }) {
   const st = stageAt(S.stages, year);
   const law = year === 2026 ? 'current' : 'reform';
   const sOffEff = (st.priceMultiplier || 1) * S.sOff;
   const ptG = propertyTax(S.gOff);
   const ptS = propertyTax(sOffEff, { asLand: st.landTax });
   const prices = st.jongbuseIncluded ? [S.gOff, sOffEff] : [S.gOff];
-  const opt = { law, residentHousePrice: S.resident ? S.gOff : 0, shares: SHARES() };
-  const jb = jongbuseJoint(prices, opt);
-  const jb1 = jongbuseJoint([S.gOff], opt);
-  const jbSolo = jongbuse(prices, { law, residentHousePrice: S.resident ? S.gOff : 0 });
+  const ptAll = ptG.total + ptS.total;
+  const opt = { law, year, residentHousePrice: S.resident ? S.gOff : 0, shares: SHARES(),
+    adjustedArea: false,   // 과천·분당 모두 2023-01-05 조정대상지역 해제 → 80% 트랙 아님
+    holdYearsVal: holdYears(G.acqDate, year), resideYearsVal: S.resident ? G.reside : 0 };
+  // propertyTaxCredit은 넘기지 않는다 → 엔진이 과세표준 대응분(종부법 §9③)을 자동 개산
+  const jb = jongbuseJoint(prices, { ...opt, priorHoldingTax: prior.total, propertyTaxThisYear: ptAll });
+  const jb1 = jongbuseJoint([S.gOff], { ...opt, priorHoldingTax: prior.oneHouseTotal, propertyTaxThisYear: ptG.total });
+  const jbSolo = jongbuseJoint(prices, { ...opt, priorHoldingTax: prior.soloTotal, propertyTaxThisYear: ptAll }).solo;
   return { year, law, st, ptG, ptS, jb, jb1, jbSolo,
-    total: ptG.total + ptS.total + jb.tax, oneHouseTotal: ptG.total + jb1.tax,
-    soloTotal: ptG.total + ptS.total + jbSolo.tax };
+    total: ptAll + jb.tax, oneHouseTotal: ptG.total + jb1.tax,
+    soloTotal: ptAll + jbSolo.tax };
+}
+/** 세부담 상한이 직전연도에 의존하므로 연도를 순서대로 이어 계산한다. */
+function holdingRows() {
+  const out = [];
+  let prior = { total: 0, oneHouseTotal: 0, soloTotal: 0 };
+  for (const y of YEARS) {
+    const r = holding(y, prior);
+    out.push(r);
+    prior = { total: r.total, oneHouseTotal: r.oneHouseTotal, soloTotal: r.soloTotal };
+  }
+  return out;
 }
 
 /* ── 헬퍼 ─────────────────────────────────────────────────────── */
@@ -409,15 +427,20 @@ const nm = (k) => (k === 'g' ? G.short : Sb.short);
 
 function renderConv() {
   for (const k of ['gAcq', 'sAcq', 'gSale', 'sSale', 'gOff', 'sOff']) $(`${k}C`).textContent = fmtEok(S[k]);
-  const b = allCombos()[0], hold = YEARS.map(holding);
+  const b = allCombos()[0], hold = holdingRows();
   const cgSave = b.a.solo && b.b.solo ? (b.a.solo.total + b.b.solo.total) - b.total : 0;
   const jbSave = hold.reduce((a, r) => a + (r.soloTotal - r.total), 0);
+  const jb27 = hold.find((r) => r.year === 2027);
   $('ownAlert').innerHTML = S.joint
     ? `<span class="ic">i</span><span><b>부부공동명의(각 50%) 기준으로 계산했습니다.</b>
-        양도소득세와 종합부동산세는 모두 <b>인별 과세</b>라 지분을 나눈 만큼 과세표준·누진세율·기본공제가 각자에게 적용됩니다.
-        현재 입력값에서 최선 매도안은 단독명의 대비 <b style="color:var(--success)">− ${W(cgSave)}</b>,
-        2026~2029년 보유세는 <b style="color:var(--success)">− ${W(jbSave)}</b> 절감됩니다.
-        단, <b>고가주택 12억 판정은 주택 전체 양도가액</b> 기준이고 <b>재산세는 물건별 과세</b>라 공동명의로도 총액이 줄지 않습니다(납부만 지분 안분).</span>`
+        양도세·종부세는 모두 <b>인별 과세</b>라 지분을 나눈 만큼 과세표준·누진세율·기본공제가 각자에게 적용됩니다 —
+        최선 매도안 <b style="color:var(--success)">− ${W(cgSave)}</b>, 2026~2029년 보유세 <b style="color:var(--success)">− ${W(jbSave)}</b>.<br>
+        <b style="color:var(--danger)">단, 개편안은 공동명의의 종부세 이점을 크게 깎았습니다.</b>
+        다주택 기본공제 9억이 <b>「4억 + 5억×거주주택 가액비중」</b>으로 쪼개져,
+        <b>4억만 각자 무조건</b> 받고 <b>5억분은 거주주택 비중만큼만</b> 받습니다.
+        → 비거주 부부공동명의 2주택은 <b>합 8억이 상한</b>(각 4억)이며 예전의 "각 9억 = 합 18억"이 아닙니다.
+        현재 설정(${S.resident ? '과천자이 거주' : '모두 비거주'})의 2027년 공제 합계는 <b>${(jb27.jb.basic / EOK).toFixed(2)}억</b>입니다.<br>
+        <b>고가주택 12억 판정은 주택 전체 양도가액</b> 기준이고 <b>재산세는 물건별 과세</b>라 공동명의로도 총액이 줄지 않습니다(납부만 지분 안분).</span>`
     : `<span class="ic">i</span><span><b>단독명의 기준</b>으로 계산 중입니다. 실제는 두 채 모두 부부공동명의이므로 위 토글을 <b>부부공동명의</b>로 두는 것이 실제 세액입니다.
         이 설정은 공동명의의 절감 효과를 비교해 보기 위한 것입니다.</span>`;
 }
@@ -455,7 +478,7 @@ function renderStageInputs() {
 }
 
 function renderHoldTable() {
-  const rows = YEARS.map(holding);
+  const rows = holdingRows();
   const t = $('holdTable');
   t.innerHTML = `
     <thead><tr><th>항목</th>${rows.map((r) => `<th class="yr">${r.year}<div class="sm">${r.law === 'current' ? '현행' : '개편안'}</div></th>`).join('')}</tr></thead>
@@ -468,10 +491,18 @@ function renderHoldTable() {
     </tbody>`;
   t.querySelectorAll('tr.clickable').forEach((tr) => tr.addEventListener('click', () => openHoldModal(tr.dataset.m, rows)));
   const jbSave = rows.reduce((a, r) => a + (r.soloTotal - r.total), 0);
-  $('holdNote').innerHTML = `${S.joint ? `종부세는 <b>인별 과세</b>(종합부동산세법 §7①)이고 공동소유주택은 각자가 그 주택을 소유한 것으로 보므로(시행령 §154의2),
-      부부공동명의는 <b>기본공제를 각자</b> 받습니다 → 4년 합계 <b style="color:var(--success)">− ${W(jbSave)}</b>. 재산세는 물건별 과세라 총액은 동일합니다(납부만 지분 안분).<br>` : ''}종부세는 <b>2주택 · ${S.resident ? '과천자이에 거주(귀국·전입)' : '모두 비거주'}</b> 상태를 기준으로 표시합니다.
-    개편안은 기본공제를 거주 여부로 차등(다주택 4억 + 5억×거주주택비중)하고 공정시장가액비율을 60%→70%로 올립니다.
-    ${S.resident ? '' : '<b style="color:var(--danger)">비거주 상태에서는 거주주택 가산분 5억을 전혀 받지 못해 기본공제가 4억으로 고정됩니다.</b>'}`;
+  const r27 = rows.find((r) => r.year === 2027);
+  const p27 = r27.jb.parts[0];
+  $('holdNote').innerHTML = `${S.joint ? `종부세는 <b>인별 과세</b>(종부세법 §7①)이고 공동소유주택은 각자가 그 주택을 소유한 것으로 보므로(시행령 §154의2)
+      부부가 <b>각자 기본공제</b>를 받습니다 → 4년 합계 <b style="color:var(--success)">− ${W(jbSave)}</b>. 재산세는 물건별 과세라 총액은 동일합니다(납부만 지분 안분).<br>` : ''}<b>개편안 기본공제 구조 (종부법 §8①)</b> — 1세대1주택자는 거주 14억 / 비거주 9억,
+    <b>그 외는 4억 + (5억 × 거주주택 공시가격 ÷ 주택 공시가격 합계액)</b>.
+    ${S.joint ? `공동명의라도 <b>각자 4억만 무조건</b> 받고 <b>5억분은 거주주택 가액비중만큼만</b> 받습니다 —
+      현재 각자 공제는 <b>${p27.basicLabel}</b> = ${(p27.basic / EOK).toFixed(2)}억, 부부 합 ${(r27.jb.basic / EOK).toFixed(2)}억입니다. ` : ''}
+    ${S.resident ? '' : '<b style="color:var(--danger)">비거주 상태에서는 거주주택 가산분 5억을 전혀 받지 못해 각자 4억(부부 합 8억)으로 고정됩니다.</b> '}
+    또한 개편안 (2)는 <b>과세대상 문턱</b>을 신설해 1세대1주택자는 공시가 합 14억, 그 외는 9억을 <b>초과</b>할 때만 납세의무가 성립합니다(종부법 §7①) —
+    ${S.joint ? `공동명의 개별납부 시 각자 귀속 공시가가 ${(p27.total / EOK).toFixed(2)}억이라 ${p27.taxable ? '문턱을 넘어 과세됩니다' : '<b style="color:var(--success)">문턱 9억 이하로 과세대상이 아닙니다</b>'}. ` : ''}
+    공정시장가액비율은 60%→70%(3주택 이상·조정대상지역 보유자는 '28년 80%, 1세대1주택자 제외)로 오릅니다.
+    과천·분당은 2023-01-05 조정대상지역이 해제되어 80% 트랙에 해당하지 않습니다.`;
   return rows;
 }
 
@@ -802,17 +833,52 @@ function openHoldModal(kind, rows) {
   const one = kind === 'jb1';
   open(one ? '과천자이 1주택 시 종부세' : `종합부동산세 (2주택 · ${S.resident ? '과천자이 거주' : '모두 비거주'})`,
     one ? '시범한양을 처분한 뒤의 상태' : '현재 입력 기준', `
-    <table><thead><tr><th>연도</th><th>적용법</th><th class="r">공시가 합계</th><th class="r">기본공제</th><th class="r">공정비율</th><th class="r">과세표준</th><th class="r">종부세</th></tr></thead>
-    <tbody>${rows.map((r) => { const j = one ? r.jb1 : r.jb; return `
+    <table><thead><tr><th>연도</th><th>적용법</th><th class="r">공시가 합계</th><th>${S.joint ? '1인 귀속 / 문턱' : '과세대상 문턱'}</th><th class="r">기본공제</th><th class="r">공정비율</th><th class="r">과세표준</th><th class="r">산출세액</th><th class="r">−재산세액공제</th><th class="r">종부세</th><th class="r">+농특세 20%</th></tr></thead>
+    <tbody>${rows.map((r) => { const j = one ? r.jb1 : r.jb; const p0 = j.parts[0]; return `
       <tr><td>${r.year}</td><td>${r.law === 'current' ? '현행' : '개편안'}</td><td class="r num">${won(j.total)}</td>
-      <td class="r num">${(j.basic / EOK).toFixed(2)}억</td><td class="r num">${Math.round(j.fair * 100)}%</td>
-      <td class="r num">${won(j.base)}</td><td class="r num"><b>${W(j.tax)}</b></td></tr>`; }).join('')}</tbody></table>
-    <div class="quote"><b>개편안 (3) 종합부동산세 개편</b><br>
-      기본공제 — 1세대 1주택: <b>거주 14억 / 비거주 9억</b><br>
-      기본공제 — 다주택자: <b>4억 + (5억 × 거주주택 공시가격 ÷ 주택 공시가격 합계)</b><br>
-      공정시장가액비율: 60% → <b>70%</b> (3주택 이상·조정대상지역은 '28년 80%)<br>
-      6~12억 구간 세율 1.0% → <b>1.3%</b> · 적용시기 2027-01-01 납세의무 성립분<br><br>
-      <b>비거주 상태의 2주택 유지가 가장 비싼 선택</b>이며, 해외 체류가 길어질수록 부담이 커집니다.${SRC_REFORM}</div>
+      <td class="num" style="font-size:.78rem">${r.law === 'current' ? '—'
+        : `${S.joint ? `${(p0.total / EOK).toFixed(2)}억 / ` : ''}${(p0.threshold / EOK).toFixed(0)}억
+           <b style="color:var(--${p0.taxable ? 'danger' : 'success'})">${p0.taxable ? '초과→과세' : '이하→제외'}</b>`}</td>
+      <td class="r num">${(j.basic / EOK).toFixed(2)}억${S.joint && j.mode === 'separate' ? `<div class="sm">각 ${(p0.basic / EOK).toFixed(2)}억</div>` : ''}${S.joint && j.mode === 'special' ? '<div class="sm">1세대1주택 특례</div>' : ''}</td>
+      <td class="r num">${Math.round(j.fair * 100)}%</td>
+      <td class="r num">${won(j.base)}</td>
+      <td class="r num" style="color:var(--text-muted)">${W(j.parts.reduce((a, x) => a + x.gross, 0))}</td>
+      <td class="r num" style="color:var(--text-muted)">−${W(j.parts.reduce((a, x) => a + x.propertyTaxCredit, 0))}</td>
+      <td class="r num"><b>${W(j.tax)}</b>${j.parts.some((x) => x.capped) ? '<div class="sm" style="color:var(--success)">세부담 상한 적용</div>' : ''}</td>
+      <td class="r num" style="color:var(--text-muted)">${W(j.parts.reduce((a, x) => a + x.withSurtax, 0))}</td></tr>`; }).join('')}</tbody></table>
+    ${S.joint && (one ? rows[1].jb1 : rows[1].jb).special ? `<div class="quote"><b>공동명의 1주택 — 두 방식 중 유리한 쪽 자동 선택</b><br>
+      ${rows.map((r) => { const j = one ? r.jb1 : r.jb; if (!j.special) return '';
+        return `${r.year}년 · 개별납부 ${W(j.separate.tax)} (각 ${(j.separate.parts[0].basic / EOK).toFixed(0)}억 공제)
+          vs 1세대1주택자 특례신청 ${W(j.special.tax)} (${(j.special.basic / EOK).toFixed(0)}억 공제)
+          → <b style="color:var(--success)">${j.mode === 'special' ? '특례신청' : '개별납부'}</b> 선택<br>`; }).join('')}
+      특례는 <b>신청해야</b> 적용됩니다(문답 p.41).</div>` : ''}
+    <div class="quote"><b>개편안 (2) 과세대상 조정 (종부법 §7①) — 기본공제와 별개의 진입 문턱</b><br>
+      1세대1주택자는 주택 공시가격 합계액 <b>14억원 초과</b>(시가 약 20억 초과), 그 외는 <b>9억원 초과</b>(시가 약 13억 초과)일 때만 납세의무가 성립합니다.
+      기본공제가 4억으로 줄어도 <b>공시가 합계가 문턱 이하면 아예 과세대상이 아닙니다</b>.
+      ${S.joint ? `공동명의 개별납부는 각자 귀속 공시가로 판정하므로, 현재 각자 <b>${(rows[1].jb.parts[0].total / EOK).toFixed(2)}억</b>은 문턱 9억 ${rows[1].jb.parts[0].taxable ? '초과 → 과세' : '이하 → <b style="color:var(--success)">과세 제외</b>'}입니다.` : ''}${SRC_REFORM}</div>
+    <div class="quote"><b>개편안 (3) 기본공제금액 조정 (종부법 §8①)</b><br>
+      1세대1주택자: <b>거주 14억 / 비거주 9억</b> (현행 12억에서 거주 여부로 차등)<br>
+      그 외: <b>4억원 + (5억원 × 거주주택 공시가격 ÷ 주택 공시가격 합계액)</b><br>
+      <b style="color:var(--danger)">→ 9억 중 4억만 기본 적용이고, 5억(4억 초과분)은 거주주택 가액 비중만큼만 공제됩니다.</b>
+      ${S.joint ? `부부공동명의라도 <b>각자 4억만 무조건</b> 받고 5억분은 거주 비중에 따릅니다 —
+        비거주면 각 4억(부부 합 <b>8억</b>)이 상한이며, "각 9억 = 합 18억"이 아닙니다.<br>` : ''}
+      원문 사례(문답 p.41): 공시가 10억 주택 2채 중 1채 거주 → 4억+(5억×1/2)=<b>6.5억</b> 공제, 비거주 → <b>4억</b> 공제<br>
+      공동명의 1주택은 <b>부부 개별 납부(거주 각 9억 / 비거주 각 4억)</b>와
+      <b>1세대1주택자 특례 신청(거주 14억 / 비거주 9억)</b> 중 유리한 쪽을 선택할 수 있습니다(신청 필요).${SRC_REFORM}</div>
+    <div class="quote"><b>개편안 (4)~(7) 그 밖의 종부세 개편</b><br>
+      <b>공정시장가액비율</b>: 3주택 이상 또는 조정대상지역 주택 보유자(1세대1주택자 제외) '26년 60% → '27년 70% → <b>'28년 80%</b>, 그 외는 70%.
+      과천·분당은 <b>2023-01-05 조정대상지역이 해제</b>되어 80% 트랙에 해당하지 않습니다.<br>
+      <b>세율</b>: 6~12억 구간 1.0%→<b>1.3%</b>. '27년은 중간세율(0.5~3.5%), <b>'28년부터 주택 수 구분이 폐지</b>되어 12억 초과 구간이 2.0~5.0%로 일원화됩니다.<br>
+      <b>1세대1주택 세액공제</b>: 보유공제 → 거주공제 전환('27년은 보유공제=거주공제의 1/2과 거주공제 중 큰 쪽, '28년부터 거주공제만).
+      연령공제와 합해 최대 80%이나 <b>금액한도가 신설</b>되어 '27년 800만원 · '28년 이후 600만원까지만 공제됩니다.<br>
+      <b>세부담 상한</b>: 직전연도 총 보유세상당액(재산세+종부세)의 150% → <b>200%</b>로 상향(종부법 §10·§15).
+      위 표는 직전연도 보유세를 이어받아 상한을 실제로 적용합니다${rows.some((r) => r.jb.parts.some((p) => p.capped)) ? ' — 현재 설정에서 상한이 걸리는 연도가 있습니다' : ' — 현재 설정에서는 상한에 걸리지 않습니다'}.<br>
+      <b>공제할 재산세액</b>(종부법 §9③): 산출세액에서 과세표준 대응 재산세 상당액을 차감합니다. 시행령 산식이 복잡해
+      <b>과세표준 × 0.18%</b> 개산치로 두되, 기재부 문답자료 p.44~45 사례 ①②③의 <b>18개 데이터포인트 중 17개가 정확히 일치</b>하도록
+      캘리브레이션했습니다(불일치 1건은 사례③ '27년으로, <b>원문 자체가 내부 정합하지 않습니다</b> —
+      세액공제 한도 전 2,141.1만에 한도 800만을 적용하면 2,251.7만이어야 하나 원문은 1,942.1만으로 표기).<br>
+      적용시기: 모두 <b>2027-01-01 이후 납세의무 성립분</b>. 위 표의 세액에는 <b>농어촌특별세 20%</b>가 별도로 붙습니다
+      (2027년 기준 ${W(rows[1].jb.parts.reduce((a, p) => a + p.nongteug, 0))}).${SRC_REFORM}</div>
     <div class="quote"><b>재건축 단계의 영향</b> — 관리처분계획인가 후 <b>멸실</b>되면 주택이 아니게 되어 종부세 주택 합산에서 빠집니다(종부세법 §8① 주택 범위).
       보유세는 줄지만 동시에 상생임대·거주요건 경로가 닫히므로 양도 전략과 함께 판단해야 합니다.${SRC_DECREE}</div>`);
 }

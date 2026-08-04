@@ -164,50 +164,216 @@ export function capitalGainsJoint(o, shares = [0.5, 0.5]) {
     solo: capitalGains({ ...o, share: 1 }) };
 }
 
-/* ── 종합부동산세 ─────────────────────────────────────────────── */
-const JB_RATES_CUR = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .010],
+/* ── 종합부동산세 ───────────────────────────────────────────────
+ * 개편안 (3) 기본공제 (종부법 §8①) — '27.1.1. 이후 납세의무 성립분
+ *   1세대1주택자: 거주 14억 / 비거주 9억
+ *   그 외:        4억 + (5억 × 거주주택 공시가격 ÷ 주택 공시가격 합계액)
+ *     → 5억분은 "거주주택 가액 비중"만큼만 공제된다. 비거주면 4억이 상한.
+ * 개편안 (4) 공정시장가액비율 (종부법 §8①·§13, 종부령 §2의4)
+ *   3주택 이상 또는 조정대상지역 주택 보유자(1세대1주택자 제외):
+ *     '26년 60% → '27년 70% → '28년 이후 80%
+ *   그 외(1세대1주택자·지방 1·2주택·조정지역 1세대1주택): 70%
+ * 개편안 (5) 세율 (종부법 §9①·②) — '27년은 중간세율, '28년 이후 주택수 구분 폐지
+ * 개편안 (6) 1세대1주택 세액공제 (종부법 §9⑤⑧⑨)
+ *   보유공제 → 거주공제 전환. '27년은 보유공제(거주공제의 1/2)와 거주공제 중 큰 쪽,
+ *   '28년 이후는 거주공제만. 연령공제와 합산 최대 80%.
+ *   금액한도 신설: '27년 800만원 → '28년 이후 600만원
+ * 개편안 (7) 세부담 상한 150% → 200% (종부법 §10·§15)
+ */
+const JB_RATES_CUR   = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .010],
   [2_500_000_000, .013], [5_000_000_000, .015], [9_400_000_000, .020], [Infinity, .027]];
-const JB_RATES_REF = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .013],
+const JB_RATES_CUR3  = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .010],
+  [2_500_000_000, .020], [5_000_000_000, .030], [9_400_000_000, .040], [Infinity, .050]];
+/* '27년 중간세율 (2주택 이하) */
+const JB_RATES_27    = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .013],
   [2_500_000_000, .015], [5_000_000_000, .020], [9_400_000_000, .027], [Infinity, .035]];
+/* '27년 3주택 이상 */
+const JB_RATES_27_3  = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .013],
+  [2_500_000_000, .020], [5_000_000_000, .030], [9_400_000_000, .040], [Infinity, .050]];
+/* '28년 이후 — 주택 수 구분 폐지, 단일 체계 */
+const JB_RATES_28    = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .013],
+  [2_500_000_000, .020], [5_000_000_000, .030], [9_400_000_000, .040], [Infinity, .050]];
 
-/** 종부세는 인별 과세 (종부세법 §7①). 공동명의는 각자 지분만큼 보유한 것으로 보고
- *  각자 기본공제를 받는다 → 부부공동명의 2주택이면 기본공제가 사실상 2배.
- *  문답자료 p.42: 공동명의 1주택은 "부부 개별 납부(각 9억/4억)" 또는
- *  "1세대1주택자 특례 신청(14억/9억)" 중 유리한 쪽 선택 가능. */
-export function jongbuseJoint(prices, { law = 'reform', residentHousePrice = 0, shares = [0.5, 0.5] } = {}) {
-  const parts = shares.map((s) => jongbuse(prices.map((p) => p * s), {
-    law, residentHousePrice: residentHousePrice * s,
-  }));
-  return { tax: parts.reduce((a, p) => a + p.tax, 0), parts,
-    basic: parts.reduce((a, p) => a + p.basic, 0),
-    base: parts.reduce((a, p) => a + p.base, 0),
-    fair: parts[0].fair, count: parts[0].count,
-    total: prices.filter((p) => p > 0).reduce((a, b) => a + b, 0) };
+/** 1세대1주택 세액공제 한도 (개편안 6) */
+const JB_CREDIT_CAP = { 2027: 8_000_000, 2028: 6_000_000, 2029: 6_000_000, 2030: 6_000_000 };
+/** 거주/보유 기간별 공제율 (개편안 6) */
+function jbPeriodCredit(years, kind) {
+  //  reside      : 개편안 거주공제 20/40/50 (= 현행 보유공제와 동일한 표)
+  //  holdCurrent : 현행 보유공제 20/40/50 (종부법 §9⑧)
+  //  hold        : 개편안 '27년 보유공제 = 거주공제의 1/2 → 10/20/25
+  const t = kind === 'hold' ? [[5, 0.10], [10, 0.20], [15, 0.25]]
+    : [[5, 0.20], [10, 0.40], [15, 0.50]];
+  let r = 0;
+  for (const [y, v] of t) if (years >= y) r = v;
+  return r;
+}
+/** 연령별 공제율 (현행 유지) */
+function jbAgeCredit(age) {
+  if (age >= 70) return 0.40;
+  if (age >= 65) return 0.30;
+  if (age >= 60) return 0.20;
+  return 0;
 }
 
-export function jongbuse(prices, { law = 'reform', residentHousePrice = 0 } = {}) {
+/** 종부세 (주택분).
+ *  prices: 이 납세자에게 귀속되는 주택별 공시가격(지분 반영 후)
+ *  year: 연도별로 세율·공정비율이 다르므로 필수에 가깝다 (미지정 시 개편 최종안)
+ *  residentHousePrice: 그 중 "거주하는 주택"의 공시가격 (지분 반영 후)
+ *  houseCount: 주택 수 판정용. 공동명의는 지분이 아니라 물건 수로 센다(§154의2 취지)
+ *  isOneHouseSpecial: 공동명의 1주택자가 1세대1주택자 특례를 신청한 경우
+ *  adjustedArea: 조정대상지역 주택 보유 여부 (공정비율 80% 트랙 판정)
+ *  age/holdYears/resideYears: 1세대1주택 세액공제 산정용
+ */
+export function jongbuse(prices, {
+  law = 'reform', year = 2029, residentHousePrice = 0, houseCount = null,
+  isOneHouseSpecial = false, notOneHouse = false, adjustedArea = false,
+  age = 0, holdYearsVal = 0, resideYearsVal = 0, propertyTaxCredit = null,
+  priorHoldingTax = 0, propertyTaxThisYear = 0,
+} = {}) {
   const list = prices.filter((p) => p > 0);
   const total = list.reduce((a, b) => a + b, 0);
-  const n = list.length;
-  let basic, fair, rates;
+  const n = houseCount === null ? list.length : houseCount;
+  // 공동명의 1주택을 각자 개별 납부하는 경우, 각 공유자는 1세대1주택자가 아니라
+  // "그 외" 납세자로 취급된다 (문답자료 p.41: 거주 각 9억 / 비거주 각 4억).
+  const isOne = isOneHouseSpecial || (n === 1 && !notOneHouse);
+  const resides = residentHousePrice > 0;
+  let basic, fair, rates, basicLabel;
+
   if (law === 'current') {
-    basic = n === 1 ? 1_200_000_000 : 900_000_000;
-    fair = 0.60; rates = JB_RATES_CUR;
+    basic = isOne ? 1_200_000_000 : 900_000_000;
+    basicLabel = isOne ? '1세대1주택 12억' : '9억';
+    fair = 0.60;
+    rates = n >= 3 ? JB_RATES_CUR3 : JB_RATES_CUR;
   } else {
-    // 개편안 (3): 1주택 거주 14억 / 비거주 9억, 다주택 4억 + 5억×(거주주택/합계)
-    basic = n === 1
-      ? (residentHousePrice > 0 ? 1_400_000_000 : 900_000_000)
-      : 400_000_000 + Math.floor(500_000_000 * (total ? residentHousePrice / total : 0));
-    fair = 0.70; rates = JB_RATES_REF;
+    if (isOne) {
+      basic = resides ? 1_400_000_000 : 900_000_000;
+      basicLabel = resides ? '1세대1주택 거주 14억' : '1세대1주택 비거주 9억';
+    } else {
+      // 4억은 무조건, 5억은 거주주택 가액 비중만큼만
+      const ratio = total ? Math.min(residentHousePrice / total, 1) : 0;
+      basic = 400_000_000 + Math.floor(500_000_000 * ratio);
+      basicLabel = `4억 + 5억×${(ratio * 100).toFixed(1)}%(거주주택 비중)`;
+    }
+    // 공정시장가액비율: 3주택 이상 또는 조정대상지역 주택 보유(1세대1주택자 제외)는 80% 트랙
+    const heavy = !isOne && (n >= 3 || adjustedArea);
+    fair = year <= 2026 ? 0.60 : (heavy ? (year >= 2028 ? 0.80 : 0.70) : 0.70);
+    rates = year <= 2027 ? (n >= 3 ? JB_RATES_27_3 : JB_RATES_27) : JB_RATES_28;
   }
-  const base = Math.max(Math.floor((total - basic) * fair), 0);
-  let tax = 0, prev = 0;
+
+  /* 개편안 (2) 과세대상 조정 (종부법 §7①) — 기본공제와 별개의 진입 문턱.
+     1세대1주택자는 공시가 합계 14억 초과, 그 외는 9억 초과일 때만 납세의무가 성립한다.
+     → 다주택 기본공제가 4억으로 줄어도 공시가 합계가 9억 이하면 아예 과세대상이 아니다. */
+  const threshold = law === 'current' ? 0 : (isOne ? 1_400_000_000 : 900_000_000);
+  const taxable = total > threshold;
+  const base = taxable ? Math.max(Math.floor((total - basic) * fair), 0) : 0;
+  let gross = 0, prev = 0;
   for (const [cap, rate] of rates) {
     if (base <= prev) break;
-    tax += Math.floor((Math.min(base, cap) - prev) * rate);
+    gross += Math.floor((Math.min(base, cap) - prev) * rate);
     prev = cap;
   }
-  return { basic, fair, base, tax, total, count: n };
+  /* 공제할 재산세액 (종부법 §9③, 종부령 §4의2) — 종부세 과세표준에 대응하는 재산세 상당액을
+     산출세액에서 차감한다. 시행령 산식이 복잡해 개산치를 쓰되, 기재부 문답자료 p.44~45의
+     사례 ①②③(‘26·’27·‘28년, 공시가 30억·50억) 4개 데이터포인트에 모두 정확히 들어맞는
+     "과세표준 × 0.18%"로 캘리브레이션했다. 숫자를 직접 넘기면 그 값이 우선한다. */
+  const ptc = propertyTaxCredit === null ? Math.floor(base * 0.0018) : propertyTaxCredit;
+  const net = Math.max(gross - ptc, 0);
+
+  // 1세대1주택 세액공제 (개편안 6) — 거주/보유 + 연령, 합계 80% 한도, 금액한도 신설
+  let credit = 0, creditLabel = '', creditCapped = 0;
+  if (isOne && (age >= 60 || holdYearsVal >= 5 || resideYearsVal >= 5)) {
+    // 현행: 보유공제(20/40/50) + 연령공제, 금액한도 없음
+    // 개편안: 거주공제로 전환. '27년은 보유공제(거주공제의 1/2)와 거주공제 중 큰 쪽,
+    //         '28년 이후는 거주공제만. 금액한도 '27년 800만 → '28년 이후 600만 신설.
+    const rPeriod = law === 'current'
+      ? jbPeriodCredit(holdYearsVal, 'holdCurrent')
+      : Math.max(jbPeriodCredit(resideYearsVal, 'reside'),
+                 year <= 2027 ? jbPeriodCredit(holdYearsVal, 'hold') : 0);
+    const rate = Math.min(rPeriod + jbAgeCredit(age), 0.80);
+    credit = Math.floor(net * rate);
+    const cap = law === 'current' ? Infinity : (JB_CREDIT_CAP[year] || 6_000_000);
+    creditCapped = Math.min(credit, cap);
+    creditLabel = `${Math.round(rate * 100)}%${credit > cap ? ` (금액한도 ${cap / 10_000}만원 적용, 한도 전 ${Math.round(credit / 10_000)}만원)` : ''}`;
+  }
+  const beforeCap = Math.max(net - creditCapped, 0);
+
+  /* 개편안 (7) 세부담 상한 (종부법 §10·§15) — 직전연도 총 보유세상당액(재산세+종부세)의
+     150%(’27년 이후 200%)를 넘는 부분은 부과하지 않는다. priorHoldingTax(직전연도 보유세)를
+     주지 않으면 상한을 적용하지 않는다(= 상한 판정 불가로 두고 그대로 부과). */
+  const capRate = law === 'current' ? 1.50 : (year >= 2027 ? 2.00 : 1.50);
+  let burdenCap = null, capped = false;
+  let tax = beforeCap;
+  if (priorHoldingTax > 0) {
+    burdenCap = Math.max(Math.floor(priorHoldingTax * capRate) - propertyTaxThisYear, 0);
+    if (beforeCap > burdenCap) { tax = burdenCap; capped = true; }
+  }
+  const nongteug = Math.floor(tax * 0.20);        // 농어촌특별세 20% (농특법 §5①)
+  return { basic, basicLabel, fair, base, gross, propertyTaxCredit: ptc, net, threshold, taxable,
+    credit, creditCapped, creditLabel, beforeCap, capRate, burdenCap, capped,
+    tax, nongteug, withSurtax: tax + nongteug,
+    total, count: n, isOne, resides, year, law };
+}
+
+/** 부부공동명의 종부세.
+ *  종부세는 인별 과세(종부세법 §7①)이고 공동소유주택은 각자가 그 주택을 소유한 것으로 보므로
+ *  (시행령 §154의2) 각자 자기 지분에 대해 기본공제를 받는다.
+ *
+ *  ★ 개편안의 결정적 디테일: 다주택 기본공제 9억이 "4억 + 5억×거주주택 비중"으로 쪼개지면서
+ *    - 4억은 각자 무조건 → 부부 합 8억
+ *    - 5억분은 거주주택 가액 비중만큼만 → 비거주면 0
+ *    즉 비거주 부부공동명의 2주택은 합 8억이 상한이고, 예전의 "각 9억 = 합 18억"이 아니다.
+ *
+ *  공동명의 1주택은 문답자료 p.41에 따라 두 방식 중 유리한 쪽을 선택할 수 있다:
+ *    - 부부 개별 납부:      거주 각 9억 / 비거주 각 4억   ← 1세대1주택자가 아니라 "그 외"로 취급
+ *    - 1세대1주택자 특례신청: 거주 14억 / 비거주 9억 (지분 합산해 1인이 납부)
+ */
+export function jongbuseJoint(prices, {
+  law = 'reform', year = 2029, residentHousePrice = 0, shares = [0.5, 0.5],
+  adjustedArea = false, age = 0, holdYearsVal = 0, resideYearsVal = 0,
+  propertyTaxCredit = null, oneHouseSpecial = 'auto',
+  priorHoldingTax = 0, propertyTaxThisYear = 0,
+} = {}) {
+  const houseCount = prices.filter((p) => p > 0).length;   // 물건 수 (지분과 무관)
+  const mk = (s) => jongbuse(prices.map((p) => p * s), {
+    law, year, residentHousePrice: residentHousePrice * s, houseCount,
+    // 공유자 개별 납부는 1세대1주택자 판정을 받지 못한다 (문답 p.41)
+    notOneHouse: shares.length > 1,
+    adjustedArea, age, holdYearsVal, resideYearsVal,
+    // null이면 각 공유자의 과세표준에서 자동 개산 (곱하면 null이 0이 되므로 분기 필요)
+    propertyTaxCredit: propertyTaxCredit === null ? null : propertyTaxCredit * s,
+    // 세부담 상한도 인별로 판정한다 (종부세가 인별 과세이므로)
+    priorHoldingTax: priorHoldingTax * s, propertyTaxThisYear: propertyTaxThisYear * s,
+  });
+  const parts = shares.map(mk);
+  const separate = {
+    parts, tax: parts.reduce((a, p) => a + p.tax, 0),
+    withSurtax: parts.reduce((a, p) => a + p.withSurtax, 0),
+    basic: parts.reduce((a, p) => a + p.basic, 0),
+    base: parts.reduce((a, p) => a + p.base, 0),
+    gross: parts.reduce((a, p) => a + p.gross, 0),
+    fair: parts[0].fair, count: houseCount, mode: 'separate',
+    capped: parts.some((p) => p.capped), capRate: parts[0].capRate,
+  };
+  // 공동명의 1주택 → 1세대1주택자 특례 신청 가능 (지분을 합쳐 1인이 납부)
+  let special = null;
+  if (houseCount === 1 && shares.length > 1) {
+    const whole = jongbuse(prices, {
+      law, year, residentHousePrice, houseCount: 1, isOneHouseSpecial: true,
+      adjustedArea, age, holdYearsVal, resideYearsVal, propertyTaxCredit,
+      priorHoldingTax, propertyTaxThisYear,
+    });
+    special = { ...whole, parts: [whole], mode: 'special' };
+  }
+  let chosen = separate;
+  if (special && (oneHouseSpecial === true
+      || (oneHouseSpecial === 'auto' && special.tax < separate.tax))) chosen = special;
+  const solo = jongbuse(prices, {
+    law, year, residentHousePrice, houseCount, adjustedArea,
+    age, holdYearsVal, resideYearsVal, propertyTaxCredit,
+    priorHoldingTax, propertyTaxThisYear,
+  });
+  return { ...chosen, separate, special, solo,
+    total: prices.filter((p) => p > 0).reduce((a, b) => a + b, 0) };
 }
 
 /* ── 재산세 (주택분, 개산) ─────────────────────────────────────── */
