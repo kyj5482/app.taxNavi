@@ -24,6 +24,7 @@
     {
       "id": "re-gwacheon",
       "name": "과천자이 25평 A형",
+      "unit": "615동 903호",
       "kind": "house",
       "region": "경기 과천시",
       "adjustedAreaAtAcquisition": true,
@@ -32,36 +33,63 @@
       "acquisitionType": "presale",
       "events": [
         { "type": "re.presale_win", "date": "2019-XX-XX", "note": "분양 당첨 (계약일 확인 필요)" },
-        { "type": "re.balance_payment", "date": "2022-01-20", "note": "잔금·입주 = 취득일 (가정값, 실제 날짜 확인 필요)", "price": 700000000 },
+        { "type": "re.balance_payment", "date": "2022-01-20", "note": "잔금·입주 = 취득일 (날짜는 가정값, 금액은 확정)", "price": 910000000, "priceNote": "분양가 9.1억원 (사용자 확인)" },
+        { "type": "re.acquisition_tax", "date": "2022-01-20", "rate": 0.03, "amount": 27300000, "note": "취득세율 3% (사용자 확인)" },
         { "type": "re.move_in", "date": "2022-01-20" },
         { "type": "re.move_out", "date": "2024-07-05", "note": "해외 주재원 발령 출국" }
       ],
       "derived": {
         "acquisitionDate": "2022-01-20",
+        "acquisitionPrice": 910000000,
+        "acquisitionTaxRate": 0.03,
+        "acquisitionTax": 27300000,
+        "otherExpenses": 5000000,
+        "necessaryExpenses": 32300000,
         "residenceYears": 2.46,
         "residenceRequirementMet": true,
         "residenceRequirementNote": "거주 2년 요건 충족 (2022-01 ~ 2024-07). 취득 당시 조정대상지역이라 이 요건이 필수였음 — 충족 상태",
         "expectedSalePrice": 1600000000,
-        "assumedOfficialPrice": 1100000000
+        "expectedSalePriceNote": "사용자 입력값. 대시보드에서 수정 가능",
+        "officialPrice": 1100000000,
+        "officialPriceStatus": "assumed",
+        "officialPriceNote": "615동 903호 공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 조회 후 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가"
       }
     },
     {
       "id": "re-sibeom",
       "name": "분당 시범한양 14평형",
+      "unit": "332동 405호",
       "kind": "house",
       "region": "경기 성남시 분당구",
+      "reconstruction": {
+        "status": "expected",
+        "note": "재건축 추진 예정. 사업시행인가 → 관리처분계획인가 → 이주·멸실 → 준공 단계별로 주택 수 판정, 보유세 종류, 양도차익 산정 방식, 상생임대 유효성이 모두 달라진다. 예상 도달 연도는 사용자가 대시보드에서 입력한다.",
+        "stages": [
+          { "id": "none", "label": "해당 없음 / 조합설립 전", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": true, "taxEffect": "일반 주택과 동일하게 판정" },
+          { "id": "approval", "label": "사업시행인가", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": true, "taxEffect": "아직 주택. 이 날 이후 취득한 대체주택은 1세대1주택 특례 대상(1년 이상 거주 등)", "basis": "소득세법 시행령 §156의2⑤" },
+          { "id": "management", "label": "관리처분계획인가", "isHouse": false, "isUnitRight": true, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": false, "taxEffect": "주택 → 조합원입주권 전환. 양도차익을 인가일 전후로 분리 산정하고 인가일 이후 기간은 장기보유특별공제 대상 아님. 임대 종료로 상생임대 경로 종료", "basis": "소득세법 시행령 §166①, §156의2" },
+          { "id": "demolished", "label": "이주·멸실", "isHouse": false, "isUnitRight": true, "landTax": true, "jongbuseIncluded": false, "sangsaengAlive": false, "taxEffect": "주택분 재산세 → 토지분 전환, 주택 종부세 합산 제외로 보유세 급감", "basis": "지방세법 §105·§107, 종합부동산세법 §8①" },
+          { "id": "completed", "label": "준공·입주 (신축주택)", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": false, "priceMultiplier": 1.8, "taxEffect": "신축주택 취득. 기존건물분·청산금분 분리 산정, 보유기간은 기존주택 취득일부터 통산. 추가분담금은 필요경비 가산. 공시가 급등으로 보유세 급증", "basis": "소득세법 시행령 §166②" }
+        ]
+      },
       "adjustedAreaAtAcquisition": true,
       "adjustedAreaNote": "성남 분당: 조정대상지역 → 2023-01-05 해제. 취득(2022-09) 당시 조정대상지역 → 비과세에 거주 2년 요건 적용 (상생임대로 면제 가능)",
       "ownershipShare": 1.0,
       "events": [
         { "type": "re.purchase_contract", "date": "2022-05-20", "note": "매수 계약 (과천자이 취득 후 1년 이상 경과 여부 확인 필요)" },
-        { "type": "re.balance_payment", "date": "2022-09-15", "note": "잔금 = 취득일", "price": 750000000 },
+        { "type": "re.balance_payment", "date": "2022-09-15", "note": "잔금 = 취득일", "price": 680000000, "priceNote": "매수가 6.8억원 (사용자 확인)" },
+        { "type": "re.acquisition_tax", "date": "2022-09-15", "rate": 0.08, "amount": 54400000, "note": "취득세율 8% — 취득 당시 조정대상지역 2주택 중과 (사용자 확인)" },
         { "type": "re.lease_contract", "date": "2022-09-10", "endDate": "2024-06-XX", "note": "잔금 전 임대차 계약 체결 → 직전 임대차계약 (승계계약 아님, 상생임대 판정에 유리)", "isPriorContract": true },
         { "type": "re.lease_contract", "date": "2024-06-XX", "endDate": "2026-06-XX", "note": "임차인 계약갱신요구권 행사 재계약", "isRenewal": true },
         { "type": "re.lease_contract", "date": "2026-07-XX", "endDate": "2028-07-XX", "note": "상생임대 목적 재계약 — 보증금·임대료 5% 이내 증액", "isSangsaeng": true, "increaseRate": "≤5%" }
       ],
       "derived": {
         "acquisitionDate": "2022-09-15",
+        "acquisitionPrice": 680000000,
+        "acquisitionTaxRate": 0.08,
+        "acquisitionTax": 54400000,
+        "otherExpenses": 5000000,
+        "necessaryExpenses": 59400000,
         "residenceYears": 0.0,
         "residenceRequirementMet": false,
         "sangsaengStatus": "candidate",
@@ -69,7 +97,10 @@
         "sangsaengSaleDeadline": "2029-07-31",
         "sangsaengDeadlineBasis": "개편안: 2027-01-01 이후 상생임대차계약 종료 → 계약종료(2028-07) 후 1년이 되는 날과 2029-12-31 중 빠른 날",
         "expectedSalePrice": 860000000,
-        "assumedOfficialPrice": 600000000
+        "expectedSalePriceNote": "사용자 입력값. 대시보드에서 수정 가능",
+        "officialPrice": 600000000,
+        "officialPriceStatus": "assumed",
+        "officialPriceNote": "332동 405호 공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 조회 후 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가"
       }
     }
   ],
