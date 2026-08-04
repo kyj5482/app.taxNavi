@@ -1,0 +1,27 @@
+{
+  "docId": "press/mofe-2026-tax-reform_2026-08-03",
+  "title": "2026년 세제개편안 (기획재정부 보도자료)",
+  "announcedAt": "2026-08-03",
+  "sourceUrl": "https://mofe.go.kr/nw/nes/detailNesDtaView.do?searchBbsId1=MOSFBBS_000000000028&searchNttId1=MOSF_000000000078809&menuNo=4010100",
+  "atchFileId": "ATCH_000000000032335",
+  "fetchedAt": "2026-08-03",
+  "files": {
+    "0_bodojaryio.pdf": {
+      "label": "보도자료",
+      "sha256": "e6d28889fe21c63930b40a7192ffed72410b642eddabb2403390e62b4744ec02",
+      "bytes": 131900
+    },
+    "2_sangsebon.pdf": {
+      "label": "상세본",
+      "sha256": "efebd4de87346cdaaa572d7130f7ec0b22ddde196c74bbc278e613228bac4e05",
+      "bytes": 1963280
+    },
+    "3_mundapjaryo.pdf": {
+      "label": "문답자료",
+      "sha256": "954ea648213ca64b85c5c80bb7648fcd03b125379bc0fcb50803b2e51fce663d",
+      "bytes": 1549704
+    }
+  },
+  "status": "announced",
+  "note": "발표 단계(국회 통과 전) — scheduled RuleSet 원천"
+}

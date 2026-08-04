@@ -3,209 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>taxNavi PoC — 김가장 가구 세금 대시보드</title>
+<title>taxNavi — 2026 세제개편안 반영 내 세금 시나리오</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-/* ═══════════ 공통 기반 ═══════════ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; }
 body {
   font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   background: var(--bg); color: var(--text);
-  font-feature-settings: "tnum";
-  line-height: 1.55;
-  transition: background .25s, color .25s;
+  font-feature-settings: "tnum"; line-height: 1.55;
 }
-.wrap { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 24px 20px 80px; }
 .num { font-variant-numeric: tabular-nums; }
-a { color: var(--primary); }
 
-/* ═══════════ 테마 1: Toss 스타일 ═══════════ */
+/* ═══ 테마 1: Toss ═══ */
 [data-theme="toss"] {
-  --primary: #3182F6; --primary-strong: #1B64DA;
-  --bg: #F2F4F6; --surface: #FFFFFF; --surface-sub: #F9FAFB;
-  --text: #191F28; --text-sub: #4E5968; --text-muted: #8B95A1;
-  --border: #E5E8EB;
-  --danger: #F04452; --danger-bg: #FDEDEE;
-  --warning: #E8890C; --warning-bg: #FFF4E5;
-  --success: #14893C; --success-bg: #E6F5EC;
-  --info-bg: #EAF2FE;
-  --gain: #F04452; --loss: #3182F6;   /* 한국 관례: 상승=빨강 */
+  --primary: #3182F6; --bg: #F2F4F6; --surface: #FFFFFF; --surface-sub: #F9FAFB;
+  --text: #191F28; --text-sub: #4E5968; --text-muted: #8B95A1; --border: #E5E8EB;
+  --danger: #F04452; --danger-bg: #FDEDEE; --warning: #C86A04; --warning-bg: #FFF4E5;
+  --success: #14893C; --success-bg: #E6F5EC; --info-bg: #EAF2FE;
+  --gain: #F04452; --loss: #3182F6;
   --radius-card: 16px; --radius-control: 12px; --radius-badge: 999px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,.04);
-  --card-border: none;
-  --pad-card: 24px;
-  --table-row-h: 48px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,.04); --card-border: none; --pad-card: 24px; --row-h: 46px;
 }
-[data-theme="toss"] .card { border: none; }
-[data-theme="toss"] h2 { font-weight: 800; }
-
-/* ═══════════ 테마 2: Civic Clarity (GOV.UK × USWDS) ═══════════ */
+/* ═══ 테마 2: Civic Clarity (GOV.UK × USWDS) ═══ */
 [data-theme="civic"] {
-  --primary: #1d70b8; --primary-strong: #162e51;
-  --bg: #f4f8fb; --surface: #FFFFFF; --surface-sub: #f3f2f1;
-  --text: #0b0c0c; --text-sub: #484949; --text-muted: #6f777b;
-  --border: #b1b4b6;
-  --danger: #ca3535; --danger-bg: #f9e7e7;
-  --warning: #B45606; --warning-bg: #fff4e4;
-  --success: #0f7a52; --success-bg: #e7f3ee;
-  --info-bg: #e8f1f8;
+  --primary: #1d70b8; --bg: #f4f8fb; --surface: #FFFFFF; --surface-sub: #f3f2f1;
+  --text: #0b0c0c; --text-sub: #484949; --text-muted: #6f777b; --border: #b1b4b6;
+  --danger: #ca3535; --danger-bg: #f9e7e7; --warning: #B45606; --warning-bg: #fff4e4;
+  --success: #0f7a52; --success-bg: #e7f3ee; --info-bg: #e8f1f8;
   --gain: #ca3535; --loss: #1d70b8;
   --radius-card: 0px; --radius-control: 0px; --radius-badge: 0px;
-  --shadow-card: none;
-  --card-border: 1px solid var(--border);
-  --pad-card: 20px;
-  --table-row-h: 44px;
+  --shadow-card: none; --card-border: 1px solid var(--border); --pad-card: 20px; --row-h: 44px;
 }
 [data-theme="civic"] .card { border-left: 4px solid var(--primary); }
 [data-theme="civic"] .card.plain { border-left: 1px solid var(--border); }
-[data-theme="civic"] h1, [data-theme="civic"] h2 { font-weight: 700; }
-[data-theme="civic"] .badge { border: 1px solid currentColor; font-weight: 700; text-transform: none; }
-[data-theme="civic"] button:focus-visible, [data-theme="civic"] summary:focus-visible {
-  outline: 3px solid #ffdd00; outline-offset: 0; box-shadow: inset 0 0 0 1px var(--text);
-}
-
-/* ═══════════ 테마 3: Stripe-grade Ledger ═══════════ */
+[data-theme="civic"] .badge { border: 1px solid currentColor; font-weight: 700; }
+[data-theme="civic"] .alert { border-left: 6px solid; background: var(--surface); }
+/* ═══ 테마 3: Stripe Ledger ═══ */
 [data-theme="ledger"] {
-  --primary: #635BFF; --primary-strong: #0A2540;
-  --bg: #F6F8FA; --surface: #FFFFFF; --surface-sub: #F6F8FA;
-  --text: #30313D; --text-sub: #6A7383; --text-muted: #87909F;
-  --border: #EBEEF1;
-  --danger: #DF1B41; --danger-bg: #FEE9EC;
-  --warning: #A85B00; --warning-bg: #FBF3D9;
-  --success: #217005; --success-bg: #E4F7D4;
-  --info-bg: #EFF4FF;
+  --primary: #635BFF; --bg: #F6F8FA; --surface: #FFFFFF; --surface-sub: #F6F8FA;
+  --text: #30313D; --text-sub: #6A7383; --text-muted: #87909F; --border: #EBEEF1;
+  --danger: #DF1B41; --danger-bg: #FEE9EC; --warning: #A85B00; --warning-bg: #FBF3D9;
+  --success: #217005; --success-bg: #E4F7D4; --info-bg: #EFF4FF;
   --gain: #DF1B41; --loss: #2F5CDE;
   --radius-card: 8px; --radius-control: 6px; --radius-badge: 4px;
   --shadow-card: 0 1px 1px rgba(0,0,0,.03), 0 3px 6px rgba(0,0,0,.04), 0 0 0 1px rgba(10,37,64,.06);
-  --card-border: none;
-  --pad-card: 18px;
-  --table-row-h: 40px;
+  --card-border: none; --pad-card: 18px; --row-h: 40px;
 }
-[data-theme="ledger"] body, [data-theme="ledger"] { font-size: 15px; }
-[data-theme="ledger"] .section-title { text-transform: uppercase; letter-spacing: .04em; font-size: .78rem; color: var(--text-sub); }
-[data-theme="ledger"] h1 { color: var(--primary-strong); }
+[data-theme="ledger"] .section-title { text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; }
+[data-theme="ledger"] h1 { color: #0A2540; }
 
-/* ═══════════ 컴포넌트 ═══════════ */
-header.top {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
-}
+header.top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
 h1 { font-size: 1.5rem; font-weight: 800; }
 .sub { color: var(--text-sub); font-size: .875rem; }
-
 .theme-switch { display: flex; gap: 6px; background: var(--surface); padding: 5px;
   border-radius: var(--radius-control); box-shadow: var(--shadow-card); border: var(--card-border); }
-.theme-switch button {
-  font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer;
+.theme-switch button { font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer;
   padding: 7px 14px; border: none; background: transparent; color: var(--text-sub);
-  border-radius: calc(var(--radius-control) - 4px);
-}
+  border-radius: calc(var(--radius-control) - 4px); }
 .theme-switch button.active { background: var(--primary); color: #fff; }
 
 .grid { display: grid; gap: 16px; }
-.grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.cols-3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.cols-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
 
-.card {
-  background: var(--surface); border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card); border: var(--card-border);
-  padding: var(--pad-card);
-}
-.section-title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 32px 0 12px; display:flex; align-items:center; gap:8px; }
+.card { background: var(--surface); border-radius: var(--radius-card); box-shadow: var(--shadow-card);
+  border: var(--card-border); padding: var(--pad-card); }
+.section-title { font-size: 1rem; font-weight: 700; margin: 34px 0 12px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .section-title .cnt { color: var(--text-muted); font-weight: 500; font-size: .8rem; }
 
-/* 스탯 타일 */
 .stat .label { font-size: .8rem; color: var(--text-muted); margin-bottom: 6px; }
-.stat .value { font-size: 1.5rem; font-weight: 800; letter-spacing: -.01em; }
-.stat .value small { font-size: .9rem; font-weight: 600; color: var(--text-sub); }
+.stat .value { font-size: 1.45rem; font-weight: 800; letter-spacing: -.01em; }
+.stat .value small { font-size: .85rem; font-weight: 600; color: var(--text-sub); }
 .stat .foot { font-size: .78rem; color: var(--text-sub); margin-top: 6px; }
 
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: .72rem; font-weight: 700; padding: 3px 9px;
-  border-radius: var(--radius-badge); vertical-align: middle;
-}
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 700;
+  padding: 3px 9px; border-radius: var(--radius-badge); }
 .badge.danger { background: var(--danger-bg); color: var(--danger); }
 .badge.warning { background: var(--warning-bg); color: var(--warning); }
 .badge.success { background: var(--success-bg); color: var(--success); }
 .badge.info { background: var(--info-bg); color: var(--primary); }
 .badge.neutral { background: var(--surface-sub); color: var(--text-sub); }
 
-.gain { color: var(--gain); font-weight: 700; }
-.loss { color: var(--loss); font-weight: 700; }
-
-/* 경고 배너 */
 .alert { display: flex; gap: 10px; padding: 14px 16px; border-radius: var(--radius-control);
   font-size: .875rem; margin-bottom: 10px; align-items: baseline; }
 .alert .ic { font-weight: 900; flex: none; }
-.alert.critical { background: var(--danger-bg); color: var(--text); }
-.alert.critical .ic { color: var(--danger); }
-.alert.warning { background: var(--warning-bg); }
-.alert.warning .ic { color: var(--warning); }
-.alert.info { background: var(--info-bg); }
-.alert.info .ic { color: var(--primary); }
-[data-theme="civic"] .alert { border-left: 6px solid; border-radius: 0; background: var(--surface); }
-[data-theme="civic"] .alert.critical { border-color: var(--danger); }
-[data-theme="civic"] .alert.warning { border-color: var(--warning); }
-[data-theme="civic"] .alert.info { border-color: var(--primary); }
-.alert .dday { margin-left: auto; font-weight: 800; white-space: nowrap; }
+.alert.critical { background: var(--danger-bg); } .alert.critical .ic { color: var(--danger); }
+.alert.critical { border-color: var(--danger); }
+.alert.warning { background: var(--warning-bg); } .alert.warning .ic { color: var(--warning); }
+.alert.warning { border-color: var(--warning); }
+.alert.info { background: var(--info-bg); } .alert.info .ic { color: var(--primary); }
+.alert.info { border-color: var(--primary); }
+.alert .dday { margin-left: auto; font-weight: 800; white-space: nowrap; font-size: .82rem; }
 
-/* 타임라인 */
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th { text-align: left; font-size: .74rem; font-weight: 600; color: var(--text-sub);
+  padding: 8px 10px; border-bottom: 1px solid var(--border); }
+td { padding: 6px 10px; min-height: var(--row-h); border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--surface-sub); }
+th.r, td.r { text-align: right; }
+td.best { background: var(--success-bg); font-weight: 700; }
+td.worst { color: var(--danger); font-weight: 700; }
+tfoot td { font-weight: 800; border-top: 2px solid var(--text); }
+
+.meter { margin-top: 10px; }
+.meter .bar { height: 8px; background: var(--surface-sub); border: 1px solid var(--border);
+  border-radius: var(--radius-badge); overflow: hidden; }
+.meter .fill { height: 100%; background: var(--primary); }
+.meter .fill.ok { background: var(--success); }
+.meter .fill.warn { background: var(--warning); }
+.meter .cap { display: flex; justify-content: space-between; font-size: .74rem; color: var(--text-sub); margin-top: 5px; gap: 8px; }
+
 .timeline { list-style: none; position: relative; padding-left: 22px; }
 .timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
-.timeline li { position: relative; padding: 0 0 14px 8px; font-size: .86rem; }
+.timeline li { position: relative; padding: 0 0 13px 8px; font-size: .84rem; }
 .timeline li::before { content: ""; position: absolute; left: -19px; top: 5px; width: 8px; height: 8px;
   border-radius: 50%; background: var(--text-muted); outline: 3px solid var(--surface); }
 .timeline li.key::before { background: var(--primary); }
 .timeline li.future::before { background: var(--surface); border: 2px solid var(--danger); width: 6px; height: 6px; }
-.timeline .d { color: var(--text-muted); font-size: .76rem; display: block; }
-.timeline b { font-weight: 700; }
+.timeline .d { color: var(--text-muted); font-size: .75rem; display: block; }
 
-/* 테이블 */
-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
-th { text-align: left; font-size: .74rem; font-weight: 600; color: var(--text-sub);
-  padding: 8px 10px; border-bottom: 1px solid var(--border); }
-td { padding: 0 10px; height: var(--table-row-h); border-bottom: 1px solid var(--border); }
-tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: var(--surface-sub); }
-th.r, td.r { text-align: right; }
-td .tk { font-weight: 700; }
-tfoot td { font-weight: 800; border-top: 2px solid var(--text); border-bottom: none; }
-
-/* 진행바 */
-.meter { margin-top: 10px; }
-.meter .bar { height: 8px; background: var(--surface-sub); border: 1px solid var(--border); border-radius: var(--radius-badge); overflow: hidden; }
-.meter .fill { height: 100%; background: var(--primary); border-radius: inherit; }
-.meter .fill.ok { background: var(--success); }
-.meter .cap { display: flex; justify-content: space-between; font-size: .74rem; color: var(--text-sub); margin-top: 5px; }
-
-/* 계산 근거 (explanation trace) */
 details.trace { margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px; }
 details.trace summary { cursor: pointer; font-size: .82rem; font-weight: 700; color: var(--primary); list-style: none; }
 details.trace summary::before { content: "▸ "; }
 details.trace[open] summary::before { content: "▾ "; }
-.trace-steps { margin-top: 10px; font-size: .82rem; }
-.trace-steps .step { display: flex; justify-content: space-between; gap: 12px; padding: 7px 10px; border-radius: var(--radius-control); }
+.trace-steps { margin-top: 10px; font-size: .8rem; }
+.trace-steps .step { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: var(--radius-control); }
 .trace-steps .step:nth-child(odd) { background: var(--surface-sub); }
-.trace-steps .step .rule { color: var(--text-sub); font-size: .74rem; }
 .law-quote { margin-top: 12px; padding: 12px 14px; background: var(--surface-sub); border-left: 3px solid var(--primary);
   border-radius: var(--radius-control); font-size: .78rem; color: var(--text-sub); }
 .law-quote .src { display: block; margin-top: 8px; font-size: .7rem; color: var(--text-muted); word-break: break-all; }
-
-/* 차트 */
-.chart-wrap { margin-top: 8px; }
-.chart-wrap svg { width: 100%; height: auto; display: block; }
-.chart-note { font-size: .74rem; color: var(--text-muted); margin-top: 4px; }
-
-/* 원문 카드 */
-.law-doc { display: flex; flex-direction: column; gap: 8px; }
-.law-doc .meta-row { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: var(--text-sub); }
-.law-doc .meta-row b { color: var(--text); }
 .hash { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .72rem; color: var(--text-muted); word-break: break-all; }
 
-footer.disclaimer { margin-top: 48px; padding: 16px; text-align: center; font-size: .76rem; color: var(--text-muted);
-  border-top: 1px solid var(--border); }
+.chart-wrap svg { width: 100%; height: auto; display: block; }
+.chart-note { font-size: .74rem; color: var(--text-muted); margin-top: 6px; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .76rem; color: var(--text-sub); margin-top: 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+.reco { border-left: 4px solid var(--success); }
+.reco ol { margin: 10px 0 0 20px; font-size: .87rem; }
+.reco ol li { margin-bottom: 9px; }
+.reco .why { color: var(--text-sub); font-size: .82rem; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: .84rem; margin-top: 8px; }
+.kv dt { color: var(--text-muted); }
+.kv dd { font-weight: 600; }
+footer.disclaimer { margin-top: 48px; padding: 16px; text-align: center; font-size: .76rem;
+  color: var(--text-muted); border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -213,237 +157,405 @@ footer.disclaimer { margin-top: 48px; padding: 16px; text-align: center; font-si
 
 <header class="top">
   <div>
-    <h1>taxNavi <span style="font-weight:400;color:var(--text-muted);font-size:1rem">PoC</span></h1>
-    <div class="sub">김가장 가구 · 기준일 2026-08-03 · 세대원 3인 (본인·배우자·자녀)</div>
+    <h1>taxNavi</h1>
+    <div class="sub">김가장 가구 · 기준일 2026-08-04 · <b>2026년 세제개편안(8/3 발표) 반영</b></div>
   </div>
   <div class="theme-switch" role="tablist" aria-label="디자인 테마 선택">
-    <button data-t="toss" class="active">① Toss 스타일</button>
+    <button data-t="toss" class="active">① Toss</button>
     <button data-t="civic">② Civic Clarity</button>
     <button data-t="ledger">③ Stripe Ledger</button>
   </div>
 </header>
 
-<!-- ═══ D-day 알림 ═══ -->
+<!-- ═══════════ 최우선 이슈 ═══════════ -->
+<div class="section-title">지금 반드시 알아야 할 3가지</div>
 <div class="alert critical"><span class="ic">⚠</span>
-  <span><b>일시적 2주택 특례 — 종전주택(마포 A아파트) 처분기한.</b> 신규주택 취득일(2026-02-28)부터 <b>3년 이내</b> 양도해야 1세대 1주택으로 보아 비과세가 적용됩니다.</span>
-  <span class="dday num">2029-02-28 · D-940</span>
+  <span><b>일시적 2주택 특례기간이 이미 만료된 것으로 보입니다.</b> 과천자이 보유 중 시범한양을 취득(2022-09)해 일시적 2주택이 되었고, 종전주택 처분기한은 <b>2025-09-15</b>였습니다. 지금은 특례 없는 <b>2주택</b> 상태이므로 어느 쪽을 팔아도 비과세가 적용되지 않습니다.</span>
+  <span class="dday">기한 경과</span>
+</div>
+<div class="alert critical"><span class="ic">⚠</span>
+  <span><b>비거주자로 판정되면 1세대 1주택 비과세가 전면 배제됩니다.</b> 과천자이 양도세가 <b>4,323만원 → 3억 2,522만원</b>(약 7.5배)으로 벌어집니다. 해외 주재원 상태에서의 거주자·비거주자 판정이 이 가구 세금의 최대 변수입니다.</span>
+  <span class="dday">7.5배 차이</span>
 </div>
 <div class="alert warning"><span class="ic">!</span>
-  <span>재산세 2기분 납부기간이 시작됩니다. (주택분 ½ + 토지분)</span>
-  <span class="dday num">2026-09-16 · D-44</span>
-</div>
-<div class="alert info"><span class="ic">i</span>
-  <span>2026년 귀속 해외주식 양도소득세 확정신고 기간 (2027년 5월)</span>
-  <span class="dday num">2027-05-31 · D-301</span>
+  <span><b>개편안이 상생임대 특례에 양도기한을 신설했습니다.</b> 종전에는 상생임대로 거주요건이 면제되면 양도 시점 제한이 없었으나, 이제 계약 종료 후 1년 내(최대 2029-12-31) 양도분만 면제됩니다. 2026-07 계약(2028-07 종료) 기준 <b>2029-07-31</b>이 기한입니다.</span>
+  <span class="dday num">2029-07-31 · D-1092</span>
 </div>
 
-<!-- ═══ 요약 스탯 ═══ -->
-<div class="section-title">한눈에 보기</div>
-<div class="grid cols-3">
-  <div class="card stat">
-    <div class="label">해외주식 올해 실현손익</div>
-    <div class="value num gain">+201.7<small>만원</small></div>
-    <div class="foot">기본공제 250만원 이내 → 예상 세액 <b>0원</b></div>
-  </div>
-  <div class="card stat">
-    <div class="label">추가 익절 가능 (비과세 한도)</div>
-    <div class="value num">48.3<small>만원</small></div>
-    <div class="foot">연내 이 금액까지 실현해도 양도세 없음</div>
-  </div>
-  <div class="card stat">
-    <div class="label">마포 A아파트 지금 팔면 (15억 가정)</div>
-    <div class="value num">1,167<small>만원</small></div>
-    <div class="foot"><span class="badge success">비과세 요건 충족</span> 고가주택 초과분만 과세</div>
+<!-- ═══════════ 결론 요약 ═══════════ -->
+<div class="section-title">한눈에 보는 최선의 방안</div>
+<div class="card reco">
+  <b style="font-size:1.05rem">2단계 전략: 시범한양을 상생임대 비과세로 먼저, 과천자이는 귀국 후 2028년에</b>
+  <ol>
+    <li><b>시범한양 — 상생임대 요건을 확정하고 2029-07-31까지 양도.</b>
+      <div class="why">1주택 상태에서 양도하면 양도가 8.6억이 고가주택 기준(12억) 이하이므로 <b>전액 비과세(0원)</b>. 2주택 상태로 팔면 1,608만원~1,863만원. 다만 이 특례는 <b>거주자</b>에게만 적용됩니다.</div>
+    </li>
+    <li><b>과천자이 — 귀국·전입으로 거주자 신분을 회복한 뒤, 1주택 상태로 2028년 중 양도.</b>
+      <div class="why">개편안의 거주공제 상향(연 6%, 최대 60%)과 해외 비거주기간 3년 거주인정(개편안 §18)이 2028년부터 동시에 적용돼 <b>3,118만원</b>으로 최저가 됩니다. 2027년(4,323만원)보다 <b>1,205만원</b> 적고, 2029년(3,287만원)보다도 낮습니다.</div>
+    </li>
+    <li><b>증여·상속은 이 상황에서 유리하지 않습니다.</b>
+      <div class="why">배우자 증여는 증여세 4,074만원 + 취득세 3,010만원 = <b>7,084만원</b>의 즉시 비용이 발생하고, 이월과세 10년 규정 때문에 절세 효과도 사라집니다. 상속은 선택할 수 있는 수단이 아닙니다.</div>
+    </li>
+  </ol>
+  <div class="law-quote" style="margin-top:14px">
+    <b>순서가 중요한 이유</b> — 시범한양을 먼저 팔면 과천자이가 1주택이 되어 비과세·우대공제를 받을 수 있습니다. 반대로 과천자이를 먼저 팔면 2주택 상태 양도라 3억 2,522만원이 과세됩니다. <b>같은 두 채, 같은 가격인데 순서만으로 3억 원 가까이 차이</b>가 납니다.
   </div>
 </div>
 
-<!-- ═══ 부동산 ═══ -->
-<div class="section-title">부동산 <span class="cnt">2건 · 세대 합산 2주택 (일시적 2주택)</span></div>
+<!-- ═══════════ 연도별 양도세 비교 (핵심 차트) ═══════════ -->
+<div class="section-title">과천자이를 언제 팔면 얼마인가 <span class="cnt">양도가 16억 · 취득가 7억 가정 · 1주택 + 거주자 상태</span></div>
+<div class="card">
+  <div class="chart-wrap">
+    <svg viewBox="0 0 720 240" role="img" aria-label="과천자이 연도별 양도세 비교 막대 차트. 2027년 개편안과 현행 모두 4323만원. 2028년 개편안 3118만원, 현행 3965만원. 2029년 개편안 3287만원, 현행 3626만원.">
+      <!-- y축 그리드 -->
+      <g stroke="var(--border)" stroke-width="1">
+        <line x1="60" y1="180" x2="700" y2="180"/>
+        <line x1="60" y1="135" x2="700" y2="135" stroke-dasharray="3 3"/>
+        <line x1="60" y1="90" x2="700" y2="90" stroke-dasharray="3 3"/>
+        <line x1="60" y1="45" x2="700" y2="45" stroke-dasharray="3 3"/>
+      </g>
+      <g font-size="10" fill="var(--text-muted)" text-anchor="end">
+        <text x="54" y="184">0</text><text x="54" y="139">1,500만</text>
+        <text x="54" y="94">3,000만</text><text x="54" y="49">4,500만</text>
+      </g>
+      <!-- 2027: 개편안 4323만(h=130) 현행 4323만 -->
+      <rect x="120" y="50" width="46" height="130" rx="4" fill="var(--primary)"/>
+      <rect x="170" y="50" width="46" height="130" rx="4" fill="var(--text-muted)" opacity=".45"/>
+      <text x="143" y="44" text-anchor="middle" font-size="11" font-weight="700" fill="var(--primary)">4,323만</text>
+      <!-- 2028: 개편안 3118만(h=94) 현행 3965만(h=119) -->
+      <rect x="330" y="86" width="46" height="94" rx="4" fill="var(--success)"/>
+      <rect x="380" y="61" width="46" height="119" rx="4" fill="var(--text-muted)" opacity=".45"/>
+      <text x="353" y="80" text-anchor="middle" font-size="11" font-weight="800" fill="var(--success)">3,118만</text>
+      <text x="403" y="55" text-anchor="middle" font-size="10" fill="var(--text-sub)">3,965만</text>
+      <!-- 2029: 개편안 3287만(h=99) 현행 3626만(h=109) -->
+      <rect x="540" y="81" width="46" height="99" rx="4" fill="var(--primary)"/>
+      <rect x="590" y="71" width="46" height="109" rx="4" fill="var(--text-muted)" opacity=".45"/>
+      <text x="563" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="var(--primary)">3,287만</text>
+      <text x="613" y="65" text-anchor="middle" font-size="10" fill="var(--text-sub)">3,626만</text>
+      <!-- 최저 표시 -->
+      <text x="353" y="205" text-anchor="middle" font-size="10" font-weight="700" fill="var(--success)">▲ 최저</text>
+      <g font-size="11" fill="var(--text)" text-anchor="middle" font-weight="600">
+        <text x="168" y="228">2027년</text><text x="378" y="228">2028년</text><text x="588" y="228">2029년</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><i style="background:var(--primary)"></i>개편안 적용</span>
+      <span><i style="background:var(--success)"></i>개편안 · 최저 시점</span>
+      <span><i style="background:var(--text-muted);opacity:.45"></i>개편 없이 현행 유지 시</span>
+    </div>
+    <div class="chart-note">동일한 양도가액을 유지해 <b>세법 변화 효과만</b> 분리한 비교입니다. 실제로는 시세 변동이 세액에 더 크게 작용할 수 있습니다.</div>
+  </div>
+
+  <table style="margin-top:18px">
+    <thead><tr>
+      <th>양도 시점</th><th class="r">공제율</th><th class="r">개편안 세액</th><th class="r">현행 유지 시</th><th class="r">개편 효과</th><th>적용되는 법</th>
+    </tr></thead>
+    <tbody class="num">
+      <tr>
+        <td><b>2027년</b></td><td class="r">28%</td><td class="r">43,232,200</td><td class="r">43,232,200</td>
+        <td class="r">±0</td>
+        <td style="font-size:.8rem">거주 연4%+보유 연4% (현행 유지). 기본공제 확대(2,500만) 요건은 거주 10년 미달로 미적용</td>
+      </tr>
+      <tr>
+        <td><b>2028년</b> <span class="badge success">최저</span></td><td class="r">42%</td>
+        <td class="r best">31,179,500</td><td class="r">39,649,500</td>
+        <td class="r" style="color:var(--success);font-weight:700">−8,470,000</td>
+        <td style="font-size:.8rem">장기<b>거주</b>소득공제로 개편 (거주 연6%·최대60% + 보유 연2%·최대20%) <b>+ 해외 비거주 3년을 거주기간으로 인정</b></td>
+      </tr>
+      <tr>
+        <td><b>2029년</b></td><td class="r">40%</td><td class="r">32,873,500</td><td class="r">36,261,500</td>
+        <td class="r" style="color:var(--success)">−3,388,000</td>
+        <td style="font-size:.8rem">보유공제 <b>완전 폐지</b>, 거주공제만 (연8%·최대80%). 거주기간이 짧아 오히려 2028년보다 불리</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="law-quote">
+    <b>2029년이 2028년보다 불리한 이유</b> — 개편안은 보유공제를 2029년에 완전히 폐지하고 거주공제만 남깁니다(연 8%, 최대 80%). 거주공제율이 높아져도 이 집의 <b>실거주가 2.5년</b>(해외 인정 3년 포함 5.5년)뿐이라 거주공제로 채울 수 있는 폭이 작고, 사라진 보유공제(2028년엔 최대 20%)를 메우지 못합니다. <b>거주기간이 짧은 집은 2028년에 파는 것이 유리</b>하다는 것이 이번 개편의 구조적 결과입니다.
+    <span class="src">근거: 2026년 세제개편안 상세본 p.57~59 (소득법 §95②) · 적용시기 2028-01-01 이후 양도분</span>
+  </div>
+
+  <details class="trace">
+    <summary>2028년 3,118만원 — 단계별 계산 근거</summary>
+    <div class="trace-steps num">
+      <div class="step"><span>양도가액 (가정)</span><span>1,600,000,000</span></div>
+      <div class="step"><span>− 취득가액</span><span>−700,000,000</span></div>
+      <div class="step"><span>− 필요경비</span><span>−20,000,000</span></div>
+      <div class="step"><span>= 양도차익</span><span>880,000,000</span></div>
+      <div class="step"><span>× 고가주택 과세비율 (4억/16억 = 25.0%)</span><span>220,000,000</span></div>
+      <div class="step"><span>− 장기거주소득공제 42% <span style="color:var(--text-muted);font-size:.75rem">거주 5년(실거주 2.5 + 해외인정 3, 정수 5)×6%=30% + 보유 6년×2%=12%</span></span><span>−92,400,000</span></div>
+      <div class="step"><span>− 기본공제</span><span>−2,500,000</span></div>
+      <div class="step"><span>= 과세표준</span><span>125,100,000</span></div>
+      <div class="step"><span>× 기본세율 35% (누진공제 1,544만)</span><span>28,345,000</span></div>
+      <div class="step"><span>+ 지방소득세 10%</span><span>2,834,500</span></div>
+      <div class="step"><b>= 총 예상세액</b><b>31,179,500</b></div>
+    </div>
+    <div class="law-quote">
+      <b>근거 원문 — 2026년 세제개편안 상세본 p.84 (18) 부득이한 사유 등의 경우 비거주기간을 거주기간으로 인정</b><br>
+      "1년 이상 계속하여 거주 중인 주택에서 부득이한 사유로 다른 시·군으로 주거 이전 시 이로 인한 비거주기간을 거주기간으로 인정(최장 3년) … <b>해외체류: 해외거주 필요로 하는 취학 또는 근무상 형편으로 인한 출국</b> … 단, 국외거주를 필요로 하는 출국의 경우 해외로 주거 이전"<br>
+      <span style="color:var(--danger);font-weight:600">※ 원문 주의: "거주기간 인정은 공제율 산정시에만 적용. 1세대 1주택 우대공제 요건 및 취득 당시 조정대상지역 소재 주택의 1세대 1주택 비과세 요건인 2년 거주요건에는 미적용"</span>
+      <span class="src">출처: press/mofe-2026-tax-reform_2026-08-03/2_sangsebon.pdf · SHA-256 efebd4de87346cda… · 적용시기 2028-01-01 이후 양도분 · confidence: drafted</span>
+    </div>
+  </details>
+</div>
+
+<!-- ═══════════ 해외전출 / 거주자 판정 ═══════════ -->
+<div class="section-title">해외 주재원 — 거주 요건은 어떻게 되는가 <span class="cnt">가장 중요한 변수</span></div>
 <div class="grid cols-2">
+  <div class="card">
+    <b>① 비과세의 거주 2년 요건 — 이미 충족</b>
+    <div class="sub" style="margin:6px 0 10px">과천자이는 취득 당시 조정대상지역(과천, 2023-01-05 해제 전)이라 비과세에 거주 2년이 필요합니다.</div>
+    <div class="meter">
+      <div class="bar"><div class="fill ok" style="width:100%"></div></div>
+      <div class="cap"><span>실거주 2022-01 ~ 2024-07 (약 2년 6개월)</span><span class="badge success">충족 ✓</span></div>
+    </div>
+    <div class="law-quote" style="margin-top:14px">
+      출국 <b>전에 이미 2년 이상 거주</b>했으므로 이 요건은 확보되어 있습니다. 해외 비거주기간을 거주로 인정받을 필요 없이 통과합니다.
+      <span class="src">근거: 소득세법 시행령 §154① (대통령령 제36343호, 시행 2026-07-01) · SHA-256 1c3498022847bad1…</span>
+    </div>
+  </div>
 
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-      <b>마포 A아파트</b>
-      <span><span class="badge info">종전주택</span> <span class="badge success">비과세 요건 충족</span></span>
+    <b>② 해외 비거주기간 3년 인정 — 공제율에만 적용</b>
+    <div class="sub" style="margin:6px 0 10px">개편안 §18이 신설한 혜택이지만 적용 범위가 제한적입니다.</div>
+    <table>
+      <tbody>
+        <tr><td>공제율 산정</td><td class="r"><span class="badge success">적용 ○</span></td></tr>
+        <tr><td>1세대 1주택 <b>비과세</b> 거주 2년 요건</td><td class="r"><span class="badge danger">미적용 ✗</span></td></tr>
+        <tr><td>1세대 1주택 <b>우대공제</b> 요건</td><td class="r"><span class="badge danger">미적용 ✗</span></td></tr>
+      </tbody>
+    </table>
+    <div class="law-quote">
+      즉 이 조항은 "비과세를 만들어주는" 조항이 <b>아니라</b> 이미 비과세 요건을 갖춘 집의 <b>공제율을 높여주는</b> 조항입니다. 2028년 세액이 최저가 되는 핵심 이유입니다.
+      <span class="src">근거: 세제개편안 상세본 p.84~86 · 적용시기 2028-01-01 이후 양도분</span>
     </div>
-    <div class="sub" style="margin:2px 0 14px">서울 마포구 · 취득 당시 조정대상지역 · 지분 100%</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;border-left:4px solid var(--danger)">
+  <b style="color:var(--danger)">③ 그런데 — 비거주자로 판정되면 위 모든 것이 무의미해집니다</b>
+  <div class="sub" style="margin:6px 0 12px">비거주자에게는 1세대 1주택 비과세와 우대 장기공제가 적용되지 않아 양도차익 전액이 과세됩니다.</div>
+  <table>
+    <thead><tr><th>과천자이 양도 (2027년, 동일 조건)</th><th class="r">양도세</th><th class="r">차이</th></tr></thead>
+    <tbody class="num">
+      <tr><td><b>거주자</b> 상태 · 1주택 · 비과세 + 고가주택 초과분 과세</td><td class="r best">43,232,200</td><td class="r">기준</td></tr>
+      <tr><td><b>비거주자</b> 상태 · 비과세 배제 · 전액 과세</td><td class="r worst">325,215,000</td><td class="r worst">+281,982,800</td></tr>
+    </tbody>
+  </table>
+  <div class="law-quote">
+    <b>거주자·비거주자 판정은 자동이 아닙니다.</b> 국내에 생계를 같이하는 가족과 자산이 있는지, 직업·체류 상황이 어떤지를 종합해 판단합니다(소득세법 시행령 §2~4). 주재원이라도 가족이 국내에 남아 있고 국내 자산이 있으면 거주자로 볼 여지가 있고, 반대로 가족과 함께 완전히 이주했다면 비거주자로 볼 여지가 큽니다.
+    <b style="color:var(--danger)">이 판정 하나로 2억 8천만원이 갈리므로, 양도 전에 반드시 세무 전문가의 사전 확인을 받으십시오.</b>
+  </div>
+</div>
+
+<!-- ═══════════ 부동산 상세 ═══════════ -->
+<div class="section-title">보유 부동산 <span class="cnt">2건 · 특례 없는 2주택 상태</span></div>
+<div class="grid cols-2">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <b>과천자이 25평 A형</b>
+      <span><span class="badge info">분양 취득</span> <span class="badge success">거주요건 충족</span></span>
+    </div>
+    <div class="sub" style="margin:2px 0 14px">경기 과천시 · 취득 당시 조정대상지역 · 지분 100%</div>
     <ul class="timeline">
-      <li class="key"><span class="d num">2019-06-15</span><b>매매계약 체결</b> · 8억 2,000만원</li>
-      <li class="key"><span class="d num">2019-09-20</span><b>잔금 지급 = 취득일</b></li>
-      <li><span class="d num">2019-10-01</span>전입 (거주 개시)</li>
-      <li><span class="d num">현재</span>보유 <b class="num">6년 10개월</b> · 거주 <b class="num">6년 10개월</b></li>
-      <li class="future"><span class="d num">2029-02-28</span><b style="color:var(--danger)">처분기한</b> (일시적 2주택 특례)</li>
+      <li class="key"><span class="d">분양 당첨 · 계약</span>분양가 기준 취득 <span class="badge warning">계약일 확인 필요</span></li>
+      <li class="key"><span class="d num">2022-01-20 (가정)</span><b>잔금·입주 = 취득일</b> · 7억원</li>
+      <li><span class="d num">2022-01-20</span>전입 (거주 개시)</li>
+      <li><span class="d num">2024-07-05</span><b>해외 주재원 발령 출국</b> — 실거주 약 2년 6개월</li>
+      <li class="future"><span class="d">현재</span>해외 거주 중 · 거주자 판정 확인 필요</li>
     </ul>
     <div class="meter">
       <div class="bar"><div class="fill ok" style="width:100%"></div></div>
-      <div class="cap"><span>보유 2년 + 거주 2년 (조정지역 취득)</span><span>충족 ✓</span></div>
+      <div class="cap"><span>비과세 거주 2년 요건 (조정지역 취득)</span><span>충족 ✓</span></div>
     </div>
-
-    <details class="trace">
-      <summary>지금 팔면 양도세 1,167만원 — 왜 이 금액인가</summary>
-      <div class="trace-steps num">
-        <div class="step"><span>양도가액 (가정)</span><span>1,500,000,000</span></div>
-        <div class="step"><span>− 취득가액</span><span>820,000,000</span></div>
-        <div class="step"><span>= 양도차익</span><span>680,000,000</span></div>
-        <div class="step"><span>× 고가주택 과세비율 <span class="rule">(15억−12억)/15억 = 20%</span></span><span>136,000,000</span></div>
-        <div class="step"><span>− 장기보유특별공제 48% <span class="rule">보유 6년×4% + 거주 6년×4%</span></span><span>−65,280,000</span></div>
-        <div class="step"><span>− 기본공제</span><span>−2,500,000</span></div>
-        <div class="step"><span>= 과세표준</span><span>68,220,000</span></div>
-        <div class="step"><span>× 기본세율 (누진)</span><span>10,612,800</span></div>
-        <div class="step"><span>+ 지방소득세 10%</span><span>1,061,280</span></div>
-        <div class="step"><b>= 총 예상세액</b><b>11,674,080</b></div>
-      </div>
-      <div class="law-quote">
-        <b>근거 원문 — 소득세법 시행령 제154조(1세대1주택의 범위) ①</b><br>
-        "…해당 주택의 보유기간이 2년 이상인 것[취득 당시에 「주택법」 제63조의2제1항제1호에 따른 조정대상지역에 있는 주택의 경우에는 해당 주택의 보유기간이 2년 이상이고 그 보유기간 중 거주기간이 2년 이상인 것]을 말한다…"
-        <span class="src num">출처: 대통령령 제36343호 (공포 2026-05-22 · 시행 2026-07-01) · law.go.kr 수집본 SHA-256 1c3498022847bad1… · confidence: drafted</span>
-      </div>
-    </details>
   </div>
 
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-      <b>성남 B아파트</b>
-      <span><span class="badge warning">신규주택</span> <span class="badge neutral">임대중 (전세)</span></span>
+      <b>분당 시범한양 14평형</b>
+      <span><span class="badge warning">상생임대 후보</span> <span class="badge neutral">임대중</span></span>
     </div>
-    <div class="sub" style="margin:2px 0 14px">경기 성남시 분당구 · 취득 당시 비조정지역 · 지분 100%</div>
+    <div class="sub" style="margin:2px 0 14px">경기 성남시 분당구 · 취득 당시 조정대상지역 · 지분 100% · 실거주 없음</div>
     <ul class="timeline">
-      <li class="key"><span class="d num">2025-11-10</span><b>매매계약 체결</b> · 9억 5,000만원</li>
-      <li class="key"><span class="d num">2026-02-28</span><b>잔금 지급 = 취득일</b></li>
-      <li><span class="d num">2026-03-15</span><b>임대차(전세) 계약</b> · 보증금 5억 5,000만원 · ~2028-03-14</li>
-      <li class="future"><span class="d num">2028-03-14</span>임대차 만기 (갱신요구권 행사 가능)</li>
+      <li class="key"><span class="d num">2022-05-20</span><b>매수 계약</b></li>
+      <li><span class="d num">2022-09 (잔금 전)</span><b>임대차 계약 체결</b> — 매수로 승계받은 계약이 아니므로 <b>직전 임대차계약</b>으로 인정 가능</li>
+      <li class="key"><span class="d num">2022-09-15</span><b>잔금 = 취득일</b> · 7.5억원</li>
+      <li><span class="d num">2024-06</span>임차인 <b>계약갱신요구권</b> 행사 재계약</li>
+      <li class="key"><span class="d num">2026-07</span><b>상생임대 목적 재계약</b> — 보증금·임대료 5% 이내 증액 ✓</li>
+      <li class="future"><span class="d num">2028-07</span>상생임대차계약 종료 예정</li>
+      <li class="future"><span class="d num">2029-07-31</span><b style="color:var(--danger)">거주요건 면제 양도기한</b> (개편안 신설)</li>
     </ul>
     <div class="meter">
-      <div class="bar"><div class="fill" style="width:16.5%"></div></div>
-      <div class="cap"><span>종전주택 처분기한 경과 (3년 중 5개월)</span><span class="num">D-940</span></div>
+      <div class="bar"><div class="fill warn" style="width:35%"></div></div>
+      <div class="cap"><span>상생임대 2년 임대기간 (2026-07 ~ 2028-07)</span><span class="num">진행중</span></div>
     </div>
-    <details class="trace">
-      <summary>일시적 2주택 특례 판정 근거</summary>
-      <div class="trace-steps">
-        <div class="step"><span>종전주택 취득 후 1년 경과 뒤 신규주택 취득?</span><span class="num">2019-09-20 → 2026-02-28 ✓</span></div>
-        <div class="step"><span>신규주택 취득일부터 3년 이내 종전주택 양도?</span><span class="num">기한 2029-02-28 (진행중)</span></div>
-      </div>
-      <div class="law-quote">
-        <b>근거 원문 — 소득세법 시행령 제155조(1세대1주택의 특례) ①</b><br>
-        "…종전의 주택을 취득한 날부터 1년 이상이 지난 후 신규 주택을 취득하고 신규 주택을 취득한 날부터 3년 이내에 종전의 주택을 양도하는 경우…에는 이를 1세대1주택으로 보아 제154조제1항을 적용한다."
-        <span class="src num">출처: 대통령령 제36343호 (공포 2026-05-22 · 시행 2026-07-01) · law.go.kr 수집본 SHA-256 1c3498022847bad1… · confidence: drafted</span>
-      </div>
-    </details>
   </div>
 </div>
 
-<!-- ═══ 주식 ═══ -->
-<div class="section-title">주식 · 계좌 <span class="cnt">일반계좌 + 중개형 ISA</span></div>
-
-<div class="card plain" style="margin-bottom:16px">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-    <b>일반 위탁계좌 <span class="sub">OO증권</span></b>
-    <span class="badge info">해외주식 양도세 과세대상</span>
+<!-- ═══════════ 상생임대 ═══════════ -->
+<div class="section-title">상생임대 — 요건과 새로 생긴 기한</div>
+<div class="card">
+  <div class="grid cols-2" style="gap:20px">
+    <div>
+      <b>요건 점검</b>
+      <table style="margin-top:8px">
+        <tbody>
+          <tr><td>직전 임대차계약 임대기간 1년 6개월 이상<br><span class="sub" style="font-size:.76rem">2022-09 계약 → 2024-06 갱신 = 약 1년 9개월</span></td><td class="r"><span class="badge success">충족 ○</span></td></tr>
+          <tr><td>매수로 승계받은 계약 제외<br><span class="sub" style="font-size:.76rem">잔금 전 <b>직접</b> 체결한 계약 — 승계 아님</span></td><td class="r"><span class="badge success">충족 ○</span></td></tr>
+          <tr><td>직전 계약 대비 보증금·임대료 증가율 5% 이내<br><span class="sub" style="font-size:.76rem">2026-07 재계약 시 5% 이내 증액</span></td><td class="r"><span class="badge success">충족 ○</span></td></tr>
+          <tr><td>2021-12-20 ~ 2026-12-31 중 계약 체결·임대 개시<br><span class="sub" style="font-size:.76rem">2026-07 체결 — 일몰 직전 통과</span></td><td class="r"><span class="badge success">충족 ○</span></td></tr>
+          <tr><td>상생임대차계약 임대기간 2년 이상<br><span class="sub" style="font-size:.76rem">2026-07 ~ 2028-07 예정 — 중도 해지 시 요건 상실</span></td><td class="r"><span class="badge warning">진행중</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <b>개편안이 바꾼 것 — 양도기한 신설</b>
+      <div class="law-quote" style="margin-top:8px">
+        <b>현행</b>: 2년 이상 상생임대 후 양도 시 1세대 1주택 비과세·장특공제의 거주 2년 요건 면제. <b>양도 시점 제한 없음.</b><br><br>
+        <b>개편안</b>: 다음 기한 내 양도분만 면제 적용<br>
+        ➊ 2026-12-31 이전 계약 종료 → <b>2027-12-31</b>까지<br>
+        ➋ <b>2027-01-01 이후 계약 종료 → 계약 종료 후 1년이 되는 날과 2029-12-31 중 빠른 날</b>
+        <span class="src">근거: 세제개편안 상세본 p.78 (소득령 §155의3) · 적용시기 2026-10-01 이후 양도분 · 2026년 중 개정 예정</span>
+      </div>
+      <div class="alert critical" style="margin-top:12px">
+        <span class="ic">⚠</span>
+        <span>이 가구는 ➋에 해당: 2028-07 종료 → <b>2029-07-31</b>이 기한입니다. 이 날을 넘기면 일반 주택과 동일하게 <b>본인이 2년 실거주</b>해야 비과세를 받습니다.</span>
+      </div>
+    </div>
   </div>
-  <table style="margin-top:12px">
-    <thead><tr>
-      <th>종목</th><th class="r">보유수량</th><th class="r">평균매수가</th><th class="r">올해 매도</th><th class="r">실현손익 (원)</th>
-    </tr></thead>
+
+  <table style="margin-top:20px">
+    <thead><tr><th>시범한양 양도 시나리오</th><th class="r">양도세</th><th>조건</th></tr></thead>
     <tbody class="num">
-      <tr><td class="tk">NVDA</td><td class="r">27주</td><td class="r">$680.00</td><td class="r">3주 @ $1,150</td><td class="r gain">+2,047,800</td></tr>
-      <tr><td class="tk">AAPL</td><td class="r">5주</td><td class="r">$190.00</td><td class="r">5주 @ $175.50</td><td class="r loss">−31,070</td></tr>
+      <tr><td><b>1주택 + 상생임대 거주요건 면제</b> · 2029-07-31 이내</td><td class="r best">0</td>
+        <td style="font-size:.8rem">양도가 8.6억 &lt; 고가주택 기준 12억 → 전액 비과세. <b>거주자</b>여야 함</td></tr>
+      <tr><td>2주택 상태 양도 · 2027년</td><td class="r">16,077,600</td><td style="font-size:.8rem">공제율 8% (보유 연2%×4년), 중과 한시완화 +5%p 구간</td></tr>
+      <tr><td>2주택 상태 양도 · 2028년</td><td class="r">16,830,000</td><td style="font-size:.8rem">공제율 5% (보유 연1%로 축소), 중과 +10%p 구간</td></tr>
+      <tr><td>2주택 상태 양도 · 2029년</td><td class="r worst">18,628,498</td><td style="font-size:.8rem">보유공제 폐지 + 실거주 0년 → <b>공제율 0%</b></td></tr>
     </tbody>
-    <tfoot class="num"><tr><td colspan="4">2026년 실현손익 합계 (손익통산)</td><td class="r gain">+2,016,730</td></tr></tfoot>
   </table>
-  <div class="meter">
-    <div class="bar"><div class="fill" style="width:80.7%"></div></div>
-    <div class="cap"><span>해외주식 기본공제 250만원 중 사용</span><span class="num">2,016,730 / 2,500,000 · 잔여 483,270원</span></div>
-  </div>
+  <div class="chart-note">시범한양은 실거주가 없어 개편안의 "거주 중심" 개편에서 가장 불리해지는 자산입니다. 2029년이면 공제가 완전히 사라집니다 — <b>상생임대 비과세 경로가 압도적으로 유리</b>합니다.</div>
+</div>
 
-  <div class="chart-wrap">
-    <svg viewBox="0 0 720 150" role="img" aria-label="2026년 월별 실현손익 막대 차트. 4월 플러스 204만 7800원, 5월 마이너스 3만 1070원, 나머지 달은 0원.">
-      <line x1="40" y1="110" x2="700" y2="110" stroke="var(--border)" stroke-width="1"/>
-      <text x="34" y="114" text-anchor="end" font-size="10" fill="var(--text-muted)">0</text>
-      <!-- 4월 +2,047,800 → h=88 -->
-      <rect x="330" y="22" width="36" height="88" rx="3" fill="var(--gain)"/>
-      <text x="348" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="var(--gain)">+204.8만</text>
-      <!-- 5월 −31,070 → h=4 (최소 표시) -->
-      <rect x="426" y="110" width="36" height="4" rx="2" fill="var(--loss)"/>
-      <text x="444" y="128" text-anchor="middle" font-size="10" font-weight="700" fill="var(--loss)">−3.1만</text>
-      <!-- 월 라벨 -->
-      <g font-size="10" fill="var(--text-muted)" text-anchor="middle">
-        <text x="60" y="142">1월</text><text x="156" y="142">2월</text><text x="252" y="142">3월</text>
-        <text x="348" y="142">4월</text><text x="444" y="142">5월</text><text x="540" y="142">6월</text><text x="636" y="142">7월</text>
-      </g>
-    </svg>
-    <div class="chart-note">2026년 월별 실현손익 (매도 체결 기준, 결제일 환율 적용)</div>
+<!-- ═══════════ 양도 vs 증여 vs 상속 ═══════════ -->
+<div class="section-title">양도 · 증여 · 상속 어느 쪽이 좋은가</div>
+<div class="card">
+  <table>
+    <thead><tr><th>방안</th><th class="r">즉시 세부담</th><th>장점</th><th>단점 / 주의</th><th class="r">판정</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>양도</b> (2단계 전략)<br><span class="sub" style="font-size:.78rem">시범한양 비과세 → 과천자이 2028년</span></td>
+        <td class="r num best">31,179,500</td>
+        <td style="font-size:.8rem">현금화 즉시 가능. 상생임대 비과세로 한 채는 0원. 개편안 거주공제 상향의 수혜</td>
+        <td style="font-size:.8rem">거주자 신분 회복 필요. 매도 순서를 지켜야 함</td>
+        <td class="r"><span class="badge success">최선</span></td>
+      </tr>
+      <tr>
+        <td><b>배우자 증여</b> (시범한양 8.6억)</td>
+        <td class="r num worst">70,840,000</td>
+        <td style="font-size:.8rem">배우자 공제 6억 활용. 명의 분산으로 향후 종부세·양도세 인별 과세 유리</td>
+        <td style="font-size:.8rem">증여세 4,074만 + 취득세 3,010만 즉시 발생. <b>이월과세 10년</b> — 증여 후 10년 내 양도하면 취득가액을 원래 취득가로 계산해 절세 효과 소멸</td>
+        <td class="r"><span class="badge danger">불리</span></td>
+      </tr>
+      <tr>
+        <td><b>상속</b></td>
+        <td class="r">—</td>
+        <td style="font-size:.8rem">취득가액이 상속 당시 시가로 갱신되어 양도차익이 사라지는 효과</td>
+        <td style="font-size:.8rem"><b>선택할 수 있는 수단이 아님.</b> 총자산 24.6억은 상속세 과세구간(일괄공제 5억 + 배우자공제 등 가정 시 과세표준 약 14.6억)</td>
+        <td class="r"><span class="badge neutral">해당 없음</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="law-quote">
+    <b>증여가 불리한 결정적 이유</b> — 배우자에게 증여한 부동산을 <b>10년 내</b>에 양도하면 이월과세가 적용되어 취득가액을 <b>증여 당시 가액이 아니라 원래 취득가액(7.5억)</b>으로 계산합니다. 즉 증여세·취득세 7,084만원을 내고도 양도세는 줄지 않습니다. 반면 상생임대 비과세 경로는 <b>비용 0원에 세액 0원</b>입니다.
   </div>
 </div>
 
+<!-- ═══════════ 종부세 ═══════════ -->
+<div class="section-title">보유세도 함께 바뀝니다 <span class="cnt">종부세 개편, 2027-01-01 시행</span></div>
+<div class="card">
+  <div class="sub" style="margin-bottom:12px">공시가격 합계 17억(과천 11억 + 분당 6억) 가정. 개편안은 기본공제를 <b>거주 여부로 차등</b>하고 공정시장가액비율을 60% → 70%로 올립니다.</div>
+  <table>
+    <thead><tr><th>상황</th><th class="r">기본공제</th><th class="r">공정비율</th><th class="r">종부세</th></tr></thead>
+    <tbody class="num">
+      <tr><td>현행 2026년 · 2주택</td><td class="r">9억</td><td class="r">60%</td><td class="r">2,760,000</td></tr>
+      <tr><td>개편안 2027년 · 2주택 <b>모두 비거주</b></td><td class="r">4억</td><td class="r">70%</td><td class="r worst">7,630,000</td></tr>
+      <tr><td>개편안 2027년 · 과천자이에 <b>거주</b></td><td class="r">7.2억</td><td class="r">70%</td><td class="r">4,685,882</td></tr>
+      <tr><td>개편안 2027년 · <b>1주택 + 거주</b> (시범한양 처분 후)</td><td class="r">14억</td><td class="r">70%</td><td class="r best">0</td></tr>
+    </tbody>
+  </table>
+  <div class="law-quote">
+    개편안의 1세대 1주택 기본공제는 <b>거주 14억 / 비거주 9억</b>으로 갈리고, 다주택자는 <b>4억 + (5억 × 거주주택 공시가 ÷ 주택 공시가 합계)</b>로 산정됩니다. 즉 <b>비거주 상태의 2주택 유지가 가장 비싼 선택</b>이며, 해외 체류가 길어질수록 보유세 부담이 커집니다. 시범한양을 처분해 1주택 + 거주 상태가 되면 종부세는 0원입니다.
+    <span class="src">근거: 세제개편안 상세본 p.61~63 (종부법 §8①, §9①·②) · 적용시기 2027-01-01 납세의무 성립분</span>
+  </div>
+</div>
+
+<!-- ═══════════ 개정 타임라인 ═══════════ -->
+<div class="section-title">앞으로 몇 년간 무엇이 바뀌는가</div>
+<div class="card">
+  <ul class="timeline">
+    <li class="key"><span class="d num">2026-08-03</span><b>세제개편안 발표</b> — 현재 단계. 국회 통과 전이라 확정 아님</li>
+    <li><span class="d num">2026-08-04</span>일시적 2주택 특례기간 단축 <b>경과조치 기준일</b> — 이 날 이전 취득·계약분은 종전 규정(3년)</li>
+    <li><span class="d num">2026-10-01</span>조정지역 일시적 2주택 특례 <b>3년 → 2년</b> 단축 시행 · 상생임대 양도기한 시행</li>
+    <li><span class="d num">2026-12-31</span>상생임대차계약 체결·개시 <b>일몰</b> (이미 2026-07 체결 완료)</li>
+    <li class="key"><span class="d num">2027-01-01</span>종부세 개편 시행 · 다주택 중과 <b>한시완화 시작</b>(2주택 +5%p) · 장기거주 1주택 기본공제 2,500만원 신설</li>
+    <li class="key"><span class="d num">2028-01-01</span><b>장기보유특별공제 → 장기거주소득공제 개편</b> · 거주 연6%/보유 연2% · <b>해외 비거주 3년 거주인정 시행</b> ← 과천자이 최적 시점</li>
+    <li><span class="d num">2028-12-31</span>다주택 중과 한시완화 종료 (2029년부터 +20%p/+30%p 원복)</li>
+    <li><span class="d num">2029-01-01</span><b>보유공제 완전 폐지</b> · 거주공제만 (연8%·최대80%)</li>
+    <li class="future"><span class="d num">2029-07-31</span><b style="color:var(--danger)">시범한양 상생임대 비과세 최종 기한</b></li>
+  </ul>
+</div>
+
+<!-- ═══════════ 원문 출처 ═══════════ -->
+<div class="section-title">이 분석의 원천 — 수집된 정부 원문</div>
 <div class="grid cols-2">
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-      <b>중개형 ISA <span class="sub">OO증권 · 일반형</span></b>
-      <span class="badge success">의무가입기간 충족</span>
+  <div class="card plain">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap">
+      <b>2026년 세제개편안</b><span class="badge warning">발표 단계 · 국회 통과 전</span>
     </div>
-    <div class="sub num" style="margin:2px 0 12px">가입 2023-06-20 · 만기 2028-06-20 (D-687)</div>
-    <table>
-      <thead><tr><th>종목</th><th class="r">수량</th><th class="r">평균단가</th></tr></thead>
-      <tbody class="num">
-        <tr><td class="tk">TIGER 미국S&amp;P500 <span class="badge neutral">국내상장 해외ETF</span></td><td class="r">350좌</td><td class="r">18,500</td></tr>
-        <tr><td class="tk">삼성전자</td><td class="r">200주</td><td class="r">71,300</td></tr>
-      </tbody>
-    </table>
-    <div class="meter">
-      <div class="bar"><div class="fill" style="width:44%"></div></div>
-      <div class="cap"><span>납입한도 (총 1억)</span><span class="num">4,400만 / 1억</span></div>
-    </div>
-    <div class="meter">
-      <div class="bar"><div class="fill" style="width:67%"></div></div>
-      <div class="cap"><span>비과세 한도 (200만) 사용</span><span class="num">134만 / 200만</span></div>
-    </div>
-    <details class="trace">
-      <summary>ISA 안이라 뭐가 다른가</summary>
-      <div class="trace-steps">
-        <div class="step"><span>국내상장 해외ETF 매매차익</span><span>계좌 내 손익통산 후 비과세 한도 적용</span></div>
-        <div class="step"><span>비과세 한도 초과분</span><span>9.9% 저율 분리과세</span></div>
-        <div class="step"><span>만기 시 선택지</span><span>연장 · 해지 후 재가입 · 연금계좌 이전(추가 세액공제)</span></div>
-      </div>
-    </details>
+    <dl class="kv">
+      <dt>발표</dt><dd class="num">2026-08-03 (세제발전심의위원회)</dd>
+      <dt>수집</dt><dd class="num">2026-08-03</dd>
+      <dt>보도자료</dt><dd class="num">1페이지 · 132KB</dd>
+      <dt>상세본</dt><dd class="num">250페이지 · 1.96MB · 12.6만자 추출</dd>
+      <dt>문답자료</dt><dd class="num">94페이지 · 1.55MB · 5.8만자 추출</dd>
+    </dl>
+    <div class="hash" style="margin-top:10px">상세본 SHA-256 efebd4de87346cdaaa572d7130f7ec0b22ddde196c74bbc278e613228bac4e05</div>
+    <div class="hash">문답자료 SHA-256 954ea648213ca64b85c5c80bb7648fcd03b125379bc0fcb50803b2e51fce663d</div>
   </div>
-
-  <div class="card">
-    <b>금융소득 종합과세 모니터</b>
-    <div class="sub" style="margin:2px 0 12px">배당 + 이자, 2026년 누계</div>
-    <div class="stat">
-      <div class="value num">186<small>만원</small> <span class="sub" style="font-size:.8rem">/ 2,000만원</span></div>
+  <div class="card plain">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap">
+      <b>소득세법 시행령 (현행)</b><span class="badge info">대통령령 제36343호</span>
     </div>
-    <div class="meter">
-      <div class="bar"><div class="fill ok" style="width:9.3%"></div></div>
-      <div class="cap"><span>종합과세 기준까지 여유</span><span class="num">1,814만원</span></div>
-    </div>
-    <div class="law-quote" style="margin-top:16px">
-      연 2,000만원 초과 시 다른 소득과 합산해 누진세율로 종합과세됩니다. 현재 추세로는 올해 기준 초과 가능성이 낮습니다.
-    </div>
+    <dl class="kv">
+      <dt>공포</dt><dd class="num">2026-05-22</dd>
+      <dt>시행</dt><dd class="num">2026-07-01</dd>
+      <dt>파싱</dt><dd class="num">468개 조문</dd>
+      <dt>사용 조문</dt><dd>§154(비과세 범위), §155(1주택 특례), §155의3(상생임대), §159의4(장기공제)</dd>
+    </dl>
+    <div class="hash" style="margin-top:10px">SHA-256 1c3498022847bad1…</div>
+    <div class="sub" style="margin-top:10px;font-size:.78rem">law.go.kr Open API에서 시행일자 기준으로 수집한 XML 원문</div>
   </div>
 </div>
 
-<!-- ═══ 규칙 데이터의 원천 ═══ -->
-<div class="section-title">이 계산의 원천 — 수집된 정부 원문</div>
-<div class="card law-doc">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-    <b>소득세법 시행령</b>
-    <span><span class="badge info">대통령령 제36343호</span> <span class="badge neutral">일부개정</span></span>
-  </div>
-  <div class="meta-row num">
-    <span>공포 <b>2026-05-22</b></span>
-    <span>시행 <b>2026-07-01</b></span>
-    <span>수집 <b>2026-08-03</b></span>
-    <span>조문 <b>468개</b> 파싱</span>
-    <span>소관 <b>재정경제부</b></span>
-  </div>
-  <div class="hash">SHA-256 1c3498022847bad1… (law-archive 불변 보관본) · 원문: law.go.kr Open API (XML)</div>
-  <div class="sub">이 대시보드의 부동산 판정(§154 비과세 요건, §155 일시적 2주택)은 위 보관본의 조문에서 추출한 규칙 초안(confidence: drafted)을 사용했습니다. 검증(verified) 승격 전이며, 세율표·공제표 수치는 PoC용 예시입니다.</div>
+<div class="card" style="margin-top:16px;border-left:4px solid var(--warning)">
+  <b>이 계산에 사용된 가정 — 실제 값으로 교체가 필요합니다</b>
+  <table style="margin-top:10px">
+    <thead><tr><th>항목</th><th class="r">사용한 가정값</th><th>영향</th></tr></thead>
+    <tbody class="num">
+      <tr><td>과천자이 취득일(잔금)</td><td class="r">2022-01-20</td><td style="font-size:.8rem">보유기간 → 공제율. 분양 계약일·잔금일 실제 확인 필요</td></tr>
+      <tr><td>과천자이 취득가액 / 양도가액</td><td class="r">7억 / 16억</td><td style="font-size:.8rem">세액에 가장 직접적 영향</td></tr>
+      <tr><td>시범한양 취득가액 / 양도가액</td><td class="r">7.5억 / 8.6억</td><td style="font-size:.8rem">8.6억이 12억 이하라 비과세 시 0원 — 12억 초과 시 결론 변경</td></tr>
+      <tr><td>실거주 기간</td><td class="r">2년 6개월</td><td style="font-size:.8rem">2년 미달이면 비과세 자체가 불가 — 전입·전출일 확인 필수</td></tr>
+      <tr><td>공시가격</td><td class="r">11억 / 6억</td><td style="font-size:.8rem">종부세 계산 전제</td></tr>
+    </tbody>
+  </table>
+  <div class="sub" style="margin-top:10px">세율표·공제표는 개편안 원문에서 추출했으나 <b>confidence: drafted</b> 상태(원문 대조 검증 전)입니다. 지방소득세는 10% 단순 가산으로 계산했습니다.</div>
 </div>
 
 <footer class="disclaimer">
-  ⚠ 본 화면은 PoC이며 모든 계산은 참고용입니다. 세무 자문을 대체하지 않으며, 실제 의사결정 전 반드시 세무 전문가와 상담하세요.<br>
-  디자인 테마: ① Toss 스타일(한국 핀테크 관용어) · ② Civic Clarity(GOV.UK/HMRC + USWDS 검증 토큰) · ③ Stripe Ledger(고밀도 원장 + Intuit 점진적 공개)
+  ⚠ 본 화면은 PoC이며 모든 계산은 참고용입니다. 2026년 세제개편안은 <b>국회 통과 전</b>이므로 확정 시까지 내용이 바뀔 수 있습니다.<br>
+  세무 자문을 대체하지 않으며, 특히 <b>거주자·비거주자 판정</b>과 <b>상생임대 요건 충족 여부</b>는 반드시 세무 전문가의 사전 확인을 받으시기 바랍니다.<br><br>
+  디자인 테마: ① Toss(한국 핀테크) · ② Civic Clarity(GOV.UK/HMRC + USWDS 검증 토큰) · ③ Stripe Ledger(고밀도 원장 + Intuit 점진적 공개)
 </footer>
 
 </div>
