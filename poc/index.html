@@ -198,16 +198,16 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
       <div class="hint">12억 이하면 1주택 비과세 시 0원</div>
     </div>
     <div class="field">
-      <label>과천자이 615동 903호 공시가격 <span class="req">확인 필요</span></label>
+      <label>과천자이 공시가격 <span class="req">확인 필요</span></label>
       <input id="gOff" type="number" step="10000000" value="1100000000">
       <div class="conv" id="gOffC"></div>
-      <div class="hint">realtyprice.kr → 공동주택 공시가격</div>
+      <div class="hint"><a href="https://www.realtyprice.kr/notice/town/searchPastRoadNameCode.htm" target="_blank" rel="noopener">공동주택 공시가격 조회 →</a></div>
     </div>
     <div class="field">
-      <label>시범한양 332동 405호 공시가격 <span class="req">확인 필요</span></label>
+      <label>시범한양 공시가격 <span class="req">확인 필요</span></label>
       <input id="sOff" type="number" step="10000000" value="600000000">
       <div class="conv" id="sOffC"></div>
-      <div class="hint">realtyprice.kr → 공동주택 공시가격</div>
+      <div class="hint"><a href="https://www.realtyprice.kr/notice/town/searchPastRoadNameCode.htm" target="_blank" rel="noopener">공동주택 공시가격 조회 →</a></div>
     </div>
   </div>
   <div class="toggle-row">
@@ -221,10 +221,19 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
       <button data-v="1" class="on">충족</button>
       <button data-v="0">미충족</button>
     </div>
+    <span class="lbl" style="margin-left:12px">명의</span>
+    <div class="seg" id="segOwn">
+      <button data-v="1" class="on">부부공동명의 (각 50%)</button>
+      <button data-v="0">단독명의</button>
+    </div>
   </div>
+  <div class="alert info" style="margin:14px 0 0" id="ownAlert"></div>
   <div class="alert warning" style="margin:14px 0 0">
     <span class="ic">!</span>
-    <span>공시가격은 자동 조회가 불가해 가정값입니다. <b>부동산공시가격 알리미(realtyprice.kr)</b> → 공동주택 공시가격에서 동·호수로 조회한 값을 위 칸에 넣으면 보유세가 정확해집니다. 재산세는 공정시장가액비율 60%·도시지역분·지방교육세를 포함한 개산치입니다.</span>
+    <span>공시가격은 자동 조회가 불가해 <b>가정값</b>입니다.
+      <a href="https://www.realtyprice.kr/" target="_blank" rel="noopener"><b>부동산공시가격 알리미 (realtyprice.kr)</b></a>
+      → 공동주택 공시가격에서 조회한 값을 위 칸에 넣으면 보유세가 정확해집니다.
+      재산세는 공정시장가액비율 60%·도시지역분·지방교육세를 포함한 개산치입니다.</span>
   </div>
 </div>
 
@@ -258,16 +267,16 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
   <div class="card tl"><table id="sYearTable"></table></div>
 </div>
 
-<div class="sec-t">양도 · 증여 · 상속</div>
+<div class="sec-t">양도 · 증여 · 상속 <span class="cnt">배우자 증여 + 자녀 증여(2013·2014년생) 비교 · 행 클릭 시 상세</span></div>
 <div class="card tl"><table id="giftTable"></table></div>
 
 <div class="sec-t">보유 부동산 이력</div>
 <div class="grid c2">
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-      <b>과천자이 615동 903호</b><span><span class="badge info">분양</span> <span class="badge success">거주요건 충족</span></span>
+      <b>과천자이 25평 A형</b><span><span class="badge info">분양</span> <span class="badge success">거주요건 충족</span></span>
     </div>
-    <div class="sub" style="margin:2px 0 12px">경기 과천시 · 25평 A형 · 취득 당시 조정대상지역 · 지분 100%</div>
+    <div class="sub" style="margin:2px 0 12px">경기 과천시 · 취득 당시 조정대상지역 · <b>부부공동명의 각 50%</b></div>
     <ul class="tlist">
       <li class="key"><span class="d num">2022-01-20 (확인 필요)</span><b>분양 잔금·입주 = 취득일</b> · 분양가 9.1억 · 취득세 3% 2,730만원</li>
       <li><span class="d num">2022-01-20</span>전입 (거주 개시)</li>
@@ -277,9 +286,9 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
   </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
-      <b>분당 시범한양 332동 405호</b><span><span class="badge warning">재건축 추진</span> <span class="badge neutral">임대중</span></span>
+      <b>분당 시범한양 14평형</b><span><span class="badge warning">재건축 추진</span> <span class="badge neutral">임대중</span></span>
     </div>
-    <div class="sub" style="margin:2px 0 12px">경기 성남시 분당구 · 14평형 · 취득 당시 조정대상지역 · 실거주 없음</div>
+    <div class="sub" style="margin:2px 0 12px">경기 성남시 분당구 · 취득 당시 조정대상지역 · 실거주 없음 · <b>부부공동명의 각 50%</b></div>
     <ul class="tlist">
       <li class="key"><span class="d num">2022-05-20</span><b>매수 계약</b></li>
       <li><span class="d num">2022-09 (잔금 전)</span><b>임대차 계약 체결</b> — 승계계약이 아니라 직전 임대차계약으로 인정 가능</li>
@@ -310,8 +319,9 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
 </div>
 
 <script type="module">
-import { capitalGains, jongbuse, propertyTax, STAGES, stageById, stageAt,
-         holdYears, won, EOK, SURCHARGE_2H } from './engine.js';
+import { capitalGains, capitalGainsJoint, jongbuse, jongbuseJoint, propertyTax,
+         STAGES, stageById, stageAt, holdYears, won, EOK, SURCHARGE_2H,
+         giftTax, giftSplit, ageAt, GIFT_DEDUCTION } from './engine.js';
 
 const YEARS = [2026, 2027, 2028, 2029];
 const SELL_YEARS = [2027, 2028, 2029];
@@ -319,17 +329,23 @@ const S = {
   gAcq: 910_000_000, sAcq: 680_000_000,
   gSale: 1_600_000_000, sSale: 860_000_000,
   gOff: 1_100_000_000, sOff: 600_000_000,
-  resident: true, sangsaeng: true,
+  resident: true, sangsaeng: true, joint: true,
   stages: { 2026: 'none', 2027: 'none', 2028: 'none', 2029: 'none' },
 };
-const G = { name: '과천자이 615동 903호', short: '과천자이', acqDate: '2022-01-20', reside: 2.46, acqTax: 27_300_000, other: 5_000_000 };
-const Sb = { name: '시범한양 332동 405호', short: '시범한양', acqDate: '2022-09-15', reside: 0, acqTax: 54_400_000, other: 5_000_000 };
+/* 부부공동명의 각 50%. 양도세·종부세는 인별 과세라 지분 분할이 그대로 절세로 이어진다. */
+const SHARES = () => (S.joint ? [0.5, 0.5] : [1]);
+const CHILDREN = [{ label: '자녀1 (2013년생)', birthYear: 2013 }, { label: '자녀2 (2014년생)', birthYear: 2014 }];
+const GIFT_DATE = '2027-06-01';            // 증여 가정 시점
+const ADULT_DATE = (by) => `${by + 19}-06-01`;
+const cg = (o) => capitalGainsJoint(o, SHARES());
+const G = { name: '과천자이 25평 A형', short: '과천자이', acqDate: '2022-01-20', reside: 2.46, acqTax: 27_300_000, other: 5_000_000 };
+const Sb = { name: '시범한양 14평형', short: '시범한양', acqDate: '2022-09-15', reside: 0, acqTax: 54_400_000, other: 5_000_000 };
 const gExp = () => G.acqTax + G.other;
 const sExp = () => Sb.acqTax + Sb.other;
 
 /* ── 계산 래퍼 ────────────────────────────────────────────────── */
 function gOne(year, law = 'reform') {
-  return capitalGains({
+  return cg({
     salePrice: S.gSale, acqPrice: S.gAcq, expenses: gExp(),
     yearsHold: holdYears(G.acqDate, year), yearsReside: G.reside, year,
     exempt1House: true, isOneHouse: true, resident: S.resident, law,
@@ -338,7 +354,7 @@ function gOne(year, law = 'reform') {
   });
 }
 function gTwo(year) {
-  return capitalGains({
+  return cg({
     salePrice: S.gSale, acqPrice: S.gAcq, expenses: gExp(),
     yearsHold: holdYears(G.acqDate, year), yearsReside: G.reside, year,
     exempt1House: false, isOneHouse: false, resident: S.resident,
@@ -349,7 +365,7 @@ function sOne(year) {
   const st = stageAt(S.stages, year);
   const ok = S.sangsaeng && st.sangsaengAlive && year <= 2029;   // 양도기한 2029-07-31
   const mult = st.priceMultiplier || 1;
-  const r = capitalGains({
+  const r = cg({
     salePrice: S.sSale * mult, acqPrice: S.sAcq, expenses: sExp(),
     yearsHold: holdYears(Sb.acqDate, year), yearsReside: 0, year,
     exempt1House: ok, isOneHouse: true, resident: S.resident, isUnitRight: st.isUnitRight,
@@ -359,7 +375,7 @@ function sOne(year) {
 function sTwo(year) {
   const st = stageAt(S.stages, year);
   const mult = st.priceMultiplier || 1;
-  const r = capitalGains({
+  const r = cg({
     salePrice: S.sSale * mult, acqPrice: S.sAcq, expenses: sExp(),
     yearsHold: holdYears(Sb.acqDate, year), yearsReside: 0, year,
     exempt1House: false, isOneHouse: false, resident: S.resident,
@@ -375,10 +391,13 @@ function holding(year) {
   const ptG = propertyTax(S.gOff);
   const ptS = propertyTax(sOffEff, { asLand: st.landTax });
   const prices = st.jongbuseIncluded ? [S.gOff, sOffEff] : [S.gOff];
-  const jb = jongbuse(prices, { law, residentHousePrice: S.resident ? S.gOff : 0 });
-  const jb1 = jongbuse([S.gOff], { law, residentHousePrice: S.resident ? S.gOff : 0 });
-  return { year, law, st, ptG, ptS, jb, jb1,
-    total: ptG.total + ptS.total + jb.tax, oneHouseTotal: ptG.total + jb1.tax };
+  const opt = { law, residentHousePrice: S.resident ? S.gOff : 0, shares: SHARES() };
+  const jb = jongbuseJoint(prices, opt);
+  const jb1 = jongbuseJoint([S.gOff], opt);
+  const jbSolo = jongbuse(prices, { law, residentHousePrice: S.resident ? S.gOff : 0 });
+  return { year, law, st, ptG, ptS, jb, jb1, jbSolo,
+    total: ptG.total + ptS.total + jb.tax, oneHouseTotal: ptG.total + jb1.tax,
+    soloTotal: ptG.total + ptS.total + jbSolo.tax };
 }
 
 /* ── 헬퍼 ─────────────────────────────────────────────────────── */
@@ -390,6 +409,17 @@ const nm = (k) => (k === 'g' ? G.short : Sb.short);
 
 function renderConv() {
   for (const k of ['gAcq', 'sAcq', 'gSale', 'sSale', 'gOff', 'sOff']) $(`${k}C`).textContent = fmtEok(S[k]);
+  const b = allCombos()[0], hold = YEARS.map(holding);
+  const cgSave = b.a.solo && b.b.solo ? (b.a.solo.total + b.b.solo.total) - b.total : 0;
+  const jbSave = hold.reduce((a, r) => a + (r.soloTotal - r.total), 0);
+  $('ownAlert').innerHTML = S.joint
+    ? `<span class="ic">i</span><span><b>부부공동명의(각 50%) 기준으로 계산했습니다.</b>
+        양도소득세와 종합부동산세는 모두 <b>인별 과세</b>라 지분을 나눈 만큼 과세표준·누진세율·기본공제가 각자에게 적용됩니다.
+        현재 입력값에서 최선 매도안은 단독명의 대비 <b style="color:var(--success)">− ${W(cgSave)}</b>,
+        2026~2029년 보유세는 <b style="color:var(--success)">− ${W(jbSave)}</b> 절감됩니다.
+        단, <b>고가주택 12억 판정은 주택 전체 양도가액</b> 기준이고 <b>재산세는 물건별 과세</b>라 공동명의로도 총액이 줄지 않습니다(납부만 지분 안분).</span>`
+    : `<span class="ic">i</span><span><b>단독명의 기준</b>으로 계산 중입니다. 실제는 두 채 모두 부부공동명의이므로 위 토글을 <b>부부공동명의</b>로 두는 것이 실제 세액입니다.
+        이 설정은 공동명의의 절감 효과를 비교해 보기 위한 것입니다.</span>`;
 }
 
 function renderStageInputs() {
@@ -432,12 +462,14 @@ function renderHoldTable() {
     <tbody>
       <tr class="clickable" data-m="pt-g"><td>과천자이 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptG.total)}</td>`).join('')}</tr>
       <tr class="clickable" data-m="pt-s"><td>시범한양 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptS.total)}<div class="sm">${r.ptS.kind}</div></td>`).join('')}</tr>
-      <tr class="clickable" data-m="jb"><td>종합부동산세<div class="sm">2주택 · ${S.resident ? '과천자이 거주' : '모두 비거주'} 기준</div></td>${rows.map((r) => `<td class="yc num">${W(r.jb.tax)}<div class="sm">공제 ${(r.jb.basic / EOK).toFixed(1)}억·${Math.round(r.jb.fair * 100)}%</div></td>`).join('')}</tr>
+      <tr class="clickable" data-m="jb"><td>종합부동산세<div class="sm">2주택 · ${S.resident ? '과천자이 거주' : '모두 비거주'}${S.joint ? ' · 부부 각각 납부' : ''}</div></td>${rows.map((r) => `<td class="yc num">${W(r.jb.tax)}<div class="sm">공제 ${(r.jb.basic / EOK).toFixed(1)}억${S.joint ? ' (2인 합)' : ''}·${Math.round(r.jb.fair * 100)}%</div></td>`).join('')}</tr>
       <tr class="total"><td>2주택 유지 시 연 보유세</td>${rows.map((r, i) => `<td class="yc"><span class="big num">${W(r.total)}</span>${i ? `<div class="sm" style="color:${r.total > rows[0].total ? 'var(--danger)' : 'var(--success)'}">${r.total >= rows[0].total ? '+' : ''}${W(r.total - rows[0].total)}</div>` : ''}</td>`).join('')}</tr>
       <tr class="clickable" data-m="jb1"><td>과천자이 1주택 시<div class="sm">시범한양 처분 후</div></td>${rows.map((r) => `<td class="yc num" style="color:var(--success);font-weight:700">${W(r.oneHouseTotal)}</td>`).join('')}</tr>
     </tbody>`;
   t.querySelectorAll('tr.clickable').forEach((tr) => tr.addEventListener('click', () => openHoldModal(tr.dataset.m, rows)));
-  $('holdNote').innerHTML = `종부세는 <b>2주택 · ${S.resident ? '과천자이에 거주(귀국·전입)' : '모두 비거주'}</b> 상태를 기준으로 표시합니다.
+  const jbSave = rows.reduce((a, r) => a + (r.soloTotal - r.total), 0);
+  $('holdNote').innerHTML = `${S.joint ? `종부세는 <b>인별 과세</b>(종합부동산세법 §7①)이고 공동소유주택은 각자가 그 주택을 소유한 것으로 보므로(시행령 §154의2),
+      부부공동명의는 <b>기본공제를 각자</b> 받습니다 → 4년 합계 <b style="color:var(--success)">− ${W(jbSave)}</b>. 재산세는 물건별 과세라 총액은 동일합니다(납부만 지분 안분).<br>` : ''}종부세는 <b>2주택 · ${S.resident ? '과천자이에 거주(귀국·전입)' : '모두 비거주'}</b> 상태를 기준으로 표시합니다.
     개편안은 기본공제를 거주 여부로 차등(다주택 4억 + 5억×거주주택비중)하고 공정시장가액비율을 60%→70%로 올립니다.
     ${S.resident ? '' : '<b style="color:var(--danger)">비거주 상태에서는 거주주택 가산분 5억을 전혀 받지 못해 기본공제가 4억으로 고정됩니다.</b>'}`;
   return rows;
@@ -612,53 +644,78 @@ function renderYearCharts() {
 }
 
 /* ── 양도/증여/상속 ───────────────────────────────────────────── */
-function giftCalc(v) {
-  const base = Math.max(v - 600_000_000, 0);
-  const tiers = [[100_000_000, .10, 0], [500_000_000, .20, 10_000_000],
-    [1_000_000_000, .30, 60_000_000], [3_000_000_000, .40, 160_000_000], [Infinity, .50, 460_000_000]];
-  let gross = 0;
-  for (const [c, r, d] of tiers) if (base <= c) { gross = Math.floor(base * r - d); break; }
-  const credit = Math.floor(gross * 0.03);
-  const acq = Math.floor(v * 0.035);
-  return { base, gross, credit, after: gross - credit, acq, total: gross - credit + acq };
+/* 증여재산공제(상증법 §53, 10년 합산): 배우자 6억 / 성년 직계비속 5,000만 / 미성년 2,000만
+   자녀는 2013·2014년생 → 증여 가정시점(2027-06) 기준 만 14세·13세로 모두 미성년 = 각 2,000만.
+   출생월은 확인되지 않아 6월로 가정했다(만 나이 산정에만 영향). */
+function childPlan(value, { adult = false, share = 1 } = {}) {
+  const each = value * share / CHILDREN.length;
+  const onDate = adult ? ADULT_DATE(Math.max(...CHILDREN.map((c) => c.birthYear))) : GIFT_DATE;
+  return giftSplit(CHILDREN.map((c) => {
+    const age = ageAt(c.birthYear, onDate);
+    return { label: `${c.label} · 만 ${age}세`, value: each, age,
+      deduction: age >= 19 ? GIFT_DEDUCTION.adultChild : GIFT_DEDUCTION.minorChild };
+  }));
+}
+function giftPlans(value) {
+  return {
+    spouse: giftTax(value * 0.5, { deduction: GIFT_DEDUCTION.spouse }),   // 본인 지분 50%를 배우자에게
+    childHalf: childPlan(value, { share: 0.5 }),                          // 본인 지분 50% → 자녀 2명
+    childAll: childPlan(value, { share: 1 }),                             // 부부 지분 전부 → 자녀 2명
+    childAdult: childPlan(value, { share: 0.5, adult: true }),            // 성년 후 동일 증여
+  };
 }
 function renderGift() {
   const best = allCombos()[0];
-  const gs = giftCalc(S.sSale), gg = giftCalc(S.gSale);
+  const P = { g: giftPlans(S.gSale), s: giftPlans(S.sSale) };
   const estate = S.gSale + S.sSale;
+  const row = (id, title, sub, amt, pro, con, verdict, cls) => `
+    <tr class="clickable" data-p="${id}">
+      <td><b>${title}</b><div class="sm">${sub}</div></td>
+      <td class="r num ${cls === 'success' ? 'best' : (cls === 'danger' ? 'bad' : '')}">${amt === null ? '—' : W(amt)}</td>
+      <td style="font-size:.79rem">${pro}</td>
+      <td style="font-size:.79rem">${con}</td>
+      <td class="r"><span class="badge ${cls}">${verdict}</span></td>
+    </tr>`;
   $('giftTable').innerHTML = `
     <thead><tr><th>방안</th><th class="r">즉시 세부담</th><th>장점</th><th>단점 / 주의</th><th class="r">판정</th></tr></thead>
     <tbody>
-      <tr class="clickable" data-p="sell">
-        <td><b>양도</b> (2단계)<div class="sm">${nm(best.first)} ${best.firstYear} → ${nm(best.first === 'g' ? 's' : 'g')} ${best.secondYear}</div></td>
-        <td class="r num best">${W(best.total)}</td>
-        <td style="font-size:.79rem">즉시 현금화. 남은 한 채는 1주택 비과세 경로가 열린다</td>
-        <td style="font-size:.79rem">${S.resident ? '매도 순서와 시점을 지켜야 함' : '<b style="color:var(--danger)">비거주자 상태라 비과세 배제 — 거주자 회복이 전제</b>'}</td>
-        <td class="r"><span class="badge success">최선</span></td>
-      </tr>
-      <tr class="clickable" data-p="gift-s">
-        <td><b>배우자 증여</b> · 시범한양<div class="sm">${fmtEok(S.sSale)}</div></td>
-        <td class="r num bad">${W(gs.total)}</td>
-        <td style="font-size:.79rem">배우자 공제 6억 활용. 명의 분산으로 인별 과세되는 종부세·양도세에 유리</td>
-        <td style="font-size:.79rem">증여세 ${W(gs.after)} + 취득세 ${W(gs.acq)} 즉시 발생. <b>이월과세 10년</b>으로 10년 내 양도 시 취득가액을 원래 취득가(${fmtEok(S.sAcq)})로 계산해 절세효과 소멸</td>
-        <td class="r"><span class="badge danger">불리</span></td>
-      </tr>
-      <tr class="clickable" data-p="gift-g">
-        <td><b>배우자 증여</b> · 과천자이<div class="sm">${fmtEok(S.gSale)}</div></td>
-        <td class="r num bad">${W(gg.total)}</td>
-        <td style="font-size:.79rem">동일</td>
-        <td style="font-size:.79rem">과천자이는 이미 거주요건을 충족해 비과세 경로가 확보된 자산이라 증여로 잃는 것이 더 크다</td>
-        <td class="r"><span class="badge danger">불리</span></td>
-      </tr>
-      <tr class="clickable" data-p="inherit">
-        <td><b>상속</b></td><td class="r">—</td>
-        <td style="font-size:.79rem">취득가액이 상속 당시 시가로 갱신되어 그간의 양도차익이 사라지는 효과</td>
-        <td style="font-size:.79rem"><b>선택할 수 있는 수단이 아님.</b> 총자산 ${fmtEok(estate)}는 상속세 과세구간</td>
-        <td class="r"><span class="badge neutral">해당 없음</span></td>
-      </tr>
+      ${row('sell', '양도 (2단계)', `${nm(best.first)} ${best.firstYear} → ${nm(best.first === 'g' ? 's' : 'g')} ${best.secondYear}`,
+        best.total,
+        '즉시 현금화. 남은 한 채는 1주택 비과세 경로가 열린다' + (S.joint ? '. 부부공동명의라 인별 과세로 이미 최대 절세 상태' : ''),
+        S.resident ? '매도 순서와 시점을 지켜야 함' : '<b style="color:var(--danger)">비거주자 상태라 비과세 배제 — 거주자 회복이 전제</b>',
+        '최선', 'success')}
+      ${row('gift-child-s', '자녀 증여 · 시범한양', `본인 지분 50% ${fmtEok(S.sSale * 0.5)} → 자녀 2명 균등`,
+        P.s.childHalf.total,
+        '재건축 전 낮은 가액으로 이전. 세대 간 이전을 지금 시작하면 이후 가치상승분은 자녀 몫',
+        `<b>미성년 공제는 1인 2,000만원</b>뿐. 증여세 ${W(P.s.childHalf.giftDue)} + 취득세 ${W(P.s.childHalf.acqTax)}. <b>이월과세 10년</b> 적용, 미성년은 세대분리 불가(시행령 §152의3)`,
+        '조건부', 'warning')}
+      ${row('gift-child-g', '자녀 증여 · 과천자이', `본인 지분 50% ${fmtEok(S.gSale * 0.5)} → 자녀 2명 균등`,
+        P.g.childHalf.total,
+        '동일',
+        '과천자이는 거주요건을 충족해 <b>비과세 경로가 이미 확보된</b> 자산 — 증여로 잃는 것이 더 크다',
+        '불리', 'danger')}
+      ${row('gift-child-all', '자녀 증여 · 부부 지분 전부', `시범한양 전체 ${fmtEok(S.sSale)} → 자녀 2명`,
+        P.s.childAll.total,
+        '주택 수를 완전히 털어내 부부는 1주택자가 된다',
+        `실효세율 ${(P.s.childAll.total / S.sSale * 100).toFixed(1)}%. 미성년 자녀는 <b>독립세대를 구성할 수 없어</b> 세대 기준 주택 수는 줄지 않는다`,
+        '고비용', 'danger')}
+      ${row('gift-child-adult', '자녀 성년 후 증여', `2032·2033년 이후 · 공제 5,000만원`,
+        P.s.childAdult.total,
+        `미성년 증여 대비 <b style="color:var(--success)">− ${W(P.s.childHalf.total - P.s.childAdult.total)}</b> (공제 2,000만 → 5,000만)`,
+        '그 사이 가액이 오르면 증가분이 절감분을 넘는다. 재건축 준공 후라면 오히려 불리',
+        '비교용', 'neutral')}
+      ${row('gift-spouse', '배우자 증여', `본인 지분 50% → 배우자 (공제 6억)`,
+        P.s.spouse.total,
+        '배우자 공제 6억 활용',
+        S.joint ? '<b>이미 부부공동명의라 실익이 거의 없다.</b> 명의 분산 효과는 이미 확보됨' : '이월과세 10년으로 10년 내 양도 시 절세효과 소멸',
+        S.joint ? '불필요' : '조건부', S.joint ? 'neutral' : 'warning')}
+      ${row('inherit', '상속', '선택 가능한 수단이 아님', null,
+        '취득가액이 상속 당시 시가로 갱신되어 그간의 양도차익이 사라지는 효과',
+        `<b>계획으로 삼을 수 없다.</b> 총자산 ${fmtEok(estate)}는 상속세 과세구간`,
+        '해당 없음', 'neutral')}
     </tbody>`;
   $('giftTable').querySelectorAll('tr.clickable').forEach((tr) =>
-    tr.addEventListener('click', () => openPlanModal(tr.dataset.p, { best, gs, gg, estate })));
+    tr.addEventListener('click', () => openPlanModal(tr.dataset.p, { best, P, estate })));
 }
 
 /* ── 모달 ─────────────────────────────────────────────────────── */
@@ -674,12 +731,26 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); }
 
 const stepsHtml = (steps) => `<div class="steps">${steps.map((s, i) => `
   <div class="s ${i === steps.length - 1 ? 'fin' : ''}"><span>${s[0]}</span><span class="num">${won(s[1])}</span></div>`).join('')}</div>`;
+/* 공동명의 결과(capitalGainsJoint)는 배우자별 계산과정을 각각 펼쳐 보여준다.
+   누진세율·기본공제가 인별로 적용되므로 단독명의 대비 절감액도 함께 표시한다. */
+const OWNER = ['본인 지분 50%', '배우자 지분 50%'];
+function cgSteps(r) {
+  if (!r.parts) return stepsHtml(r.steps);
+  if (r.parts.length === 1) return stepsHtml(r.parts[0].steps);
+  const saving = r.solo.total - r.total;
+  return r.parts.map((p, i) => `<div style="font-weight:700;margin:${i ? 18 : 0}px 0 6px;font-size:.85rem">${OWNER[i]} — ${W(p.total)}</div>${stepsHtml(p.steps)}`).join('')
+    + `<div class="steps" style="margin-top:10px"><div class="s fin"><span>= 부부 합계</span><span class="num">${won(r.total)}</span></div></div>`
+    + `<div class="quote"><b>부부공동명의 효과 ${saving > 0 ? `− ${W(saving)}` : '없음'}</b><br>
+        단독명의라면 ${W(r.solo.total)}. 양도소득세는 <b>인별 과세</b>라 과세표준이 절반으로 쪼개져 누진세율 구간이 내려가고, 기본공제(연 250만/개편안 10년거주 2,500만)도 각자 받습니다.
+        고가주택 12억 판정은 지분가액이 아니라 <b>주택 전체 양도가액</b> 기준이라 공동명의로 낮출 수 없습니다.
+        <span class="src">근거: 소득세법 §92~§95(인별 과세표준·세율), 시행령 §154의2(공동소유주택의 주택 수 계산) · 기재부 2026 세제개편안 문답자료 p.49 "부부공동명의 주택의 경우에는 각각 2,500만원 공제"</span></div>`;
+}
 const SRC_REFORM = `<span class="src">출처: law-archive/press/mofe-2026-tax-reform_2026-08-03/2_sangsebon.pdf (250p) · SHA-256 efebd4de87346cda… · 2026-08-03 발표 · <b>국회 통과 전 (scheduled)</b> · confidence: drafted</span>`;
 const SRC_DECREE = `<span class="src">출처: law-archive/statutes/sodukse-sihaengryeong/2026-07-01_si-haeng_je36343ho/law.xml · 대통령령 제36343호, 시행 2026-07-01 · SHA-256 1c3498022847bad1… · 468개 조문 파싱</span>`;
 
 function openCgModal(title, r, year) {
   open(title, `공제율 ${Math.round(r.rate * 100)}% · ${r.rateLabel} · 총 <b class="num">${W(r.total)}</b>`, `
-    ${stepsHtml(r.steps)}
+    ${cgSteps(r)}
     ${year >= 2028 && S.resident ? `<div class="quote"><b>개편안 (18) 해외 근무상 출국 비거주기간을 거주기간으로 인정</b><br>
       "1년 이상 계속하여 거주 중인 주택에서 부득이한 사유로 다른 시·군으로 주거 이전 시 이로 인한 비거주기간을 거주기간으로 인정(최장 3년) … 해외체류: 해외거주 필요로 하는 취학 또는 근무상 형편으로 인한 출국"<br>
       <b style="color:var(--danger)">※ 원문 주의: 거주기간 인정은 공제율 산정시에만 적용. 1세대 1주택 우대공제 요건 및 취득 당시 조정대상지역 소재 주택의 비과세 2년 거주요건에는 미적용</b>${SRC_REFORM}</div>` : ''}
@@ -701,14 +772,14 @@ function openOrderModal(c) {
   open(`매도 순서: ${nm(c.first)} → ${nm(c.first === 'g' ? 's' : 'g')}`,
     `${c.firstYear}년 · ${c.secondYear}년 · 총 <b class="num">${W(c.total)}</b>`, `
     <div style="font-weight:700;margin-bottom:8px">① ${fn} · ${c.firstYear}년 — 2주택 상태 양도 (과세)</div>
-    ${stepsHtml(c.a.steps)}
+    ${cgSteps(c.a)}
     <div class="quote"><b>개편안 (12) 다주택자 양도세 중과 한시완화</b><br>
       2주택 +20%p → '27년 <b>+5%p</b>, '28년 <b>+10%p</b>, '29년부터 원복(+20%p)<br>
       3주택 이상 +30%p → '27년 +10%p, '28년 +15%p<br>
       <b>보유 2년 이상에 한정되며, 완화기간 중 양도에는 장기보유특별공제가 적용되지 않습니다.</b><br>
       → ${c.firstYear}년은 중과 +${SURCHARGE_2H[c.firstYear]}%p${c.firstYear <= 2028 ? ', 장특공제 배제' : ', 장특공제 적용'}${SRC_REFORM}</div>
     <div style="font-weight:700;margin:20px 0 8px">② ${sn} · ${c.secondYear}년 — 1주택 상태 양도${c.secondExempt ? ' <span class="badge success">비과세</span>' : ''}</div>
-    ${stepsHtml(c.b.steps)}
+    ${cgSteps(c.b)}
     <div class="quote"><b>왜 순서가 중요한가</b><br>
       먼저 파는 쪽은 2주택 상태 양도라 비과세를 받을 수 없고 중과세율이 붙습니다. 남은 한 채는 1주택이 되어 비과세 경로가 열립니다.
       따라서 <b>양도차익이 작은 쪽을 먼저 과세로 떠안고, 차익이 큰 쪽을 1주택 비과세로 넘기는 것</b>이 유리합니다.<br>
@@ -755,23 +826,87 @@ function openPlanModal(kind, ctx) {
         <li style="margin-bottom:10px"><b>${nm(b.first === 'g' ? 's' : 'g')}을 ${b.secondYear}년에 양도</b> — 1주택이 되어 ${b.secondExempt ? '<b style="color:var(--success)">비과세</b>가 적용됩니다' : '공제 우대를 받습니다'}. ${W(b.b.total)}</li>
         <li>${S.resident ? '<b>거주자 신분을 유지·회복한 상태여야 합니다.</b>' : '<b style="color:var(--danger)">현재 비거주자 설정입니다 — 비과세가 배제되어 세액이 급증합니다. 귀국·전입으로 거주자 회복이 전제입니다.</b>'}</li>
       </ol>
+      ${S.joint ? `<div class="quote"><b>부부공동명의가 이미 최대 절세 구조</b><br>
+        단독명의라면 ${W(b.a.solo.total + b.b.solo.total)}였을 세액이 인별 과세로 <b style="color:var(--success)">${W(b.total)}</b>가 됩니다.
+        증여로 명의를 더 분산할 실익은 거의 없고, 남은 변수는 <b>순서·시점·거주자 판정</b>입니다.</div>` : ''}
       <div class="quote">2주택이라 한 채는 반드시 과세됩니다. 관건은 <b>어느 쪽을 과세로 떠안을지</b>입니다. 양도차익이 작은 쪽을 먼저 처분하고 차익이 큰 쪽을 1주택 비과세로 넘기는 것이 원칙입니다.</div>`);
     return;
   }
-  if (kind === 'gift-s' || kind === 'gift-g') {
-    const isS = kind === 'gift-s';
-    const g = isS ? ctx.gs : ctx.gg;
-    const v = isS ? S.sSale : S.gSale;
-    const acqP = isS ? S.sAcq : S.gAcq;
-    open(`배우자 증여 — ${isS ? Sb.short : G.short}`, `즉시 비용 <b class="num">${W(g.total)}</b>`, `
-      ${stepsHtml([['증여재산가액 (시가)', v], ['− 배우자 증여재산공제', -600_000_000], ['= 과세표준', g.base],
-        ['× 증여세율 (누진공제 적용)', g.gross], ['− 신고세액공제 3%', -g.credit], ['= 증여세', g.after],
-        ['+ 취득세 3.5% (무상취득)', g.acq], ['= 즉시 비용 합계', g.total]])}
-      <div class="quote"><b>증여가 불리한 결정적 이유 — 이월과세</b><br>
-        배우자에게 증여받은 부동산을 <b>10년 내</b>에 양도하면 양도차익 계산 시 취득가액을 <b>증여 당시 가액(${fmtEok(v)})이 아니라 증여자의 원래 취득가액(${fmtEok(acqP)})</b>으로 계산합니다.
-        즉 증여세·취득세 ${W(g.total)}를 내고도 양도세는 줄어들지 않습니다.
-        <span class="src">근거: 소득세법 §97의2(양도소득의 필요경비 계산 특례) — 배우자·직계존비속 증여 후 10년 내 양도 시 이월과세</span></div>
-      <div class="quote"><b>그래도 증여가 의미 있는 경우</b> — 10년을 넘겨 보유할 계획이고, 그 기간 인별 과세되는 종부세 절감분이 즉시 비용을 넘어설 때입니다. 다만 개편안이 다주택 기본공제를 4억으로 낮췄으므로 명의 분산 효과도 종전보다 작아졌습니다.</div>`);
+  const CARRY = `<div class="quote"><b>이월과세 10년 (소득세법 §97의2)</b><br>
+    배우자 <b>또는 직계존비속</b>에게 증여받은 부동산을 <b>10년 내</b>에 양도하면, 양도차익 계산 시 취득가액을 증여 당시 가액이 아니라
+    <b>증여자의 원래 취득가액</b>으로 계산합니다. 자녀 증여도 동일하게 적용되므로, 증여세·취득세를 낸 뒤 곧 매도하면 절세효과가 사라집니다.
+    <span class="src">근거: 소득세법 §97의2(양도소득의 필요경비 계산 특례)</span></div>`;
+  const MINOR = `<div class="quote"><b>미성년 자녀는 독립세대를 구성할 수 없습니다</b><br>
+    시행령 §152의3은 30세 미만이라도 배우자가 있거나 사망·이혼, 또는 중위소득 40% 이상의 소득이 있으면 별도 세대로 보되
+    <b>미성년자는 소득요건에서 제외</b>합니다. 따라서 자녀에게 증여해도 <b>1세대의 주택 수는 줄지 않습니다</b>.
+    주택 수를 줄이려는 목적이라면 증여는 수단이 되지 못합니다.
+    <span class="src">근거: 소득세법 시행령 §152의3(1세대의 범위)</span></div>`;
+  const giftSteps = (sp) => sp.parts.map((r) => `
+    <div style="font-weight:700;margin:0 0 6px;font-size:.85rem">${r.label} — ${W(r.calc.total)}</div>
+    ${stepsHtml([['증여재산가액 (지분 시가)', r.calc.value],
+      [`− 증여재산공제 (${r.age >= 19 ? '성년 5,000만' : '미성년 2,000만'})`, -r.calc.deduction],
+      ['= 과세표준', r.calc.base], ['× 증여세율 (누진공제 적용)', r.calc.gross],
+      ['− 신고세액공제 3%', -r.calc.credit], ['= 증여세', r.calc.giftDue],
+      ['+ 취득세 3.5% (무상취득)', r.calc.acqTax], ['= 즉시 비용', r.calc.total]])}`).join('')
+    + `<div class="steps" style="margin-top:10px"><div class="s fin"><span>= 자녀 ${sp.parts.length}명 합계</span><span class="num">${won(sp.total)}</span></div></div>`;
+  const LAW_GIFT = `<div class="quote"><b>증여재산공제 (상증법 §53) — 10년 합산</b><br>
+    배우자 <b>6억원</b> · 성년 직계비속 <b>5,000만원</b> · <b>미성년 직계비속 2,000만원</b> · 기타 친족 1,000만원<br>
+    세율 1억 이하 10% → 5억 이하 20% → 10억 이하 30% → 30억 이하 40% → 초과 50% (§56)<br>
+    신고세액공제 3% (§69) · 무상취득 취득세 3.5% (지방세법 §11①2)<br>
+    세대생략 할증 30%(§57)는 조부모→손자녀에만 적용되어 여기서는 해당 없습니다.<br>
+    <b>2026년 세제개편안에는 증여재산공제 변경이 없습니다</b> — 위 금액은 현행 그대로입니다.
+    <span class="src">근거: 상속세 및 증여세법 §53·§56·§57·§69 · 개편안 미변경 확인</span></div>`;
+
+  if (kind === 'gift-child-s' || kind === 'gift-child-g' || kind === 'gift-child-all' || kind === 'gift-child-adult') {
+    const isG = kind === 'gift-child-g';
+    const asset = isG ? G : Sb;
+    const plans = isG ? ctx.P.g : ctx.P.s;
+    const sp = kind === 'gift-child-all' ? plans.childAll
+      : kind === 'gift-child-adult' ? plans.childAdult : plans.childHalf;
+    const titleMap = {
+      'gift-child-s': `자녀 증여 — ${Sb.short} 본인 지분 50%`,
+      'gift-child-g': `자녀 증여 — ${G.short} 본인 지분 50%`,
+      'gift-child-all': `자녀 증여 — ${Sb.short} 부부 지분 전부`,
+      'gift-child-adult': `자녀 성년 후 증여 — ${Sb.short} 본인 지분 50%`,
+    };
+    const adult = kind === 'gift-child-adult';
+    open(titleMap[kind], `증여가액 ${fmtEok(sp.value)} · 즉시 비용 <b class="num">${W(sp.total)}</b> · 실효 ${(sp.total / sp.value * 100).toFixed(1)}%`, `
+      <div class="quote">증여 시점을 <b>${adult ? `자녀가 모두 성년이 된 ${ADULT_DATE(2014).slice(0, 4)}년 이후` : GIFT_DATE.slice(0, 7)}</b>로 가정했습니다.
+        자녀는 <b>2013년생·2014년생</b>이며 출생월은 확인되지 않아 6월로 가정했습니다(만 나이 산정에만 영향).
+        ${adult ? '' : '두 자녀 모두 <b>미성년</b>이라 공제는 1인 2,000만원입니다.'}</div>
+      ${giftSteps(sp)}
+      ${adult ? `<div class="quote"><b>성년 증여와의 비교</b><br>
+        지금(미성년) 증여 ${W(plans.childHalf.total)} → 성년 후 증여 ${W(plans.childAdult.total)} =
+        <b style="color:var(--success)">− ${W(plans.childHalf.total - plans.childAdult.total)}</b>.
+        2013년생은 ${2013 + 19}년, 2014년생은 ${2014 + 19}년에 성년이 됩니다.
+        다만 그 사이 가액이 오르면 증가분이 이 절감분을 넘어섭니다 — 특히 시범한양은 재건축 준공 후 공시가·시가가 크게 오릅니다.
+        <b>가액이 낮은 지금 증여하는 것과 공제가 큰 성년까지 기다리는 것의 손익분기</b>가 판단 지점입니다.</div>` : ''}
+      ${kind === 'gift-child-all' ? `<div class="quote"><b>부부 지분 전부를 증여하면</b><br>
+        본인·배우자 각 50%를 각각 자녀 2명에게 증여하는 형태입니다. 증여자별·수증자별로 공제가 적용되지만
+        <b>동일인(부모는 동일인으로 봄)으로부터 10년 내 받은 증여는 합산</b>되므로 미성년 공제 2,000만원은 자녀 1명당 한 번만 유효합니다.
+        여기서는 자녀 1인이 ${fmtEok(sp.value / 2)}을 받는 것으로 계산했습니다.
+        <span class="src">근거: 상증법 §47②(재차증여 합산), §53(증여재산공제)</span></div>` : ''}
+      ${CARRY}
+      ${MINOR}
+      ${isG ? `<div class="quote"><b>과천자이는 증여 대상으로 최악입니다</b><br>
+        거주 2년 요건을 이미 충족해 <b>1세대 1주택 비과세 경로가 확보된</b> 자산입니다. 증여하면 그 이력이 자녀에게 승계되지 않아
+        확보해 둔 비과세를 버리고 증여세 ${W(sp.giftDue)} + 취득세 ${W(sp.acqTax)}를 내는 결과가 됩니다.</div>` : ''}
+      ${LAW_GIFT}`);
+    return;
+  }
+  if (kind === 'gift-spouse') {
+    const g = ctx.P.s.spouse;
+    open(`배우자 증여 — ${Sb.short} 본인 지분 50%`, `즉시 비용 <b class="num">${W(g.total)}</b>`, `
+      ${stepsHtml([['증여재산가액 (지분 50% 시가)', g.value], ['− 배우자 증여재산공제', -g.deduction],
+        ['= 과세표준', g.base], ['× 증여세율', g.gross], ['− 신고세액공제 3%', -g.credit],
+        ['= 증여세', g.giftDue], ['+ 취득세 3.5% (무상취득)', g.acqTax], ['= 즉시 비용 합계', g.total]])}
+      ${S.joint ? `<div class="quote"><b>이미 부부공동명의라 실익이 없습니다</b><br>
+        배우자 증여의 목적은 인별 과세되는 양도세·종부세의 명의 분산인데, 두 채 모두 이미 각 50% 공동명의여서
+        <b>그 효과는 이미 확보</b>되어 있습니다. 나머지 지분을 배우자에게 몰아주면 오히려 인별 분산이 깨져 불리해집니다.
+        본인 지분 ${fmtEok(g.value)}은 배우자 공제 6억 이내라 증여세는 ${g.giftDue === 0 ? '<b>0원</b>' : W(g.giftDue)}이지만
+        취득세 ${W(g.acqTax)}는 그대로 발생합니다.</div>` : ''}
+      ${CARRY}
+      ${LAW_GIFT}`);
     return;
   }
   open('상속', '선택 가능한 절세 수단이 아닙니다', `
@@ -782,7 +917,8 @@ function openPlanModal(kind, ctx) {
     </tbody></table>
     <div class="quote">상속은 취득가액이 상속 당시 시가로 갱신되어 그간의 양도차익이 사라지는 효과가 있지만 <b>계획으로 삼을 수 있는 수단이 아닙니다</b>.
       이 표는 총자산 규모가 상속세 과세구간에 있음을 확인하는 용도입니다. 배우자 상속공제는 실제 상속분·법정지분에 따라 최대 30억까지 달라집니다.
-      <span class="src">근거: 상속세 및 증여세법 §18~§23의2(기초공제·일괄공제·배우자 상속공제)</span></div>`);
+      자녀가 <b>미성년</b>인 경우 미성년자공제(1,000만원 × 19세까지의 연수)가 추가됩니다.
+      <span class="src">근거: 상속세 및 증여세법 §18~§23의2(기초공제·일괄공제·미성년자공제·배우자 상속공제)</span></div>`);
 }
 
 /* ── 바인딩 ───────────────────────────────────────────────────── */
@@ -804,6 +940,11 @@ $('segRes').querySelectorAll('button').forEach((b) => b.addEventListener('click'
 $('segSang').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
   S.sangsaeng = b.dataset.v === '1';
   $('segSang').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  renderAll();
+}));
+$('segOwn').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+  S.joint = b.dataset.v === '1';
+  $('segOwn').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
   renderAll();
 }));
 document.querySelectorAll('.tsw button').forEach((b) => b.addEventListener('click', () => {

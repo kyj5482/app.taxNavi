@@ -1,10 +1,32 @@
 {
   "profile": {
     "name": "김가장",
-    "household": ["본인(해외 주재원)", "배우자", "자녀"],
+    "household": [
+      "본인(해외 주재원)",
+      "배우자",
+      "자녀1(2013년생)",
+      "자녀2(2014년생)"
+    ],
     "residencyStatus": "non_resident_candidate",
     "residencyNote": "2024-07 해외 주재원 발령. 국내 세법상 거주자/비거주자 판정은 국내 가족·자산·체류 등 종합 판단 필요 (소득세법 시행령 §2~4). 판정 결과가 양도세 비과세 가능 여부를 좌우하는 최대 변수.",
-    "asOf": "2026-08-04"
+    "asOf": "2026-08-04",
+    "children": [
+      {
+        "id": "child1",
+        "birthYear": 2013,
+        "birthMonthAssumed": 6,
+        "ageAsOf": "만 13세 (2026-08 기준)",
+        "minorUntil": "2032-06 (만 19세)"
+      },
+      {
+        "id": "child2",
+        "birthYear": 2014,
+        "birthMonthAssumed": 6,
+        "ageAsOf": "만 12세 (2026-08 기준)",
+        "minorUntil": "2033-06 (만 19세)"
+      }
+    ],
+    "childrenNote": "출생월은 확인되지 않아 6월로 가정(만 나이 산정에만 영향). 두 자녀 모두 미성년이므로 증여재산공제는 1인 2,000만원(상증법 §53). 미성년자는 소득요건 적용이 배제되어 독립세대를 구성할 수 없으므로(소득세법 시행령 §152의3) 증여해도 1세대의 주택 수는 줄지 않는다."
   },
   "lawBasis": {
     "statute": {
@@ -24,19 +46,41 @@
     {
       "id": "re-gwacheon",
       "name": "과천자이 25평 A형",
-      "unit": "615동 903호",
       "kind": "house",
       "region": "경기 과천시",
       "adjustedAreaAtAcquisition": true,
       "adjustedAreaNote": "과천시: 2016-11-03 조정대상지역 지정 → 2023-01-05 해제. 취득 당시 조정대상지역 → 비과세에 거주 2년 요건 적용",
-      "ownershipShare": 1.0,
+      "ownershipShare": 0.5,
       "acquisitionType": "presale",
       "events": [
-        { "type": "re.presale_win", "date": "2019-XX-XX", "note": "분양 당첨 (계약일 확인 필요)" },
-        { "type": "re.balance_payment", "date": "2022-01-20", "note": "잔금·입주 = 취득일 (날짜는 가정값, 금액은 확정)", "price": 910000000, "priceNote": "분양가 9.1억원 (사용자 확인)" },
-        { "type": "re.acquisition_tax", "date": "2022-01-20", "rate": 0.03, "amount": 27300000, "note": "취득세율 3% (사용자 확인)" },
-        { "type": "re.move_in", "date": "2022-01-20" },
-        { "type": "re.move_out", "date": "2024-07-05", "note": "해외 주재원 발령 출국" }
+        {
+          "type": "re.presale_win",
+          "date": "2019-XX-XX",
+          "note": "분양 당첨 (계약일 확인 필요)"
+        },
+        {
+          "type": "re.balance_payment",
+          "date": "2022-01-20",
+          "note": "잔금·입주 = 취득일 (날짜는 가정값, 금액은 확정)",
+          "price": 910000000,
+          "priceNote": "분양가 9.1억원 (사용자 확인)"
+        },
+        {
+          "type": "re.acquisition_tax",
+          "date": "2022-01-20",
+          "rate": 0.03,
+          "amount": 27300000,
+          "note": "취득세율 3% (사용자 확인)"
+        },
+        {
+          "type": "re.move_in",
+          "date": "2022-01-20"
+        },
+        {
+          "type": "re.move_out",
+          "date": "2024-07-05",
+          "note": "해외 주재원 발령 출국"
+        }
       ],
       "derived": {
         "acquisitionDate": "2022-01-20",
@@ -52,36 +96,121 @@
         "expectedSalePriceNote": "사용자 입력값. 대시보드에서 수정 가능",
         "officialPrice": 1100000000,
         "officialPriceStatus": "assumed",
-        "officialPriceNote": "615동 903호 공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 조회 후 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가"
-      }
+        "officialPriceNote": "공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 해당 단지를 조회해 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가. 동·호수는 개인 식별 위험이 있어 저장하지 않는다"
+      },
+      "ownershipNote": "부부공동명의 각 50%. 상세는 최상위 ownership 참조"
     },
     {
       "id": "re-sibeom",
       "name": "분당 시범한양 14평형",
-      "unit": "332동 405호",
       "kind": "house",
       "region": "경기 성남시 분당구",
       "reconstruction": {
         "status": "expected",
         "note": "재건축 추진 예정. 사업시행인가 → 관리처분계획인가 → 이주·멸실 → 준공 단계별로 주택 수 판정, 보유세 종류, 양도차익 산정 방식, 상생임대 유효성이 모두 달라진다. 예상 도달 연도는 사용자가 대시보드에서 입력한다.",
         "stages": [
-          { "id": "none", "label": "해당 없음 / 조합설립 전", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": true, "taxEffect": "일반 주택과 동일하게 판정" },
-          { "id": "approval", "label": "사업시행인가", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": true, "taxEffect": "아직 주택. 이 날 이후 취득한 대체주택은 1세대1주택 특례 대상(1년 이상 거주 등)", "basis": "소득세법 시행령 §156의2⑤" },
-          { "id": "management", "label": "관리처분계획인가", "isHouse": false, "isUnitRight": true, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": false, "taxEffect": "주택 → 조합원입주권 전환. 양도차익을 인가일 전후로 분리 산정하고 인가일 이후 기간은 장기보유특별공제 대상 아님. 임대 종료로 상생임대 경로 종료", "basis": "소득세법 시행령 §166①, §156의2" },
-          { "id": "demolished", "label": "이주·멸실", "isHouse": false, "isUnitRight": true, "landTax": true, "jongbuseIncluded": false, "sangsaengAlive": false, "taxEffect": "주택분 재산세 → 토지분 전환, 주택 종부세 합산 제외로 보유세 급감", "basis": "지방세법 §105·§107, 종합부동산세법 §8①" },
-          { "id": "completed", "label": "준공·입주 (신축주택)", "isHouse": true, "isUnitRight": false, "landTax": false, "jongbuseIncluded": true, "sangsaengAlive": false, "priceMultiplier": 1.8, "taxEffect": "신축주택 취득. 기존건물분·청산금분 분리 산정, 보유기간은 기존주택 취득일부터 통산. 추가분담금은 필요경비 가산. 공시가 급등으로 보유세 급증", "basis": "소득세법 시행령 §166②" }
+          {
+            "id": "none",
+            "label": "해당 없음 / 조합설립 전",
+            "isHouse": true,
+            "isUnitRight": false,
+            "landTax": false,
+            "jongbuseIncluded": true,
+            "sangsaengAlive": true,
+            "taxEffect": "일반 주택과 동일하게 판정"
+          },
+          {
+            "id": "approval",
+            "label": "사업시행인가",
+            "isHouse": true,
+            "isUnitRight": false,
+            "landTax": false,
+            "jongbuseIncluded": true,
+            "sangsaengAlive": true,
+            "taxEffect": "아직 주택. 이 날 이후 취득한 대체주택은 1세대1주택 특례 대상(1년 이상 거주 등)",
+            "basis": "소득세법 시행령 §156의2⑤"
+          },
+          {
+            "id": "management",
+            "label": "관리처분계획인가",
+            "isHouse": false,
+            "isUnitRight": true,
+            "landTax": false,
+            "jongbuseIncluded": true,
+            "sangsaengAlive": false,
+            "taxEffect": "주택 → 조합원입주권 전환. 양도차익을 인가일 전후로 분리 산정하고 인가일 이후 기간은 장기보유특별공제 대상 아님. 임대 종료로 상생임대 경로 종료",
+            "basis": "소득세법 시행령 §166①, §156의2"
+          },
+          {
+            "id": "demolished",
+            "label": "이주·멸실",
+            "isHouse": false,
+            "isUnitRight": true,
+            "landTax": true,
+            "jongbuseIncluded": false,
+            "sangsaengAlive": false,
+            "taxEffect": "주택분 재산세 → 토지분 전환, 주택 종부세 합산 제외로 보유세 급감",
+            "basis": "지방세법 §105·§107, 종합부동산세법 §8①"
+          },
+          {
+            "id": "completed",
+            "label": "준공·입주 (신축주택)",
+            "isHouse": true,
+            "isUnitRight": false,
+            "landTax": false,
+            "jongbuseIncluded": true,
+            "sangsaengAlive": false,
+            "priceMultiplier": 1.8,
+            "taxEffect": "신축주택 취득. 기존건물분·청산금분 분리 산정, 보유기간은 기존주택 취득일부터 통산. 추가분담금은 필요경비 가산. 공시가 급등으로 보유세 급증",
+            "basis": "소득세법 시행령 §166②"
+          }
         ]
       },
       "adjustedAreaAtAcquisition": true,
       "adjustedAreaNote": "성남 분당: 조정대상지역 → 2023-01-05 해제. 취득(2022-09) 당시 조정대상지역 → 비과세에 거주 2년 요건 적용 (상생임대로 면제 가능)",
-      "ownershipShare": 1.0,
+      "ownershipShare": 0.5,
       "events": [
-        { "type": "re.purchase_contract", "date": "2022-05-20", "note": "매수 계약 (과천자이 취득 후 1년 이상 경과 여부 확인 필요)" },
-        { "type": "re.balance_payment", "date": "2022-09-15", "note": "잔금 = 취득일", "price": 680000000, "priceNote": "매수가 6.8억원 (사용자 확인)" },
-        { "type": "re.acquisition_tax", "date": "2022-09-15", "rate": 0.08, "amount": 54400000, "note": "취득세율 8% — 취득 당시 조정대상지역 2주택 중과 (사용자 확인)" },
-        { "type": "re.lease_contract", "date": "2022-09-10", "endDate": "2024-06-XX", "note": "잔금 전 임대차 계약 체결 → 직전 임대차계약 (승계계약 아님, 상생임대 판정에 유리)", "isPriorContract": true },
-        { "type": "re.lease_contract", "date": "2024-06-XX", "endDate": "2026-06-XX", "note": "임차인 계약갱신요구권 행사 재계약", "isRenewal": true },
-        { "type": "re.lease_contract", "date": "2026-07-XX", "endDate": "2028-07-XX", "note": "상생임대 목적 재계약 — 보증금·임대료 5% 이내 증액", "isSangsaeng": true, "increaseRate": "≤5%" }
+        {
+          "type": "re.purchase_contract",
+          "date": "2022-05-20",
+          "note": "매수 계약 (과천자이 취득 후 1년 이상 경과 여부 확인 필요)"
+        },
+        {
+          "type": "re.balance_payment",
+          "date": "2022-09-15",
+          "note": "잔금 = 취득일",
+          "price": 680000000,
+          "priceNote": "매수가 6.8억원 (사용자 확인)"
+        },
+        {
+          "type": "re.acquisition_tax",
+          "date": "2022-09-15",
+          "rate": 0.08,
+          "amount": 54400000,
+          "note": "취득세율 8% — 취득 당시 조정대상지역 2주택 중과 (사용자 확인)"
+        },
+        {
+          "type": "re.lease_contract",
+          "date": "2022-09-10",
+          "endDate": "2024-06-XX",
+          "note": "잔금 전 임대차 계약 체결 → 직전 임대차계약 (승계계약 아님, 상생임대 판정에 유리)",
+          "isPriorContract": true
+        },
+        {
+          "type": "re.lease_contract",
+          "date": "2024-06-XX",
+          "endDate": "2026-06-XX",
+          "note": "임차인 계약갱신요구권 행사 재계약",
+          "isRenewal": true
+        },
+        {
+          "type": "re.lease_contract",
+          "date": "2026-07-XX",
+          "endDate": "2028-07-XX",
+          "note": "상생임대 목적 재계약 — 보증금·임대료 5% 이내 증액",
+          "isSangsaeng": true,
+          "increaseRate": "≤5%"
+        }
       ],
       "derived": {
         "acquisitionDate": "2022-09-15",
@@ -100,8 +229,9 @@
         "expectedSalePriceNote": "사용자 입력값. 대시보드에서 수정 가능",
         "officialPrice": 600000000,
         "officialPriceStatus": "assumed",
-        "officialPriceNote": "332동 405호 공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 조회 후 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가"
-      }
+        "officialPriceNote": "공시가격 미확인. realtyprice.kr(부동산공시가격 알리미) → 공동주택 공시가격에서 해당 단지를 조회해 갱신 필요. 이 환경에서는 realtyprice.kr·rt.molit.go.kr 접속이 차단되어 자동 조회 불가. 동·호수는 개인 식별 위험이 있어 저장하지 않는다"
+      },
+      "ownershipNote": "부부공동명의 각 50%. 상세는 최상위 ownership 참조"
     }
   ],
   "criticalIssues": [
@@ -122,13 +252,75 @@
       "title": "개편안: 상생임대 특례에 양도기한 신설",
       "detail": "기존에는 상생임대로 거주요건이 면제되면 양도 시점 제한이 없었으나, 개편안은 상생임대차계약 종료 후 1년(최대 2029-12-31) 내 양도분에만 면제를 적용. 2026-07 계약(2028-07 종료) 기준 양도기한은 2029-07-31.",
       "action": "시범한양을 상생임대 비과세로 양도하려면 2029-07-31까지 양도 완료"
+    },
+    {
+      "severity": "warning",
+      "title": "자녀가 모두 미성년 — 증여로 세대분리·주택 수 감소는 불가",
+      "detail": "2013·2014년생 자녀는 2032·2033년에 성년이 된다. 미성년자는 소득세법 시행령 §152의3의 소득요건 적용에서 제외되어 독립세대를 구성할 수 없으므로, 증여해도 1세대의 주택 수는 줄지 않는다. 증여재산공제도 1인 2,000만원에 그친다.",
+      "action": "주택 수를 줄이려면 증여가 아니라 양도가 필요. 세대 간 이전 자체가 목적이라면 가액이 낮은 시점 증여 vs 공제가 큰 성년 후 증여의 손익분기를 비교 (성년 후 증여 시 자녀 1인당 3,000만원 공제 증가 = 부부 지분 기준 11,640,000원 절감)"
     }
   ],
   "ddays": [
-    { "label": "시범한양 상생임대 거주요건 면제 양도기한 (개편안 신설)", "date": "2029-07-31", "severity": "critical" },
-    { "label": "다주택자 양도세 중과 한시완화 1단계 종료 (2주택 +5%p → +10%p)", "date": "2027-12-31", "severity": "warning" },
-    { "label": "장기보유특별공제 → 장기거주소득공제 개편 시행 (보유공제 축소)", "date": "2028-01-01", "severity": "warning" },
-    { "label": "보유공제 완전 폐지 · 거주공제만 적용 (연 8%, 최대 80%)", "date": "2029-01-01", "severity": "warning" },
-    { "label": "종부세 개편 시행 (기본공제 거주 여부로 차등, 공정비율 70%)", "date": "2027-01-01", "severity": "warning" }
-  ]
+    {
+      "label": "시범한양 상생임대 거주요건 면제 양도기한 (개편안 신설)",
+      "date": "2029-07-31",
+      "severity": "critical"
+    },
+    {
+      "label": "다주택자 양도세 중과 한시완화 1단계 종료 (2주택 +5%p → +10%p)",
+      "date": "2027-12-31",
+      "severity": "warning"
+    },
+    {
+      "label": "장기보유특별공제 → 장기거주소득공제 개편 시행 (보유공제 축소)",
+      "date": "2028-01-01",
+      "severity": "warning"
+    },
+    {
+      "label": "보유공제 완전 폐지 · 거주공제만 적용 (연 8%, 최대 80%)",
+      "date": "2029-01-01",
+      "severity": "warning"
+    },
+    {
+      "label": "종부세 개편 시행 (기본공제 거주 여부로 차등, 공정비율 70%)",
+      "date": "2027-01-01",
+      "severity": "warning"
+    }
+  ],
+  "ownership": {
+    "type": "joint_spouse",
+    "shares": {
+      "본인": 0.5,
+      "배우자": 0.5
+    },
+    "appliesTo": [
+      "re-gwacheon",
+      "re-sibeom"
+    ],
+    "effect": {
+      "capitalGains": "인별 과세(소득세법 §92~§95) → 과세표준·누진세율·기본공제를 각자 적용. 최선 매도안 53,749,601원 → 36,342,870원 (절감 17,406,731원)",
+      "capitalGainsCaveat": "고가주택 12억 판정은 지분가액이 아니라 주택 전체 양도가액 기준. 기본공제는 안분하지 않고 각자 전액(개편안 문답자료 p.49 \"부부공동명의주택의 경우에는 각각 2,500만원 공제\"). 개편안 (8)④ 공제한도는 인별 한도와 양도물건별 한도×지분 중 작은 쪽",
+      "jongbuse": "인별 과세(종합부동산세법 §7①) + 공동소유주택은 각자가 그 주택을 소유한 것으로 봄(시행령 §154의2) → 기본공제를 각자 받아 사실상 2배. 2026년(현행) 2,760,000원 → 0원, 2027년(개편안) 7,630,000원 → 3,210,000원",
+      "jongbuseOption": "공동명의 1주택은 부부 개별 납부(거주 각 9억/비거주 각 4억)와 1세대1주택자 특례 신청(14억/9억) 중 유리한 쪽 선택 가능 (개편안 문답자료 p.42)",
+      "propertyTax": "물건별 과세라 공동명의여도 총액은 동일(4,812,000원). 납부만 지분 안분"
+    }
+  },
+  "giftOptions": {
+    "assumedGiftDate": "2027-06-01",
+    "deductionBasis": "상속세 및 증여세법 §53(증여재산공제, 10년 합산) — 배우자 6억 / 성년 직계비속 5,000만 / 미성년 직계비속 2,000만. 2026년 세제개편안에 변경 없음",
+    "sibeom": {
+      "toSpouse": 15050000,
+      "toChildrenHalf": 71310000,
+      "toChildrenAll": 169780000,
+      "toChildrenAfterAdult": 59670000
+    },
+    "gwacheon": {
+      "toSpouse": 57100000,
+      "toChildrenHalf": 156040000,
+      "toChildrenAll": 393560000,
+      "toChildrenAfterAdult": 144400000
+    },
+    "carryoverWarning": "소득세법 §97의2 이월과세는 배우자뿐 아니라 직계존비속 증여에도 적용된다. 증여 후 10년 내 양도하면 취득가액을 증여자의 원래 취득가로 계산해 절세효과가 소멸한다",
+    "conclusion": "양도(2단계, 36,342,870원)가 모든 증여안보다 저렴하다. 자녀 증여는 미성년 공제가 2,000만원뿐이어서 즉시 비용이 크고, 세대분리도 되지 않아 주택 수를 줄이지 못한다. 배우자 증여는 이미 공동명의라 실익이 없다"
+  }
 }

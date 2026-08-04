@@ -70,28 +70,39 @@ function deductionRate(yHold, yReside, year, isOne, law = 'reform') {
 }
 const pct = (v) => `${Math.round(v * 100)}%`;
 
-/* ── 양도세 ───────────────────────────────────────────────────── */
+/* ── 양도세 ─────────────────────────────────────────────────────
+ * share: 지분비율. 부부공동명의 50%면 0.5.
+ *   - 고가주택 12억 기준은 주택 전체 양도가액으로 판정 (지분이 아님)
+ *   - 과세표준·누진세율·기본공제는 인별로 적용 → 지분 분할의 최대 효과
+ *   - 공제한도(개편안 8④)는 인별 한도와 양도물건별 한도×지분 중 작은 쪽
+ */
 export function capitalGains(o) {
   const {
     salePrice, acqPrice, expenses, yearsHold, yearsReside, year,
     exempt1House = false, isOneHouse = false, resident = true, law = 'reform',
     overseasCredit = 0, surchargePp = 0, noLongDeduction = false,
     isUnitRight = false,       // 조합원입주권 양도 여부
+    share = 1,                 // 이 납세자의 지분
   } = o;
-  const gross = salePrice - acqPrice - expenses;
-  const steps = [
-    ['양도가액', salePrice], ['− 취득가액', -acqPrice],
-    ['− 필요경비(취득세 등)', -expenses], ['= 양도차익', gross],
-  ];
+  const housePrice = salePrice;              // 주택 전체 양도가액 (12억 판정 기준)
+  const mySale = salePrice * share;
+  const gross = Math.floor((salePrice - acqPrice - expenses) * share);
+  const steps = share < 1
+    ? [[`양도가액 (전체 ${(housePrice / EOK).toFixed(2)}억 × 지분 ${Math.round(share * 100)}%)`, mySale],
+       ['− 취득가액 (지분)', -acqPrice * share],
+       ['− 필요경비 (지분)', -expenses * share], ['= 양도차익 (지분)', gross]]
+    : [['양도가액', salePrice], ['− 취득가액', -acqPrice],
+       ['− 필요경비(취득세 등)', -expenses], ['= 양도차익', gross]];
   let taxable;
   if (exempt1House && resident) {
-    if (salePrice <= HIGH_VALUE) {
-      return { tax: 0, local: 0, total: 0, taxable: 0, base: 0, rate: 0,
-        rateLabel: '비과세', steps: [...steps, ['1세대 1주택 비과세 (양도가액 12억 이하)', 0]] };
+    if (housePrice <= HIGH_VALUE) {
+      return { tax: 0, local: 0, total: 0, taxable: 0, base: 0, rate: 0, share,
+        rateLabel: '비과세', steps: [...steps, ['1세대 1주택 비과세 (주택 전체 양도가액 12억 이하)', 0]] };
     }
-    const ratio = (salePrice - HIGH_VALUE) / salePrice;
+    // 12억 판정은 주택 전체 기준 — 공동명의라도 지분가액으로 나눠 판정하지 않는다
+    const ratio = (housePrice - HIGH_VALUE) / housePrice;
     taxable = Math.floor(gross * ratio);
-    steps.push([`× 고가주택 과세비율 (${((salePrice - HIGH_VALUE) / EOK).toFixed(2)}억/${(salePrice / EOK).toFixed(2)}억 = ${(ratio * 100).toFixed(1)}%)`, taxable]);
+    steps.push([`× 고가주택 과세비율 (${((housePrice - HIGH_VALUE) / EOK).toFixed(2)}억/${(housePrice / EOK).toFixed(2)}억 = ${(ratio * 100).toFixed(1)}%)`, taxable]);
   } else {
     taxable = gross;
     if (exempt1House && !resident) steps.push(['비거주자 → 1세대 1주택 비과세 배제 (전액 과세)', taxable]);
@@ -109,22 +120,28 @@ export function capitalGains(o) {
   } else {
     [rate, detail] = deductionRate(yearsHold, yearsReside + overseasCredit, year, isOneHouse && resident, law);
     ded = Math.floor(taxable * rate);
-    const cap = law === 'reform' ? DEDUCTION_CAP[year] : undefined;
-    if (cap && ded > cap) { ded = cap; detail += ` · 공제한도 ${cap / EOK}억 적용`; }
+    // 개편안 (8)④: 인별 한도 + 양도물건별 한도(공동소유는 지분비율로 안분)
+    const cap = law === 'reform' && DEDUCTION_CAP[year]
+      ? Math.min(DEDUCTION_CAP[year], DEDUCTION_CAP[year] * share) : undefined;
+    if (cap && ded > cap) {
+      ded = cap;
+      detail += ` · 공제한도 ${(cap / EOK).toFixed(0)}억 적용${share < 1 ? ` (양도물건별 ${DEDUCTION_CAP[year] / EOK}억 × 지분 ${Math.round(share * 100)}%)` : ''}`;
+    }
     steps.push([`− 장기${year >= 2028 && law === 'reform' ? '거주소득' : '보유특별'}공제 ${pct(rate)} (${detail})`, -ded]);
   }
   const income = taxable - ded;
 
   // 개편안 (9) 10년 이상 거주 + 양도가액 30억 이하 1주택 → 기본공제 2,500만
+  // 문답자료 p.49: "부부공동명의 주택의 경우에는 각각 2,500만원 공제" — 안분하지 않는다
   let basic = 2_500_000;
   if (law === 'reform' && year >= 2027 && resident && isOneHouse
-      && (yearsReside + overseasCredit) >= 10 && salePrice <= 3_000_000_000) {
+      && (yearsReside + overseasCredit) >= 10 && housePrice <= 3_000_000_000) {
     basic = 25_000_000;
-    steps.push(['− 기본공제 (10년 이상 거주 1주택 · 개편안)', -basic]);
-  } else steps.push(['− 기본공제', -basic]);
+    steps.push([`− 기본공제 (10년 이상 거주 1주택 · 개편안)${share < 1 ? ' — 부부공동명의는 각자 전액' : ''}`, -basic]);
+  } else steps.push([`− 기본공제 (인별 연 250만)`, -basic]);
 
   const base = Math.max(income - basic, 0);
-  steps.push(['= 과세표준', base]);
+  steps.push(['= 과세표준 (인별)', base]);
   let tax = basicRateTax(base);
   let label = bracketLabel(base);
   if (surchargePp) {
@@ -134,8 +151,17 @@ export function capitalGains(o) {
   } else steps.push([`× 기본세율 ${label} (누진공제 적용)`, tax]);
   const local = Math.floor(tax * 0.1);
   steps.push(['+ 지방소득세 10%', local]);
-  steps.push(['= 총 예상세액', tax + local]);
-  return { tax, local, total: tax + local, taxable, base, rate, rateLabel: label, steps };
+  steps.push([share < 1 ? '= 1인분 세액' : '= 총 예상세액', tax + local]);
+  return { tax, local, total: tax + local, taxable, base, rate, rateLabel: label, share, steps };
+}
+
+/** 부부공동명의 양도 — 각 배우자를 인별로 계산해 합산.
+ *  누진세율·기본공제가 인별로 적용되므로 단독명의보다 유리하다. */
+export function capitalGainsJoint(o, shares = [0.5, 0.5]) {
+  const parts = shares.map((s) => capitalGains({ ...o, share: s }));
+  const total = parts.reduce((a, p) => a + p.total, 0);
+  return { total, parts, rate: parts[0].rate, rateLabel: parts[0].rateLabel,
+    solo: capitalGains({ ...o, share: 1 }) };
 }
 
 /* ── 종합부동산세 ─────────────────────────────────────────────── */
@@ -143,6 +169,21 @@ const JB_RATES_CUR = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, 
   [2_500_000_000, .013], [5_000_000_000, .015], [9_400_000_000, .020], [Infinity, .027]];
 const JB_RATES_REF = [[300_000_000, .005], [600_000_000, .007], [1_200_000_000, .013],
   [2_500_000_000, .015], [5_000_000_000, .020], [9_400_000_000, .027], [Infinity, .035]];
+
+/** 종부세는 인별 과세 (종부세법 §7①). 공동명의는 각자 지분만큼 보유한 것으로 보고
+ *  각자 기본공제를 받는다 → 부부공동명의 2주택이면 기본공제가 사실상 2배.
+ *  문답자료 p.42: 공동명의 1주택은 "부부 개별 납부(각 9억/4억)" 또는
+ *  "1세대1주택자 특례 신청(14억/9억)" 중 유리한 쪽 선택 가능. */
+export function jongbuseJoint(prices, { law = 'reform', residentHousePrice = 0, shares = [0.5, 0.5] } = {}) {
+  const parts = shares.map((s) => jongbuse(prices.map((p) => p * s), {
+    law, residentHousePrice: residentHousePrice * s,
+  }));
+  return { tax: parts.reduce((a, p) => a + p.tax, 0), parts,
+    basic: parts.reduce((a, p) => a + p.basic, 0),
+    base: parts.reduce((a, p) => a + p.base, 0),
+    fair: parts[0].fair, count: parts[0].count,
+    total: prices.filter((p) => p > 0).reduce((a, b) => a + b, 0) };
+}
 
 export function jongbuse(prices, { law = 'reform', residentHousePrice = 0 } = {}) {
   const list = prices.filter((p) => p > 0);
@@ -224,6 +265,49 @@ export function stageAt(schedule, year) {
 export function holdYears(acqDate, year, month = 7) {
   const [y, m] = acqDate.split('-').map(Number);
   return (year - y) + (month - m) / 12;
+}
+
+/* ── 증여세 (상증법 §53, §56, §57, §69) ──────────────────────────
+ * 증여재산공제 (10년 합산): 배우자 6억 / 성년 직계비속 5,000만 / 미성년 2,000만
+ * 세대생략 할증 30% (§57) — 조부모→손자녀. 부모→자녀는 해당 없음.
+ */
+export const GIFT_TIERS = [
+  [100_000_000, 0.10, 0], [500_000_000, 0.20, 10_000_000],
+  [1_000_000_000, 0.30, 60_000_000], [3_000_000_000, 0.40, 160_000_000],
+  [Infinity, 0.50, 460_000_000],
+];
+export const GIFT_DEDUCTION = { spouse: 600_000_000, adultChild: 50_000_000, minorChild: 20_000_000 };
+
+/** 만 나이 (증여일 기준). 미성년 = 만 19세 미만 */
+export function ageAt(birthYear, onDate, birthMonth = 6) {
+  const [y, m] = onDate.split('-').map(Number);
+  return (y - birthYear) - (m < birthMonth ? 1 : 0);
+}
+
+/** 증여세 계산.
+ *  value: 증여재산가액(지분가액), deduction: 증여재산공제,
+ *  generationSkip: 세대생략 할증 30% 여부, acqTaxRate: 무상취득 취득세율 */
+export function giftTax(value, { deduction = 0, generationSkip = false, acqTaxRate = 0.035 } = {}) {
+  const base = Math.max(value - deduction, 0);
+  let gross = 0;
+  for (const [cap, rate, ded] of GIFT_TIERS) if (base <= cap) { gross = Math.max(Math.floor(base * rate - ded), 0); break; }
+  const surcharge = generationSkip ? Math.floor(gross * 0.30) : 0;
+  const beforeCredit = gross + surcharge;
+  const credit = Math.floor(beforeCredit * 0.03);           // 신고세액공제 3% (§69)
+  const giftDue = beforeCredit - credit;
+  const acqTax = Math.floor(value * acqTaxRate);            // 무상취득 취득세 3.5% (지방세법 §11①2)
+  return { value, deduction, base, gross, surcharge, credit, giftDue, acqTax,
+    total: giftDue + acqTax, effectiveRate: value ? (giftDue + acqTax) / value : 0 };
+}
+
+/** 지분을 여러 수증자에게 쪼개 증여할 때의 합계.
+ *  recipients: [{label, value, deduction, generationSkip}] */
+export function giftSplit(recipients) {
+  const parts = recipients.map((r) => ({ ...r, calc: giftTax(r.value, r) }));
+  return { parts, total: parts.reduce((a, p) => a + p.calc.total, 0),
+    giftDue: parts.reduce((a, p) => a + p.calc.giftDue, 0),
+    acqTax: parts.reduce((a, p) => a + p.calc.acqTax, 0),
+    value: parts.reduce((a, p) => a + p.value, 0) };
 }
 
 export const won = (v) => `${Math.round(v).toLocaleString('ko-KR')}`;
