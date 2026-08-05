@@ -209,6 +209,12 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
       <div class="conv" id="sOffC"></div>
       <div class="hint"><a href="https://www.realtyprice.kr/notice/town/searchPastRoadNameCode.htm" target="_blank" rel="noopener">공동주택 공시가격 조회 →</a></div>
     </div>
+    <div class="field">
+      <label>공시가격 연 상승률 <span class="req">가정</span></label>
+      <input id="offGrowth" type="number" step="1" min="-20" max="60" value="30">
+      <div class="conv" id="offGrowthC"></div>
+      <div class="hint">2026년 확인값을 기준으로 매년 복리 적용. 보유세만 바뀌고 양도세는 매도가 기준이라 영향 없음</div>
+    </div>
   </div>
   <div class="toggle-row">
     <span class="lbl">거주자 신분</span>
@@ -226,14 +232,20 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
       <button data-v="1" class="on">부부공동명의 (각 50%)</button>
       <button data-v="0">단독명의</button>
     </div>
+    <span class="lbl" style="margin-left:12px">조정대상지역</span>
+    <div class="seg" id="segAdj">
+      <button data-v="0" class="on">해제 상태 (현재)</button>
+      <button data-v="1">재지정 시 (공정비율 80%)</button>
+    </div>
   </div>
   <div class="alert info" style="margin:14px 0 0" id="ownAlert"></div>
   <div class="alert warning" style="margin:14px 0 0">
     <span class="ic">!</span>
-    <span>공시가격은 자동 조회가 불가해 <b>가정값</b>입니다.
+    <span>공시가격은 <b>2026-01-01 기준 확인값</b>이고, <b>연 상승률은 가정치</b>입니다.
+      공시가는 매년 3월에 새로 발표되므로
       <a href="https://www.realtyprice.kr/" target="_blank" rel="noopener"><b>부동산공시가격 알리미 (realtyprice.kr)</b></a>
-      → 공동주택 공시가격에서 조회한 값을 위 칸에 넣으면 보유세가 정확해집니다.
-      재산세는 공정시장가액비율 60%·도시지역분·지방교육세를 포함한 개산치입니다.</span>
+      에서 확인한 값으로 매년 갱신하는 것이 정확합니다.
+      재산세는 공정시장가액비율 60%·도시지역분·지방교육세를 포함한 개산치이며, 과세표준상한제(지방세법 §110③)를 반영합니다.</span>
   </div>
 </div>
 
@@ -320,7 +332,7 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
 
 <script type="module">
 import { capitalGains, capitalGainsJoint, jongbuse, jongbuseJoint, propertyTax,
-         STAGES, stageById, stageAt, holdYears, won, EOK, SURCHARGE_2H,
+         officialAt, STAGES, stageById, stageAt, holdYears, won, EOK, SURCHARGE_2H,
          giftTax, giftSplit, ageAt, GIFT_DEDUCTION } from './engine.js';
 
 const YEARS = [2026, 2027, 2028, 2029];
@@ -330,6 +342,11 @@ const S = {
   gSale: 2_100_000_000, sSale: 1_300_000_000,
   // 2026-01-01 기준 공동주택 공시가격 (사용자 확인값)
   gOff: 1_307_000_000, sOff: 600_000_000,
+  // 공시가격 연 상승률. 2026년을 기준연도로 두고 이후 연도에 복리로 적용한다.
+  offGrowth: 0.30,
+  // 조정대상지역 주택 보유 여부 → 개편안 (4) 공정시장가액비율 80% 트랙 판정
+  // 과천·분당은 2023-01-05 해제 상태이나, 재지정되면 '28년 80%가 적용되므로 토글로 둔다.
+  adjusted: false,
   resident: true, sangsaeng: true, joint: true,
   // 시범한양 재건축 예정: '27년 사업시행인가 → '29년 관리처분계획인가
   stages: { 2026: 'none', 2027: 'approval', 2028: 'approval', 2029: 'management' },
@@ -389,22 +406,33 @@ function sTwo(year) {
 /* prior: 직전연도 보유세(재산세+종부세). 개편안 (7) 세부담 상한 200% 판정에 쓰인다.
    상한은 "직전연도 총 보유세상당액 × 상한율"을 당해연도 보유세 총액의 천장으로 두므로
    연도별 계산이 앞 연도 결과에 의존한다 → holdingRows()로 순차 계산한다. */
+const BASE_YEAR = 2026;                                  // 공시가 기준연도 (2026-01-01 고시)
+/** 해당 연도의 공시가격 — 기준연도 확인값에 상승률을 복리로 적용한다. */
+const offOf = (key, year) => officialAt(S[key], BASE_YEAR, year, S.offGrowth);
+
 function holding(year, prior = { total: 0, oneHouseTotal: 0, soloTotal: 0 }) {
   const st = stageAt(S.stages, year);
   const law = year === 2026 ? 'current' : 'reform';
-  const sOffEff = (st.priceMultiplier || 1) * S.sOff;
-  const ptG = propertyTax(S.gOff);
-  const ptS = propertyTax(sOffEff, { asLand: st.landTax });
-  const prices = st.jongbuseIncluded ? [S.gOff, sOffEff] : [S.gOff];
+  const gOff = offOf('gOff', year);
+  const sOffEff = (st.priceMultiplier || 1) * offOf('sOff', year);
+  // 재산세 과세표준상한제(지방세법 §110③)는 직전연도 공시가가 있어야 판정된다.
+  // 기준연도(2026)는 직전연도 값을 모르므로 상한을 적용하지 않는다.
+  const prevSt = year > BASE_YEAR ? stageAt(S.stages, year - 1) : null;
+  const gPrev = year > BASE_YEAR ? offOf('gOff', year - 1) : null;
+  const sPrev = prevSt ? (prevSt.priceMultiplier || 1) * offOf('sOff', year - 1) : null;
+  const ptG = propertyTax(gOff, { priorOfficialPrice: gPrev });
+  const ptS = propertyTax(sOffEff, { asLand: st.landTax, priorOfficialPrice: sPrev });
+  const prices = st.jongbuseIncluded ? [gOff, sOffEff] : [gOff];
   const ptAll = ptG.total + ptS.total;
-  const opt = { law, year, residentHousePrice: S.resident ? S.gOff : 0, shares: SHARES(),
-    adjustedArea: false,   // 과천·분당 모두 2023-01-05 조정대상지역 해제 → 80% 트랙 아님
+  const opt = { law, year, residentHousePrice: S.resident ? gOff : 0, shares: SHARES(),
+    // 개편안 (4): 3주택 이상 또는 조정대상지역 주택 보유(1세대1주택자 제외) → '28년 80%
+    adjustedArea: S.adjusted,
     holdYearsVal: holdYears(G.acqDate, year), resideYearsVal: S.resident ? G.reside : 0 };
   // propertyTaxCredit은 넘기지 않는다 → 엔진이 과세표준 대응분(종부법 §9③)을 자동 개산
   const jb = jongbuseJoint(prices, { ...opt, priorHoldingTax: prior.total, propertyTaxThisYear: ptAll });
-  const jb1 = jongbuseJoint([S.gOff], { ...opt, priorHoldingTax: prior.oneHouseTotal, propertyTaxThisYear: ptG.total });
+  const jb1 = jongbuseJoint([gOff], { ...opt, priorHoldingTax: prior.oneHouseTotal, propertyTaxThisYear: ptG.total });
   const jbSolo = jongbuseJoint(prices, { ...opt, priorHoldingTax: prior.soloTotal, propertyTaxThisYear: ptAll }).solo;
-  return { year, law, st, ptG, ptS, jb, jb1, jbSolo,
+  return { year, law, st, ptG, ptS, jb, jb1, jbSolo, gOff, sOff: sOffEff,
     total: ptAll + jb.tax, oneHouseTotal: ptG.total + jb1.tax,
     soloTotal: ptAll + jbSolo.tax };
 }
@@ -429,6 +457,8 @@ const nm = (k) => (k === 'g' ? G.short : Sb.short);
 
 function renderConv() {
   for (const k of ['gAcq', 'sAcq', 'gSale', 'sSale', 'gOff', 'sOff']) $(`${k}C`).textContent = fmtEok(S[k]);
+  $('offGrowthC').textContent = S.offGrowth === 0 ? '동결 (상승 없음)'
+    : `연 ${(S.offGrowth * 100).toFixed(0)}% → 2029년 과천자이 ${fmtEok(offOf('gOff', 2029))} · 시범한양 ${fmtEok(offOf('sOff', 2029))}`;
   const b = allCombos()[0], hold = holdingRows();
   const cgSave = b.a.solo && b.b.solo ? (b.a.solo.total + b.b.solo.total) - b.total : 0;
   const jbSave = hold.reduce((a, r) => a + (r.soloTotal - r.total), 0);
@@ -485,8 +515,9 @@ function renderHoldTable() {
   t.innerHTML = `
     <thead><tr><th>항목</th>${rows.map((r) => `<th class="yr">${r.year}<div class="sm">${r.law === 'current' ? '현행' : '개편안'}</div></th>`).join('')}</tr></thead>
     <tbody>
-      <tr class="clickable" data-m="pt-g"><td>과천자이 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptG.total)}</td>`).join('')}</tr>
-      <tr class="clickable" data-m="pt-s"><td>시범한양 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptS.total)}<div class="sm">${r.ptS.kind}</div></td>`).join('')}</tr>
+      <tr class="clickable" data-m="off"><td>공시가격<div class="sm">${S.offGrowth ? `연 ${(S.offGrowth * 100).toFixed(0)}% 상승 가정` : '동결 가정'}</div></td>${rows.map((r) => `<td class="yc num">${fmtEok(r.gOff + r.sOff)}<div class="sm">${fmtEok(r.gOff)} + ${fmtEok(r.sOff)}</div></td>`).join('')}</tr>
+      <tr class="clickable" data-m="pt-g"><td>과천자이 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptG.total)}${r.ptG.baseCapped ? '<div class="sm" style="color:var(--success)">과표상한 적용</div>' : ''}</td>`).join('')}</tr>
+      <tr class="clickable" data-m="pt-s"><td>시범한양 재산세</td>${rows.map((r) => `<td class="yc num">${W(r.ptS.total)}<div class="sm">${r.ptS.kind}${r.ptS.baseCapped ? ' · 과표상한' : ''}</div></td>`).join('')}</tr>
       <tr class="clickable" data-m="jb"><td>종합부동산세<div class="sm">2주택 · ${S.resident ? '과천자이 거주' : '모두 비거주'}${S.joint ? ' · 부부 각각 납부' : ''}</div></td>${rows.map((r) => `<td class="yc num">${W(r.jb.tax)}<div class="sm">공제 ${(r.jb.basic / EOK).toFixed(1)}억${S.joint ? ' (2인 합)' : ''}·${Math.round(r.jb.fair * 100)}%</div></td>`).join('')}</tr>
       <tr class="total"><td>2주택 유지 시 연 보유세</td>${rows.map((r, i) => `<td class="yc"><span class="big num">${W(r.total)}</span>${i ? `<div class="sm" style="color:${r.total > rows[0].total ? 'var(--danger)' : 'var(--success)'}">${r.total >= rows[0].total ? '+' : ''}${W(r.total - rows[0].total)}</div>` : ''}</td>`).join('')}</tr>
       <tr class="clickable" data-m="jb1"><td>과천자이 1주택 시<div class="sm">시범한양 처분 후</div></td>${rows.map((r) => `<td class="yc num" style="color:var(--success);font-weight:700">${W(r.oneHouseTotal)}</td>`).join('')}</tr>
@@ -503,8 +534,12 @@ function renderHoldTable() {
     ${S.resident ? '' : '<b style="color:var(--danger)">비거주 상태에서는 거주주택 가산분 5억을 전혀 받지 못해 각자 4억(부부 합 8억)으로 고정됩니다.</b> '}
     또한 개편안 (2)는 <b>과세대상 문턱</b>을 신설해 1세대1주택자는 공시가 합 14억, 그 외는 9억을 <b>초과</b>할 때만 납세의무가 성립합니다(종부법 §7①) —
     ${S.joint ? `공동명의 개별납부 시 각자 귀속 공시가가 ${(p27.total / EOK).toFixed(2)}억이라 ${p27.taxable ? '문턱을 넘어 과세됩니다' : '<b style="color:var(--success)">문턱 9억 이하로 과세대상이 아닙니다</b>'}. ` : ''}
-    공정시장가액비율은 60%→70%(3주택 이상·조정대상지역 보유자는 '28년 80%, 1세대1주택자 제외)로 오릅니다.
-    과천·분당은 2023-01-05 조정대상지역이 해제되어 80% 트랙에 해당하지 않습니다.`;
+    공정시장가액비율은 60%→70%(3주택 이상·조정대상지역 보유자는 '28년 80%, 1세대1주택자 제외)로 오릅니다 —
+    ${S.adjusted ? `<b style="color:var(--danger)">조정대상지역 재지정을 가정했으므로 '28년부터 80% 트랙이 적용됩니다</b>(${rows.map((r) => `${r.year}년 ${Math.round(r.jb.fair * 100)}%`).join(' · ')}).`
+      : `과천·분당은 2023-01-05 조정대상지역이 해제되어 <b>70% 트랙</b>입니다. 재지정되면 '28년 80%가 되므로 위 토글로 확인할 수 있습니다.`}<br>
+    <b>재산세에는 과세표준상한제가 있습니다 (지방세법 §110③)</b> — 주택 과세표준은 「직전연도 공시가×공정비율 + 당해 공시가×공정비율×5%」를 넘지 못합니다(시행령 §109의2, 상한율 5%).
+    ${S.offGrowth > 0.05 ? `<b style="color:var(--success)">공시가 연 ${(S.offGrowth * 100).toFixed(0)}% 상승 가정에서는 이 상한이 매년 걸려 재산세 증가가 크게 완충됩니다.</b>` : ''}
+    반면 <b>종부세에는 이 상한이 없고</b> 세부담 상한(직전연도 보유세의 ${S.offGrowth ? '200%' : '150~200%'})만 있어, 공시가 상승은 종부세에 훨씬 빠르게 반영됩니다.`;
   return rows;
 }
 
@@ -820,16 +855,43 @@ function openOrderModal(c) {
 }
 
 function openHoldModal(kind, rows) {
+  if (kind === 'off') {
+    const g = (r) => (r.year === 2026 ? '기준' : `×${((1 + S.offGrowth) ** (r.year - 2026)).toFixed(3)}`);
+    open('공시가격 추정', `2026년 확인값에 연 ${(S.offGrowth * 100).toFixed(0)}% 상승률을 복리 적용`, `
+      <table><thead><tr><th>연도</th><th class="r">과천자이</th><th class="r">시범한양</th><th class="r">합계</th><th>누적배수</th><th class="r">1인 귀속</th><th>종부세 문턱</th></tr></thead>
+      <tbody>${rows.map((r) => { const p0 = r.jb.parts[0]; return `
+        <tr><td>${r.year}</td><td class="r num">${won(r.gOff)}</td><td class="r num">${won(r.sOff)}</td>
+        <td class="r num"><b>${won(r.gOff + r.sOff)}</b></td><td class="num" style="font-size:.78rem">${g(r)}</td>
+        <td class="r num">${(p0.total / EOK).toFixed(2)}억</td>
+        <td class="num" style="font-size:.78rem">${r.law === 'current' ? '—'
+          : `${(p0.threshold / EOK).toFixed(0)}억 <b style="color:var(--${p0.taxable ? 'danger' : 'success'})">${p0.taxable ? '초과→과세' : '이하→제외'}</b>`}</td></tr>`; }).join('')}</tbody></table>
+      <div class="quote"><b>공시가격은 매년 1월 1일 기준으로 새로 결정됩니다</b>(부동산 가격공시에 관한 법률 §18).
+        위 표는 2026-01-01 확인값을 기준으로 입력한 상승률을 복리 적용한 <b>가정치</b>이며, 실제 공시가는 매년 3월 발표됩니다.<br>
+        <b>공시가 상승이 세금에 전달되는 경로는 두 가지가 다릅니다.</b>
+        재산세는 <b>과세표준상한제</b>(지방세법 §110③)가 있어 과세표준이 「직전연도 공시가×60% + 당해 공시가×60%×5%」를 넘지 못해 상승이 완충되지만,
+        종부세는 과세표준상한제가 없어 공시가 상승이 <b>기본공제 초과분에 그대로 반영</b>됩니다(세부담 상한 200%만 작동).
+        <b>양도세는 매도가 기준</b>이라 공시가 상승률과 무관합니다.
+        <span class="src">근거: 지방세법 §110③·시행령 §109의2(과세표준상한율 5%) / 종부세법 §8①·§9 / 부동산 가격공시에 관한 법률 §18 · 상승률은 사용자 입력 가정치</span></div>`);
+    return;
+  }
   if (kind === 'pt-g' || kind === 'pt-s') {
     const isG = kind === 'pt-g';
     open(`${isG ? G.name : Sb.name} 재산세`, '공시가격 기준 개산 · 연도 비교', `
-      <table><thead><tr><th>연도</th><th>구분</th><th class="r">과세표준</th><th class="r">재산세</th><th class="r">지방교육세</th><th class="r">도시지역분</th><th class="r">합계</th></tr></thead>
-      <tbody>${rows.map((r) => { const p = isG ? r.ptG : r.ptS; return `
-        <tr><td>${r.year}</td><td>${p.kind}</td><td class="r num">${won(p.base)}</td><td class="r num">${won(p.main)}</td>
+      <table><thead><tr><th>연도</th><th>구분</th><th class="r">공시가격</th><th class="r">공시가×60%</th><th class="r">과표상한액</th><th class="r">과세표준</th><th class="r">재산세</th><th class="r">지방교육세</th><th class="r">도시지역분</th><th class="r">합계</th></tr></thead>
+      <tbody>${rows.map((r) => { const p = isG ? r.ptG : r.ptS; const off = isG ? r.gOff : r.sOff; return `
+        <tr><td>${r.year}</td><td>${p.kind}</td><td class="r num">${won(off)}</td>
+        <td class="r num" style="color:var(--text-muted)">${won(p.rawBase ?? p.base)}</td>
+        <td class="r num" style="color:var(--text-muted)">${p.baseCap === null ? '—' : won(p.baseCap)}</td>
+        <td class="r num">${won(p.base)}${p.baseCapped ? '<div class="sm" style="color:var(--success)">상한 적용</div>' : ''}</td>
+        <td class="r num">${won(p.main)}</td>
         <td class="r num">${won(p.edu)}</td><td class="r num">${won(p.city)}</td><td class="r num"><b>${W(p.total)}</b></td></tr>`; }).join('')}</tbody></table>
-      <div class="quote"><b>계산 방식</b> — 주택분: 공시가격 × 공정시장가액비율 60% = 과세표준, 4단계 누진세율(0.1~0.4%) 적용. 지방교육세는 재산세의 20%, 도시지역분은 과세표준의 0.14%.
-        ${!isG ? '<br><b>멸실 후</b>에는 건물이 없어져 주택분이 아닌 <b>토지분</b> 재산세로 전환됩니다(별도합산 0.2% 개산, 공정비율 70%).' : ''}
-        <span class="src">근거: 지방세법 §110(과세표준), §111(세율), §112(도시지역분) · 1세대 1주택 공정시장가액비율 특례(43~45%)는 반영하지 않은 보수적 개산치</span></div>`);
+      <div class="quote"><b>계산 방식</b> — 주택분: 공시가격 × 공정시장가액비율 60% = 과세표준, 4단계 누진세율(0.1~0.4%) 적용. 지방교육세는 재산세의 20%, 도시지역분은 과세표준의 0.14%.<br>
+        <b>과세표준상한제 (지방세법 §110③, 신설 2023.3.14)</b> — 공시가가 급등해도 과세표준은
+        「<b>직전연도 공시가 × 60% + 당해 공시가 × 60% × 5%</b>」를 넘지 못합니다(상한율 5%는 시행령 §109의2②).
+        ${rows.some((r) => (isG ? r.ptG : r.ptS).baseCapped) ? '<b style="color:var(--success)">현재 상승률 가정에서 이 상한이 실제로 걸려 재산세 증가가 완충되고 있습니다.</b>' : '현재 상승률 가정에서는 상한에 걸리지 않습니다.'}
+        참고로 지방세법 §122의 세부담상한 150%는 단서에서 <b>주택을 제외</b>하므로, 주택 재산세에는 §110③ 과세표준상한제만 적용됩니다.
+        ${!isG ? '<br><b>멸실 후</b>에는 건물이 없어져 주택분이 아닌 <b>토지분</b> 재산세로 전환됩니다(별도합산 0.2% 개산, 공정비율 70%). 토지는 과세표준상한제 대상이 아닙니다.' : ''}
+        <span class="src">근거: 지방세법 §110(과세표준)·§111(세율)·§112(도시지역분)·§122(세부담상한, 주택 제외), 지방세법 시행령 §109(공정시장가액비율 60%)·§109의2(과세표준상한율 5%) · 1세대 1주택 공정시장가액비율 특례(43~45%)는 반영하지 않은 보수적 개산치</span></div>`);
     return;
   }
   const one = kind === 'jb1';
@@ -1015,6 +1077,18 @@ $('segOwn').querySelectorAll('button').forEach((b) => b.addEventListener('click'
   $('segOwn').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
   renderAll();
 }));
+$('segAdj').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
+  S.adjusted = b.dataset.v === '1';
+  $('segAdj').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  renderAll();
+}));
+// 공시가 상승률은 %로 입력받아 비율로 보관한다
+$('offGrowth').addEventListener('input', () => {
+  const v = Number($('offGrowth').value);
+  if (!Number.isFinite(v)) return;
+  S.offGrowth = Math.max(-0.20, Math.min(v, 60) / 100);
+  renderAll();
+});
 document.querySelectorAll('.tsw button').forEach((b) => b.addEventListener('click', () => {
   document.documentElement.dataset.theme = b.dataset.t;
   document.querySelectorAll('.tsw button').forEach((x) => x.classList.toggle('active', x === b));

@@ -581,24 +581,39 @@ def jongbuse_joint(official_prices, year, *, shares=(0.5, 0.5), **kw):
             "totalOfficial": sum(official_prices), "houseCount": house_count}
 
 
-def property_tax(official_price, *, one_house_under_900m=False, as_land=False):
+def property_tax(official_price, *, one_house_under_900m=False, as_land=False,
+                 prior_official_price=None):
     """재산세 개산. 지방세법 §111, 공정시장가액비율 60%(1주택 특례 43~45% 별도).
     도시지역분·지방교육세 포함 개산치.
 
     as_land: 재건축 멸실 후. 건물이 없어지면 주택분이 아니라 토지분으로 과세된다
-        (지방세법 §105·§107) → 별도합산 0.2~0.4% 개산, 공정비율 70%."""
+        (지방세법 §105·§107) → 별도합산 0.2~0.4% 개산, 공정비율 70%.
+
+    prior_official_price: 직전연도 공시가격. 주면 지방세법 §110③ 주택 과세표준상한제를 적용한다.
+        ★ 공시가 급등 시나리오에서는 이 상한이 세액을 지배한다:
+            과세표준상한액 = 직전연도 공시가 × 공정비율 + (당해 공시가 × 공정비율 × 5%)
+          상한율 5%는 지방세법 시행령 §109의2②. 공시가가 30% 올라도 과세표준은 그만큼
+          오르지 않으므로, 상한을 넣지 않으면 재산세를 크게 과대계상한다.
+          (§122 세부담상한 150%는 단서에서 주택을 제외하므로 주택엔 §110③만 적용된다)"""
     if official_price <= 0:
         return {"taxBase": 0, "propertyTax": 0, "eduTax": 0, "cityTax": 0,
-                "total": 0, "kind": "없음"}
+                "total": 0, "kind": "없음", "baseCapped": False, "baseCap": None}
     if as_land:
         base = int(official_price * 0.70)
         tax = int(base * 0.002)
         edu = int(tax * 0.2)
         city = int(base * 0.0014)
+        # 토지는 과세표준상한제 대상이 아니다 (지방세법 §110③은 주택만)
         return {"taxBase": base, "propertyTax": tax, "eduTax": edu, "cityTax": city,
-                "total": tax + edu + city, "kind": "토지분"}
+                "total": tax + edu + city, "kind": "토지분",
+                "baseCapped": False, "baseCap": None}
     fair = 0.60
-    base = int(official_price * fair)
+    raw = int(official_price * fair)
+    base, base_cap, base_capped = raw, None, False
+    if prior_official_price:
+        base_cap = int(prior_official_price * fair) + int(official_price * fair * 0.05)
+        if raw > base_cap:
+            base, base_capped = base_cap, True
     tiers = [(60_000_000, .001, 0), (150_000_000, .0015, 30_000),
              (300_000_000, .0025, 180_000), (float("inf"), .004, 630_000)]
     for cap, rate, ded in tiers:
@@ -607,12 +622,35 @@ def property_tax(official_price, *, one_house_under_900m=False, as_land=False):
             break
     edu = int(tax * 0.2)            # 지방교육세 20%
     city = int(base * 0.0014)       # 도시지역분 0.14%
-    return {"taxBase": base, "propertyTax": tax, "eduTax": edu, "cityTax": city,
-            "total": tax + edu + city, "kind": "주택분"}
+    return {"taxBase": base, "rawTaxBase": raw, "propertyTax": tax, "eduTax": edu,
+            "cityTax": city, "total": tax + edu + city, "kind": "주택분",
+            "baseCapped": base_capped, "baseCap": base_cap, "fairRatio": fair}
+
+
+# ── 공시가격 상승 가정 ─────────────────────────────────────────────
+# 공시가격은 매년 1월 1일 기준으로 새로 결정된다(부동산 가격공시에 관한 법률 §18).
+# 사용자 입력값은 2026-01-01 기준 확인값이므로 이후 연도는 상승률을 복리로 적용한다.
+OFFICIAL_BASE_YEAR = 2026
+OFFICIAL_GROWTH = 0.30          # 사용자 가정: 연 30% 상승
+
+# 개편안 (4) 공정시장가액비율 80% 트랙 판정용 (종부법 §13①②, 종부령 §2의4).
+# 요건은 "3주택 이상 또는 조정대상지역 주택 보유(1세대1주택자 제외)"뿐이다.
+# 과천·분당은 2023-01-05 조정대상지역 해제 상태이므로 기본값은 False(70% 트랙)이고,
+# 재지정 시 '28년부터 80%가 적용된다. ※ 비거주자 여부는 이 트랙의 요건이 아니다.
+ADJUSTED_AREA = False
+
+
+def official_at(base_price, year, growth=OFFICIAL_GROWTH, base_year=OFFICIAL_BASE_YEAR):
+    if not growth or year <= base_year:
+        return base_price
+    return round(base_price * (1 + growth) ** (year - base_year))
 
 
 OFFICIAL = [GWACHEON["official_price"], SIBEOM["official_price"]]
+# 아래는 공시가 상승을 배제한 '기준연도(2026) 공시가 고정' 비교표다 — 법 개정 효과만 분리해서 본다.
+# 상승률을 반영한 실제 예상 보유세는 holding_tax_timeline을 쓴다.
 results["jongbuse"] = {
+    "note": "공시가격 2026-01-01 확인값 고정 (상승률 미반영) — 법 개정 효과 분리용",
     "official": OFFICIAL,
     "current_2026": jongbuse(OFFICIAL, 2026, resident_house_price=0, law="current"),
     "reform_2027_no_residence": jongbuse(OFFICIAL, 2027, resident_house_price=0),
@@ -630,25 +668,34 @@ prior = {"two": 0, "one": 0, "solo": 0}
 for year in (2026, 2027, 2028, 2029):
     law = "current" if year == 2026 else "reform"
     st = stage_at(year)
+    # 공시가격은 매년 새로 고시된다 → 기준연도(2026) 확인값에 상승률을 복리 적용
+    g_off = official_at(GWACHEON["official_price"], year)
     # 재건축 단계에 따라 시범한양의 재산세 종류·종부세 합산 여부가 달라진다
-    s_off = SIBEOM["official_price"] * st["mult"]
-    pt_g = property_tax(GWACHEON["official_price"])
-    pt_s = property_tax(s_off, as_land=st["land_tax"])
+    s_off = official_at(SIBEOM["official_price"], year) * st["mult"]
+    # 재산세 과세표준상한제(지방세법 §110③)는 직전연도 공시가가 있어야 판정된다.
+    # 기준연도(2026)는 직전연도를 모르므로 상한을 적용하지 않는다.
+    prev_st = stage_at(year - 1) if year > OFFICIAL_BASE_YEAR else None
+    g_prev = official_at(GWACHEON["official_price"], year - 1) if prev_st else None
+    s_prev = official_at(SIBEOM["official_price"], year - 1) * prev_st["mult"] if prev_st else None
+    pt_g = property_tax(g_off, prior_official_price=g_prev)
+    pt_s = property_tax(s_off, as_land=st["land_tax"], prior_official_price=s_prev)
     pt_both = pt_g["total"] + pt_s["total"]
-    prices = [OFFICIAL[0], s_off] if st["jongbuse"] else [OFFICIAL[0]]
+    prices = [g_off, s_off] if st["jongbuse"] else [g_off]
     # 종부세는 인별 과세 → 부부공동명의는 각자 지분·각자 기본공제로 계산해 합산
-    jbkw = dict(law=law, prior_holding_tax=prior["two"], property_tax_this_year=pt_both)
+    jbkw = dict(law=law, adjusted_area=ADJUSTED_AREA,
+                prior_holding_tax=prior["two"], property_tax_this_year=pt_both)
     two_j = jongbuse_joint(prices, year, resident_house_price=0, **jbkw)
-    two_res_j = jongbuse_joint(prices, year, resident_house_price=OFFICIAL[0], **jbkw)
+    two_res_j = jongbuse_joint(prices, year, resident_house_price=g_off, **jbkw)
     # 세부담 상한은 납세자별로 판정된다 → 단독명의 비교값은 단독명의의 직전연도를 써야 한다
     # (공동명의 직전연도를 쓰면 단독 세액이 잘못 깎인다)
     two_solo = jongbuse_joint(prices, year, resident_house_price=0, law=law,
+                              adjusted_area=ADJUSTED_AREA,
                               prior_holding_tax=prior["solo"],
                               property_tax_this_year=pt_both)["solo"]
-    one_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
-                           resident_house_price=OFFICIAL[0], law=law,
+    one_j = jongbuse_joint([g_off], year, one_house=True,
+                           resident_house_price=g_off, law=law,
                            prior_holding_tax=prior["one"], property_tax_this_year=pt_g["total"])
-    one_nr_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
+    one_nr_j = jongbuse_joint([g_off], year, one_house=True,
                               resident_house_price=0, law=law,
                               prior_holding_tax=prior["one"], property_tax_this_year=pt_g["total"])
     holding_timeline.append({
@@ -657,6 +704,12 @@ for year in (2026, 2027, 2028, 2029):
         "reconstructionStage": st["label"],
         "sibeomPropertyTaxKind": pt_s["kind"],
         "sibeomInJongbuse": st["jongbuse"],
+        "officialPrice": {"gwacheon": g_off, "sibeom": int(s_off),
+                          "total": int(g_off + s_off),
+                          "growthAssumed": OFFICIAL_GROWTH},
+        "propertyTaxBaseCap": {"gwacheon": pt_g["baseCap"], "sibeom": pt_s["baseCap"],
+                               "gwacheonCapped": pt_g["baseCapped"],
+                               "sibeomCapped": pt_s["baseCapped"]},
         # 재산세는 물건별 과세라 공동명의여도 총액이 동일 (납부만 지분대로 안분)
         "propertyTax": {"gwacheon": pt_g["total"], "sibeom": pt_s["total"],
                         "bothTotal": pt_g["total"] + pt_s["total"]},
@@ -954,14 +1007,20 @@ for s in sib:
 print(f"  1주택 + 상생임대 거주요건 면제 비과세 (기한 2029-07-31): {won(sib_ex['total'])}")
 
 print(f"\n{'═'*78}\n보유세 타임라인 (재산세 + 종부세) — 부부공동명의 각 50%, 인별 과세")
+print(f"  가정: 공시가격 연 {OFFICIAL_GROWTH:.0%} 상승 (2026-01-01 확인값 기준 복리), "
+      f"조정대상지역 {'재지정' if ADJUSTED_AREA else '해제 상태'}")
 for h in holding_timeline:
-    j = h["jongbuse"]
-    print(f"  {h['year']}년 [{h['law']}] 재산세 {won(h['propertyTax']['bothTotal']):>12} | "
+    j, o, c = h["jongbuse"], h["officialPrice"], h["propertyTaxBaseCap"]
+    caps = "".join([" 과천★" if c["gwacheonCapped"] else "", " 시범★" if c["sibeomCapped"] else ""])
+    print(f"  {h['year']}년 [{h['law']}] 공시가 합 {o['total']/EOK:5.2f}억 | "
+          f"재산세 {won(h['propertyTax']['bothTotal']):>12}{caps} | "
           f"종부세 2주택·비거주 {won(j['twoHouse_nonresident']):>12} "
           f"(공제합 {j['basicDeduction_twoHouse_nonresident']/EOK:.1f}억, 공정 {j['fairRatio']:.0%}) "
           f"→ 합계 {won(h['total_twoHouse_nonresident'])}")
-    print(f"          단독명의였다면 {won(h['total_twoHouse_nonresident_ifSingleName']):>14} "
-          f"→ 공동명의 절감 {won(j['jongbuseSaving'] if 'jongbuseSaving' in j else j['jointSaving_twoHouse_nonresident'])}")
+    print(f"          과천자이 거주 시 종부세 {won(j['twoHouse_livingInGwacheon']):>12} "
+          f"→ 합계 {won(h['propertyTax']['bothTotal'] + j['twoHouse_livingInGwacheon'])} | "
+          f"단독명의였다면 {won(h['total_twoHouse_nonresident_ifSingleName'])}")
+print("  ★ = 지방세법 §110③ 주택 과세표준상한제 적용 (직전연도 과표 + 당해 공시가×공정비율×5%)")
 
 print(f"\n{'═'*78}\n매도 순서 조합 — 총 양도세 상위 5개 (거주자 회복 전제 · 부부공동명의)")
 for k, v in ranked[:5]:

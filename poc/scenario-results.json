@@ -997,6 +997,7 @@
     }
   ],
   "jongbuse": {
+    "note": "공시가격 2026-01-01 확인값 고정 (상승률 미반영) — 법 개정 효과 분리용",
     "official": [
       1307000000,
       600000000
@@ -1159,6 +1160,18 @@
       "reconstructionStage": "해당 없음 / 조합설립 전",
       "sibeomPropertyTaxKind": "주택분",
       "sibeomInJongbuse": true,
+      "officialPrice": {
+        "gwacheon": 1307000000,
+        "sibeom": 600000000,
+        "total": 1907000000,
+        "growthAssumed": 0.3
+      },
+      "propertyTaxBaseCap": {
+        "gwacheon": null,
+        "sibeom": null,
+        "gwacheonCapped": false,
+        "sibeomCapped": false
+      },
       "propertyTax": {
         "gwacheon": 4106040,
         "sibeom": 1476000,
@@ -1188,28 +1201,40 @@
       "reconstructionStage": "사업시행인가",
       "sibeomPropertyTaxKind": "주택분",
       "sibeomInJongbuse": true,
+      "officialPrice": {
+        "gwacheon": 1699100000,
+        "sibeom": 780000000,
+        "total": 2479100000,
+        "growthAssumed": 0.3
+      },
+      "propertyTaxBaseCap": {
+        "gwacheon": 835173000,
+        "sibeom": 383400000,
+        "gwacheonCapped": true,
+        "sibeomCapped": true
+      },
       "propertyTax": {
-        "gwacheon": 4106040,
-        "sibeom": 1476000,
-        "bothTotal": 5582040
+        "gwacheon": 4422072,
+        "sibeom": 1621080,
+        "bothTotal": 6043152
       },
       "jongbuse": {
-        "twoHouse_nonresident": 2829480,
-        "twoHouse_livingInGwacheon": 944452,
+        "twoHouse_nonresident": 4911924,
+        "twoHouse_livingInGwacheon": 2417178,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1414740,
-          1414740
+          2455962,
+          2455962
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7614880,
-        "jointSaving_twoHouse_nonresident": 4785400
+        "soloIfSingleName_twoHouse_nonresident": 10229808,
+        "jointSaving_twoHouse_nonresident": 5317884
       },
-      "total_twoHouse_nonresident": 8411520,
-      "total_oneHouse_resident": 4106040,
-      "total_twoHouse_nonresident_ifSingleName": 13196920
+      "total_twoHouse_nonresident": 10955076,
+      "total_oneHouse_resident": 4422072,
+      "total_twoHouse_nonresident_ifSingleName": 16272960
     },
     {
       "year": 2028,
@@ -1217,28 +1242,40 @@
       "reconstructionStage": "사업시행인가",
       "sibeomPropertyTaxKind": "주택분",
       "sibeomInJongbuse": true,
+      "officialPrice": {
+        "gwacheon": 2208830000,
+        "sibeom": 1014000000,
+        "total": 3222830000,
+        "growthAssumed": 0.3
+      },
+      "propertyTaxBaseCap": {
+        "gwacheon": 1085724900,
+        "sibeom": 498420000,
+        "gwacheonCapped": true,
+        "sibeomCapped": true
+      },
       "propertyTax": {
-        "gwacheon": 4106040,
-        "sibeom": 1476000,
-        "bothTotal": 5582040
+        "gwacheon": 5975492,
+        "sibeom": 2334204,
+        "bothTotal": 8309696
       },
       "jongbuse": {
-        "twoHouse_nonresident": 2829480,
-        "twoHouse_livingInGwacheon": 944452,
-        "oneHouse_resident": 0,
-        "oneHouse_nonresident": 0,
+        "twoHouse_nonresident": 10594988,
+        "twoHouse_livingInGwacheon": 5221690,
+        "oneHouse_resident": 915780,
+        "oneHouse_nonresident": 2868652.0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1414740,
-          1414740
+          5297494,
+          5297494
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7614880,
-        "jointSaving_twoHouse_nonresident": 4785400
+        "soloIfSingleName_twoHouse_nonresident": 23362854,
+        "jointSaving_twoHouse_nonresident": 12767866
       },
-      "total_twoHouse_nonresident": 8411520,
-      "total_oneHouse_resident": 4106040,
-      "total_twoHouse_nonresident_ifSingleName": 13196920
+      "total_twoHouse_nonresident": 18904684,
+      "total_oneHouse_resident": 6891272,
+      "total_twoHouse_nonresident_ifSingleName": 31672550
     },
     {
       "year": 2029,
@@ -1246,28 +1283,40 @@
       "reconstructionStage": "관리처분계획인가",
       "sibeomPropertyTaxKind": "주택분",
       "sibeomInJongbuse": true,
+      "officialPrice": {
+        "gwacheon": 2871479000,
+        "sibeom": 1318200000,
+        "total": 4189679000,
+        "growthAssumed": 0.3
+      },
+      "propertyTaxBaseCap": {
+        "gwacheon": 1411442370,
+        "sibeom": 647946000,
+        "gwacheonCapped": true,
+        "sibeomCapped": true
+      },
       "propertyTax": {
-        "gwacheon": 4106040,
-        "sibeom": 1476000,
-        "bothTotal": 5582040
+        "gwacheon": 7994941,
+        "sibeom": 3261264,
+        "bothTotal": 11256205
       },
       "jongbuse": {
-        "twoHouse_nonresident": 2829480,
-        "twoHouse_livingInGwacheon": 944452,
-        "oneHouse_resident": 0,
-        "oneHouse_nonresident": 0,
+        "twoHouse_nonresident": 18175084,
+        "twoHouse_livingInGwacheon": 12801786,
+        "oneHouse_resident": 2700184,
+        "oneHouse_nonresident": 5787603.0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          1414740,
-          1414740
+          9087542,
+          9087542
         ],
-        "soloIfSingleName_twoHouse_nonresident": 7614880,
-        "jointSaving_twoHouse_nonresident": 4785400
+        "soloIfSingleName_twoHouse_nonresident": 37208264,
+        "jointSaving_twoHouse_nonresident": 19033180
       },
-      "total_twoHouse_nonresident": 8411520,
-      "total_oneHouse_resident": 4106040,
-      "total_twoHouse_nonresident_ifSingleName": 13196920
+      "total_twoHouse_nonresident": 29431289,
+      "total_oneHouse_resident": 10695125,
+      "total_twoHouse_nonresident_ifSingleName": 48464469
     }
   ],
   "sale_order_scenarios": {

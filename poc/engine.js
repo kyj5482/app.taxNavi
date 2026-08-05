@@ -254,7 +254,14 @@ export function jongbuse(prices, {
       basic = 400_000_000 + Math.floor(500_000_000 * ratio);
       basicLabel = `4억 + 5억×${(ratio * 100).toFixed(1)}%(거주주택 비중)`;
     }
-    // 공정시장가액비율: 3주택 이상 또는 조정대상지역 주택 보유(1세대1주택자 제외)는 80% 트랙
+    /* 개편안 (4) 공정시장가액비율 (종부법 §13①②, 종부령 §2의4)
+       원문(상세본 p.62 / 문답 p.41~42): "3주택 이상 또는 조정대상지역 주택 보유자
+       (단, 1세대1주택자 제외)는 60% → 80%까지, 그 외는 60% → 70%까지 상향.
+       (‘26)60% → (’27)70% → (‘28)80%"
+       문답 p.42 각주: "2주택자가 조정지역 주택 1채, 비조정지역 주택 1채 소유한 경우 포함"
+       → 조정대상지역 주택을 1채라도 가지고 있으면 80% 트랙이다.
+       ※ 비거주자 여부는 80% 트랙 요건이 아니다 (원문에 없음). 거주 여부는 기본공제(§8①)의
+         5억분 비중에만 영향을 준다. */
     const heavy = !isOne && (n >= 3 || adjustedArea);
     fair = year <= 2026 ? 0.60 : (heavy ? (year >= 2028 ? 0.80 : 0.70) : 0.70);
     rates = year <= 2027 ? (n >= 3 ? JB_RATES_27_3 : JB_RATES_27) : JB_RATES_28;
@@ -380,22 +387,49 @@ export function jongbuseJoint(prices, {
 const PT_TIERS = [[60_000_000, .001, 0], [150_000_000, .0015, 30_000],
   [300_000_000, .0025, 180_000], [Infinity, .004, 630_000]];
 
-export function propertyTax(officialPrice, { asLand = false } = {}) {
-  if (officialPrice <= 0) return { total: 0, base: 0, main: 0, edu: 0, city: 0, kind: '없음' };
+/** 재산세 (주택분·토지분 개산).
+ *  priorOfficialPrice: 직전연도 공시가격. 주면 지방세법 §110③ 주택 과세표준상한제를 적용한다.
+ *
+ *  ★ 공시가가 급등하는 시나리오에서는 이 상한이 세액을 지배한다 (지방세법 §110③, 시행령 §109의2):
+ *      과세표준상한액 = 직전연도 공시가 × 공정비율 + (당해 공시가 × 공정비율 × 5%)
+ *    즉 주택 재산세 과세표준은 전년 대비 "당해 과세표준의 5%"까지만 오른다. 공시가가 30%
+ *    올라도 과세표준은 그만큼 오르지 않으므로, 상한을 넣지 않으면 재산세를 크게 과대계상한다.
+ *    (참고: 지방세법 §122 세부담상한 150%는 단서에서 주택을 제외하므로 주택엔 §110③만 적용된다)
+ */
+export function propertyTax(officialPrice, { asLand = false, priorOfficialPrice = null } = {}) {
+  if (officialPrice <= 0) {
+    return { total: 0, base: 0, main: 0, edu: 0, city: 0, kind: '없음', baseCapped: false, baseCap: null };
+  }
   if (asLand) {
-    // 멸실 후 토지분 — 별도합산 0.2~0.4% 개산 (공정비율 70%)
+    // 멸실 후 토지분 — 별도합산 0.2~0.4% 개산 (공정비율 70%). 토지는 과세표준상한제 대상이 아니다
     const base = Math.floor(officialPrice * 0.70);
     const main = Math.floor(base * 0.002);
     const edu = Math.floor(main * 0.2);
     const city = Math.floor(base * 0.0014);
-    return { total: main + edu + city, base, main, edu, city, kind: '토지분' };
+    return { total: main + edu + city, base, main, edu, city, kind: '토지분',
+      baseCapped: false, baseCap: null };
   }
-  const base = Math.floor(officialPrice * 0.60);
+  const FAIR = 0.60;
+  const raw = Math.floor(officialPrice * FAIR);
+  // 지방세법 §110③ 과세표준상한액 (시행령 §109의2 — 상한율 5%)
+  let baseCap = null, baseCapped = false, base = raw;
+  if (priorOfficialPrice !== null && priorOfficialPrice > 0) {
+    baseCap = Math.floor(priorOfficialPrice * FAIR) + Math.floor(officialPrice * FAIR * 0.05);
+    if (raw > baseCap) { base = baseCap; baseCapped = true; }
+  }
   let main = 0;
   for (const [cap, rate, ded] of PT_TIERS) if (base <= cap) { main = Math.floor(base * rate - ded); break; }
   const edu = Math.floor(main * 0.2);
   const city = Math.floor(base * 0.0014);
-  return { total: main + edu + city, base, main, edu, city, kind: '주택분' };
+  return { total: main + edu + city, base, rawBase: raw, main, edu, city, kind: '주택분',
+    baseCapped, baseCap, fair: FAIR };
+}
+
+/** 공시가격 상승률을 적용한 연도별 공시가.
+ *  공시가격은 매년 1월 1일 기준으로 새로 결정되므로 base 연도 대비 복리로 오른다. */
+export function officialAt(basePrice, baseYear, year, growth) {
+  if (!growth || year <= baseYear) return basePrice;
+  return Math.round(basePrice * (1 + growth) ** (year - baseYear));
 }
 
 /* ── 재건축 단계 정의 ──────────────────────────────────────────── */
