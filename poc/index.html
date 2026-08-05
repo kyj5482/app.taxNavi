@@ -187,19 +187,19 @@ footer.disc { margin-top:44px; padding:16px; text-align:center; font-size:.76rem
     </div>
     <div class="field">
       <label>과천자이 예상 매도가 <span class="req">입력</span></label>
-      <input id="gSale" type="number" step="10000000" value="1600000000">
+      <input id="gSale" type="number" step="10000000" value="2100000000">
       <div class="conv" id="gSaleC"></div>
       <div class="hint">12억 초과 시 고가주택 → 초과분만 과세</div>
     </div>
     <div class="field">
       <label>시범한양 예상 매도가 <span class="req">입력</span></label>
-      <input id="sSale" type="number" step="10000000" value="860000000">
+      <input id="sSale" type="number" step="10000000" value="1300000000">
       <div class="conv" id="sSaleC"></div>
       <div class="hint">12억 이하면 1주택 비과세 시 0원</div>
     </div>
     <div class="field">
       <label>과천자이 공시가격 <span class="req">확인 필요</span></label>
-      <input id="gOff" type="number" step="10000000" value="1100000000">
+      <input id="gOff" type="number" step="1000000" value="1307000000">
       <div class="conv" id="gOffC"></div>
       <div class="hint"><a href="https://www.realtyprice.kr/notice/town/searchPastRoadNameCode.htm" target="_blank" rel="noopener">공동주택 공시가격 조회 →</a></div>
     </div>
@@ -327,10 +327,12 @@ const YEARS = [2026, 2027, 2028, 2029];
 const SELL_YEARS = [2027, 2028, 2029];
 const S = {
   gAcq: 910_000_000, sAcq: 680_000_000,
-  gSale: 1_600_000_000, sSale: 860_000_000,
-  gOff: 1_100_000_000, sOff: 600_000_000,
+  gSale: 2_100_000_000, sSale: 1_300_000_000,
+  // 2026-01-01 기준 공동주택 공시가격 (사용자 확인값)
+  gOff: 1_307_000_000, sOff: 600_000_000,
   resident: true, sangsaeng: true, joint: true,
-  stages: { 2026: 'none', 2027: 'none', 2028: 'none', 2029: 'none' },
+  // 시범한양 재건축 예정: '27년 사업시행인가 → '29년 관리처분계획인가
+  stages: { 2026: 'none', 2027: 'approval', 2028: 'approval', 2029: 'management' },
 };
 /* 부부공동명의 각 50%. 양도세·종부세는 인별 과세라 지분 분할이 그대로 절세로 이어진다. */
 const SHARES = () => (S.joint ? [0.5, 0.5] : [1]);

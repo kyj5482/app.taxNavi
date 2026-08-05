@@ -9,9 +9,9 @@
       "acquisition_tax": 27300000,
       "other_expenses": 5000000,
       "expenses": 32300000,
-      "sale_price": 1600000000,
+      "sale_price": 2100000000,
       "reside_years": 2.46,
-      "official_price": 1100000000
+      "official_price": 1307000000
     },
     "sibeom": {
       "name": "분당 시범한양 14평형",
@@ -21,7 +21,7 @@
       "acquisition_tax": 54400000,
       "other_expenses": 5000000,
       "expenses": 59400000,
-      "sale_price": 860000000,
+      "sale_price": 1300000000,
       "reside_years": 0.0,
       "official_price": 600000000
     }
@@ -30,43 +30,25 @@
     "gwacheon_acq_price": "실제 분양가 9.1억 (사용자 확인)",
     "gwacheon_acq_tax": "취득세율 3% → 2,730만원 (사용자 확인)",
     "sibeom_acq_price": "실제 매수가 6.8억 (사용자 확인)",
-    "sibeom_acq_tax": "취득세율 8% → 5,440만원 (사용자 확인, 2주택 중과세율)"
+    "sibeom_acq_tax": "취득세율 8% → 5,440만원 (사용자 확인, 2주택 중과세율)",
+    "gwacheon_official_price": "2026-01-01 기준 공시가격 13.07억 (사용자 확인)",
+    "sibeom_official_price": "2026-01-01 기준 공시가격 6.00억 (사용자 확인)",
+    "gwacheon_sale_price": "예상 매도가 21억 (사용자 입력)",
+    "sibeom_sale_price": "예상 매도가 13억 (사용자 입력) — 재건축 기대가 반영된 가격",
+    "reconstructionSchedule": "시범한양: 2027년 사업시행인가, 2029년 관리처분계획인가 (사용자 예정)"
   },
-  "pendingInputs": [
-    {
-      "field": "gwacheon.sale_price",
-      "label": "과천자이 예상 매도가",
-      "assumed": 1600000000
-    },
-    {
-      "field": "sibeom.sale_price",
-      "label": "시범한양 예상 매도가",
-      "assumed": 860000000
-    },
-    {
-      "field": "gwacheon.official_price",
-      "label": "과천자이 공시가격",
-      "assumed": 1100000000,
-      "howTo": "부동산공시가격 알리미(realtyprice.kr) → 공동주택 공시가격 → 경기 과천시 해당 단지 조회 (동·호수는 기록하지 않음)"
-    },
-    {
-      "field": "sibeom.official_price",
-      "label": "시범한양 공시가격",
-      "assumed": 600000000,
-      "howTo": "부동산공시가격 알리미(realtyprice.kr) → 공동주택 공시가격 → 경기 성남시 분당구 해당 단지 조회 (동·호수는 기록하지 않음)"
-    }
-  ],
+  "pendingInputs": [],
   "gwacheon_1house_resident": [
     {
       "year": 2027,
       "reform": {
-        "tax": 25120100,
-        "local": 2512010,
-        "total": 27632110,
+        "tax": 115953257,
+        "local": 11595325,
+        "total": 127548582,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -78,15 +60,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기보유특별공제 28% (거주 2년×4%=8% + 보유 5년×4%=20%)",
-            -46039000
+            -138923999
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -94,35 +76,35 @@
           ],
           [
             "= 과세표준 (인별)",
-            115886000
+            354733143
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            25120100
+            "× 기본세율 40% (누진공제 적용)",
+            115953257
           ],
           [
             "+ 지방소득세 10%",
-            2512010
+            11595325
           ],
           [
             "= 총 예상세액",
-            27632110
+            127548582
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "40%",
         "deduction_rate": 0.28,
-        "taxable": 164425000,
-        "base": 115886000,
+        "taxable": 496157142,
+        "base": 354733143,
         "share": 1.0
       },
       "current": {
-        "tax": 25120100,
-        "local": 2512010,
-        "total": 27632110,
+        "tax": 115953257,
+        "local": 11595325,
+        "total": 127548582,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -134,15 +116,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기보유특별공제 28% (거주 2년×4%=8% + 보유 5년×4%=20%)",
-            -46039000
+            -138923999
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -150,25 +132,25 @@
           ],
           [
             "= 과세표준 (인별)",
-            115886000
+            354733143
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            25120100
+            "× 기본세율 40% (누진공제 적용)",
+            115953257
           ],
           [
             "+ 지방소득세 10%",
-            2512010
+            11595325
           ],
           [
             "= 총 예상세액",
-            27632110
+            127548582
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "40%",
         "deduction_rate": 0.28,
-        "taxable": 164425000,
-        "base": 115886000,
+        "taxable": 496157142,
+        "base": 354733143,
         "share": 1.0
       },
       "overseasCredited": 0.0
@@ -176,13 +158,13 @@
     {
       "year": 2028,
       "reform": {
-        "tax": 17063274,
-        "local": 1706327,
-        "total": 18769601,
+        "tax": 88463034,
+        "local": 8846303,
+        "total": 97309337,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -194,15 +176,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기거주소득공제 42% (거주 5년×6%=30% + 보유 6년×2%=12%)",
-            -69058500
+            -208385999
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -210,35 +192,35 @@
           ],
           [
             "= 과세표준 (인별)",
-            92866500
+            285271143
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            17063274
+            "× 기본세율 38% (누진공제 적용)",
+            88463034
           ],
           [
             "+ 지방소득세 10%",
-            1706327
+            8846303
           ],
           [
             "= 총 예상세액",
-            18769601
+            97309337
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "38%",
         "deduction_rate": 0.42,
-        "taxable": 164425000,
-        "base": 92866500,
+        "taxable": 496157142,
+        "base": 285271143,
         "share": 1.0
       },
       "current": {
-        "tax": 22818150,
-        "local": 2281815,
-        "total": 25099965,
+        "tax": 108014742,
+        "local": 10801474,
+        "total": 118816216,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -250,15 +232,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기보유특별공제 32% (거주 2년×4%=8% + 보유 6년×4%=24%)",
-            -52616000
+            -158770285
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -266,25 +248,25 @@
           ],
           [
             "= 과세표준 (인별)",
-            109309000
+            334886857
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            22818150
+            "× 기본세율 40% (누진공제 적용)",
+            108014742
           ],
           [
             "+ 지방소득세 10%",
-            2281815
+            10801474
           ],
           [
             "= 총 예상세액",
-            25099965
+            118816216
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "40%",
         "deduction_rate": 0.32,
-        "taxable": 164425000,
-        "base": 109309000,
+        "taxable": 496157142,
+        "base": 334886857,
         "share": 1.0
       },
       "overseasCredited": 3.0
@@ -292,13 +274,13 @@
     {
       "year": 2029,
       "reform": {
-        "tax": 18214250,
-        "local": 1821425,
-        "total": 20035675,
+        "tax": 92233828,
+        "local": 9223382,
+        "total": 101457210,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -310,15 +292,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기거주소득공제 40% (거주 5년×8%=40% + 보유 7년×0%=0%)",
-            -65770000
+            -198462856
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -326,35 +308,35 @@
           ],
           [
             "= 과세표준 (인별)",
-            96155000
+            295194286
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            18214250
+            "× 기본세율 38% (누진공제 적용)",
+            92233828
           ],
           [
             "+ 지방소득세 10%",
-            1821425
+            9223382
           ],
           [
             "= 총 예상세액",
-            20035675
+            101457210
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "38%",
         "deduction_rate": 0.4,
-        "taxable": 164425000,
-        "base": 96155000,
+        "taxable": 496157142,
+        "base": 295194286,
         "share": 1.0
       },
       "current": {
-        "tax": 20516200,
-        "local": 2051620,
-        "total": 22567820,
+        "tax": 100076228,
+        "local": 10007622,
+        "total": 110083850,
         "steps": [
           [
             "양도가액",
-            1600000000
+            2100000000
           ],
           [
             "− 취득가액",
@@ -366,15 +348,15 @@
           ],
           [
             "= 양도차익",
-            657700000
+            1157700000
           ],
           [
-            "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-            164425000
+            "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+            496157142
           ],
           [
             "− 장기보유특별공제 36% (거주 2년×4%=8% + 보유 7년×4%=28%)",
-            -59193000
+            -178616571
           ],
           [
             "− 기본공제 (인별 연 250만)",
@@ -382,25 +364,25 @@
           ],
           [
             "= 과세표준 (인별)",
-            102732000
+            315040571
           ],
           [
-            "× 기본세율 35% (누진공제 적용)",
-            20516200
+            "× 기본세율 40% (누진공제 적용)",
+            100076228
           ],
           [
             "+ 지방소득세 10%",
-            2051620
+            10007622
           ],
           [
             "= 총 예상세액",
-            22567820
+            110083850
           ]
         ],
-        "rate_label": "35%",
+        "rate_label": "40%",
         "deduction_rate": 0.36000000000000004,
-        "taxable": 164425000,
-        "base": 102732000,
+        "taxable": 496157142,
+        "base": 315040571,
         "share": 1.0
       },
       "overseasCredited": 3.0
@@ -408,13 +390,13 @@
   ],
   "gwacheon_nonresident": {
     "2027": {
-      "tax": 211620600,
-      "local": 21162060,
-      "total": 232782660,
+      "tax": 401803500,
+      "local": 40180350,
+      "total": 441983850,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -426,15 +408,15 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "비거주자 → 1세대 1주택 비과세 배제 (전액 과세)",
-          657700000
+          1157700000
         ],
         [
           "− 장기보유특별공제 10% (거주 2년×0%=0% + 보유 5년×2%=10%)",
-          -65770000
+          -115770000
         ],
         [
           "− 기본공제 (인별 연 250만)",
@@ -442,35 +424,35 @@
         ],
         [
           "= 과세표준 (인별)",
-          589430000
+          1039430000
         ],
         [
-          "× 기본세율 42% (누진공제 적용)",
-          211620600
+          "× 기본세율 45% (누진공제 적용)",
+          401803500
         ],
         [
           "+ 지방소득세 10%",
-          21162060
+          40180350
         ],
         [
           "= 총 예상세액",
-          232782660
+          441983850
         ]
       ],
-      "rate_label": "42%",
+      "rate_label": "45%",
       "deduction_rate": 0.1,
-      "taxable": 657700000,
-      "base": 589430000,
+      "taxable": 1157700000,
+      "base": 1039430000,
       "share": 1.0
     },
     "2028": {
-      "tax": 222669960,
-      "local": 22266996,
-      "total": 244936956,
+      "tax": 422642100,
+      "local": 42264210,
+      "total": 464906310,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -482,15 +464,15 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "비거주자 → 1세대 1주택 비과세 배제 (전액 과세)",
-          657700000
+          1157700000
         ],
         [
           "− 장기거주소득공제 6% (거주 4% vs 보유 6% 중 높은 쪽)",
-          -39462000
+          -69462000
         ],
         [
           "− 기본공제 (인별 연 250만)",
@@ -498,35 +480,35 @@
         ],
         [
           "= 과세표준 (인별)",
-          615738000
+          1085738000
         ],
         [
-          "× 기본세율 42% (누진공제 적용)",
-          222669960
+          "× 기본세율 45% (누진공제 적용)",
+          422642100
         ],
         [
           "+ 지방소득세 10%",
-          22266996
+          42264210
         ],
         [
           "= 총 예상세액",
-          244936956
+          464906310
         ]
       ],
-      "rate_label": "42%",
+      "rate_label": "45%",
       "deduction_rate": 0.06,
-      "taxable": 657700000,
-      "base": 615738000,
+      "taxable": 1157700000,
+      "base": 1085738000,
       "share": 1.0
     },
     "2029": {
-      "tax": 228194640,
-      "local": 22819464,
-      "total": 251014104,
+      "tax": 433061400,
+      "local": 43306140,
+      "total": 476367540,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -538,15 +520,15 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "비거주자 → 1세대 1주택 비과세 배제 (전액 과세)",
-          657700000
+          1157700000
         ],
         [
           "− 장기거주소득공제 4% (거주 4% vs 보유 0% 중 높은 쪽)",
-          -26308000
+          -46308000
         ],
         [
           "− 기본공제 (인별 연 250만)",
@@ -554,37 +536,37 @@
         ],
         [
           "= 과세표준 (인별)",
-          628892000
+          1108892000
         ],
         [
-          "× 기본세율 42% (누진공제 적용)",
-          228194640
+          "× 기본세율 45% (누진공제 적용)",
+          433061400
         ],
         [
           "+ 지방소득세 10%",
-          22819464
+          43306140
         ],
         [
           "= 총 예상세액",
-          251014104
+          476367540
         ]
       ],
-      "rate_label": "42%",
+      "rate_label": "45%",
       "deduction_rate": 0.04,
-      "taxable": 657700000,
-      "base": 628892000,
+      "taxable": 1157700000,
+      "base": 1108892000,
       "share": 1.0
     }
   },
   "gwacheon_two_house": {
     "2027": {
-      "tax": 272004000,
-      "local": 27200400,
-      "total": 299204400,
+      "tax": 511660000,
+      "local": 51166000,
+      "total": 562826000,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -596,7 +578,7 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "− 장기보유특별공제 (배제)",
@@ -608,35 +590,35 @@
         ],
         [
           "= 과세표준 (인별)",
-          655200000
+          1155200000
         ],
         [
-          "× 기본세율 42% + 중과 5%p",
-          272004000
+          "× 기본세율 45% + 중과 5%p",
+          511660000
         ],
         [
           "+ 지방소득세 10%",
-          27200400
+          51166000
         ],
         [
           "= 총 예상세액",
-          299204400
+          562826000
         ]
       ],
-      "rate_label": "42% + 5%p 중과",
+      "rate_label": "45% + 5%p 중과",
       "deduction_rate": 0.0,
-      "taxable": 657700000,
-      "base": 655200000,
+      "taxable": 1157700000,
+      "base": 1155200000,
       "share": 1.0
     },
     "2028": {
-      "tax": 304764000,
-      "local": 30476400,
-      "total": 335240400,
+      "tax": 569420000,
+      "local": 56942000,
+      "total": 626362000,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -648,7 +630,7 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "− 장기보유특별공제 (배제)",
@@ -660,35 +642,35 @@
         ],
         [
           "= 과세표준 (인별)",
-          655200000
+          1155200000
         ],
         [
-          "× 기본세율 42% + 중과 10%p",
-          304764000
+          "× 기본세율 45% + 중과 10%p",
+          569420000
         ],
         [
           "+ 지방소득세 10%",
-          30476400
+          56942000
         ],
         [
           "= 총 예상세액",
-          335240400
+          626362000
         ]
       ],
-      "rate_label": "42% + 10%p 중과",
+      "rate_label": "45% + 10%p 중과",
       "deduction_rate": 0.0,
-      "taxable": 657700000,
-      "base": 655200000,
+      "taxable": 1157700000,
+      "base": 1155200000,
       "share": 1.0
     },
     "2029": {
-      "tax": 353973040,
-      "local": 35397304,
-      "total": 389370344,
+      "tax": 654839800,
+      "local": 65483980,
+      "total": 720323780,
       "steps": [
         [
           "양도가액",
-          1600000000
+          2100000000
         ],
         [
           "− 취득가액",
@@ -700,11 +682,11 @@
         ],
         [
           "= 양도차익",
-          657700000
+          1157700000
         ],
         [
           "− 장기거주소득공제 4% (거주 4% vs 보유 0% 중 높은 쪽)",
-          -26308000
+          -46308000
         ],
         [
           "− 기본공제 (인별 연 250만)",
@@ -712,25 +694,25 @@
         ],
         [
           "= 과세표준 (인별)",
-          628892000
+          1108892000
         ],
         [
-          "× 기본세율 42% + 중과 20%p",
-          353973040
+          "× 기본세율 45% + 중과 20%p",
+          654839800
         ],
         [
           "+ 지방소득세 10%",
-          35397304
+          65483980
         ],
         [
           "= 총 예상세액",
-          389370344
+          720323780
         ]
       ],
-      "rate_label": "42% + 20%p 중과",
+      "rate_label": "45% + 20%p 중과",
       "deduction_rate": 0.04,
-      "taxable": 657700000,
-      "base": 628892000,
+      "taxable": 1157700000,
+      "base": 1108892000,
       "share": 1.0
     }
   },
@@ -738,13 +720,13 @@
     {
       "year": 2027,
       "reform": {
-        "tax": 31800000,
-        "local": 3180000,
-        "total": 34980000,
+        "tax": 226367000,
+        "local": 22636700,
+        "total": 249003700,
         "steps": [
           [
             "양도가액",
-            860000000
+            1300000000.0
           ],
           [
             "− 취득가액",
@@ -756,7 +738,7 @@
           ],
           [
             "= 양도차익",
-            120600000
+            560600000
           ],
           [
             "− 장기보유특별공제 (배제)",
@@ -768,39 +750,40 @@
           ],
           [
             "= 과세표준 (인별)",
-            118100000
+            558100000
           ],
           [
-            "× 기본세율 35% + 중과 5%p",
-            31800000
+            "× 기본세율 42% + 중과 5%p",
+            226367000
           ],
           [
             "+ 지방소득세 10%",
-            3180000
+            22636700
           ],
           [
             "= 총 예상세액",
-            34980000
+            249003700
           ]
         ],
-        "rate_label": "35% + 5%p 중과",
+        "rate_label": "42% + 5%p 중과",
         "deduction_rate": 0.0,
-        "taxable": 120600000,
-        "base": 118100000,
+        "taxable": 560600000,
+        "base": 558100000,
         "share": 1.0
       },
-      "surchargePp": 5
+      "surchargePp": 5,
+      "stage": "사업시행인가"
     },
     {
       "year": 2028,
       "reform": {
-        "tax": 37705000,
-        "local": 3770500,
-        "total": 41475500,
+        "tax": 254272000,
+        "local": 25427200,
+        "total": 279699200,
         "steps": [
           [
             "양도가액",
-            860000000
+            1300000000.0
           ],
           [
             "− 취득가액",
@@ -812,7 +795,7 @@
           ],
           [
             "= 양도차익",
-            120600000
+            560600000
           ],
           [
             "− 장기보유특별공제 (배제)",
@@ -824,39 +807,40 @@
           ],
           [
             "= 과세표준 (인별)",
-            118100000
+            558100000
           ],
           [
-            "× 기본세율 35% + 중과 10%p",
-            37705000
+            "× 기본세율 42% + 중과 10%p",
+            254272000
           ],
           [
             "+ 지방소득세 10%",
-            3770500
+            25427200
           ],
           [
             "= 총 예상세액",
-            41475500
+            279699200
           ]
         ],
-        "rate_label": "35% + 10%p 중과",
+        "rate_label": "42% + 10%p 중과",
         "deduction_rate": 0.0,
-        "taxable": 120600000,
-        "base": 118100000,
+        "taxable": 560600000,
+        "base": 558100000,
         "share": 1.0
       },
-      "surchargePp": 10
+      "surchargePp": 10,
+      "stage": "사업시행인가"
     },
     {
       "year": 2029,
       "reform": {
-        "tax": 49515000,
-        "local": 4951500,
-        "total": 54466500,
+        "tax": 310082000,
+        "local": 31008200,
+        "total": 341090200,
         "steps": [
           [
             "양도가액",
-            860000000
+            1300000000.0
           ],
           [
             "− 취득가액",
@@ -868,10 +852,10 @@
           ],
           [
             "= 양도차익",
-            120600000
+            560600000
           ],
           [
-            "− 장기거주소득공제 0% (거주 0% vs 보유 0% 중 높은 쪽)",
+            "− 장기보유특별공제 0% (조합원입주권 — 관리처분인가 후 기간은 장특공제 대상 아님 (시행령 §166①))",
             0
           ],
           [
@@ -880,40 +864,43 @@
           ],
           [
             "= 과세표준 (인별)",
-            118100000
+            558100000
           ],
           [
-            "× 기본세율 35% + 중과 20%p",
-            49515000
+            "× 기본세율 42% + 중과 20%p",
+            310082000
           ],
           [
             "+ 지방소득세 10%",
-            4951500
+            31008200
           ],
           [
             "= 총 예상세액",
-            54466500
+            341090200
           ]
         ],
-        "rate_label": "35% + 20%p 중과",
+        "rate_label": "42% + 20%p 중과",
         "deduction_rate": 0.0,
-        "taxable": 120600000,
-        "base": 118100000,
+        "taxable": 560600000,
+        "base": 558100000,
         "share": 1.0
       },
-      "surchargePp": 20
+      "surchargePp": 20,
+      "stage": "관리처분계획인가"
     }
   ],
   "sibeom_sangsaeng_exempt": {
     "deadline": "2029-07-31",
-    "tax": 0,
-    "local": 0,
-    "total": 0,
-    "share": 1.0,
+    "lastYearAvailable": 2028,
+    "blockedFrom": 2029,
+    "note": "상생임대 양도기한은 2029-07-31이나 2029년 관리처분계획인가로 주택이 조합원입주권으로 전환되면 경로가 닫힌다. 실질 기한은 인가일이며, 안전하게는 2028년 내 양도.",
+    "tax": 4510038,
+    "local": 451003,
+    "total": 4961041,
     "steps": [
       [
         "양도가액",
-        860000000
+        1300000000
       ],
       [
         "− 취득가액",
@@ -925,17 +912,42 @@
       ],
       [
         "= 양도차익",
-        120600000
+        560600000
       ],
       [
-        "1세대 1주택 비과세 (주택 전체 양도가액 12억 이하)",
-        0
+        "× 고가주택 과세비율 (1.00억/13.00억 = 7.7%)",
+        43123076
+      ],
+      [
+        "− 장기거주소득공제 5% (거주 0% vs 보유 5% 중 높은 쪽)",
+        -2156153
+      ],
+      [
+        "− 기본공제 (인별 연 250만)",
+        -2500000
+      ],
+      [
+        "= 과세표준 (인별)",
+        38466923
+      ],
+      [
+        "× 기본세율 15% (누진공제 적용)",
+        4510038
+      ],
+      [
+        "+ 지방소득세 10%",
+        451003
+      ],
+      [
+        "= 총 예상세액",
+        4961041
       ]
     ],
-    "rate_label": "비과세",
-    "deduction_rate": 0,
-    "taxable": 0,
-    "base": 0
+    "rate_label": "15%",
+    "deduction_rate": 0.05,
+    "taxable": 43123076,
+    "base": 38466923,
+    "share": 1.0
   },
   "reconstruction_stages": [
     {
@@ -986,7 +998,7 @@
   ],
   "jongbuse": {
     "official": [
-      1100000000,
+      1307000000,
       600000000
     ],
     "current_2026": {
@@ -995,21 +1007,21 @@
       "fairRatio": 0.6,
       "threshold": 0,
       "taxable": true,
-      "taxBase": 480000000,
-      "grossTax": 2760000,
-      "propertyTaxCredit": 864000,
-      "netTax": 1896000,
+      "taxBase": 604200000,
+      "grossTax": 3642000,
+      "propertyTaxCredit": 1087560,
+      "netTax": 2554440,
       "credit": 0,
       "creditApplied": 0,
       "creditLabel": "",
-      "taxBeforeCap": 1896000,
+      "taxBeforeCap": 2554440,
       "burdenCapRate": 1.5,
       "burdenCap": null,
       "burdenCapped": false,
-      "tax": 1896000,
-      "nongteugse": 379200,
-      "withSurtax": 2275200,
-      "totalOfficial": 1700000000,
+      "tax": 2554440,
+      "nongteugse": 510888,
+      "withSurtax": 3065328,
+      "totalOfficial": 1907000000,
       "houseCount": 2,
       "isOneHouse": false,
       "resides": false
@@ -1020,46 +1032,46 @@
       "fairRatio": 0.7,
       "threshold": 900000000,
       "taxable": true,
-      "taxBase": 910000000,
-      "grossTax": 7630000,
-      "propertyTaxCredit": 1638000,
-      "netTax": 5992000,
+      "taxBase": 1054899999,
+      "grossTax": 9513699,
+      "propertyTaxCredit": 1898819,
+      "netTax": 7614880,
       "credit": 0,
       "creditApplied": 0,
       "creditLabel": "",
-      "taxBeforeCap": 5992000,
+      "taxBeforeCap": 7614880,
       "burdenCapRate": 2.0,
       "burdenCap": null,
       "burdenCapped": false,
-      "tax": 5992000,
-      "nongteugse": 1198400,
-      "withSurtax": 7190400,
-      "totalOfficial": 1700000000,
+      "tax": 7614880,
+      "nongteugse": 1522976,
+      "withSurtax": 9137856,
+      "totalOfficial": 1907000000,
       "houseCount": 2,
       "isOneHouse": false,
       "resides": false
     },
     "reform_2027_if_living_in_gwacheon": {
-      "basicDeduction": 723529411,
-      "basicLabel": "4억 + 5억×64.7%(거주주택 비중)",
+      "basicDeduction": 742684845,
+      "basicLabel": "4억 + 5억×68.5%(거주주택 비중)",
       "fairRatio": 0.7,
       "threshold": 900000000,
       "taxable": true,
-      "taxBase": 683529412,
-      "grossTax": 4685882,
-      "propertyTaxCredit": 1230352,
-      "netTax": 3455530,
+      "taxBase": 815020608,
+      "grossTax": 6395267,
+      "propertyTaxCredit": 1467037,
+      "netTax": 4928230,
       "credit": 0,
       "creditApplied": 0,
       "creditLabel": "",
-      "taxBeforeCap": 3455530,
+      "taxBeforeCap": 4928230,
       "burdenCapRate": 2.0,
       "burdenCap": null,
       "burdenCapped": false,
-      "tax": 3455530,
-      "nongteugse": 691106,
-      "withSurtax": 4146636,
-      "totalOfficial": 1700000000,
+      "tax": 4928230,
+      "nongteugse": 985646,
+      "withSurtax": 5913876,
+      "totalOfficial": 1907000000,
       "houseCount": 2,
       "isOneHouse": false,
       "resides": true
@@ -1084,7 +1096,7 @@
       "tax": 0,
       "nongteugse": 0,
       "withSurtax": 0,
-      "totalOfficial": 1100000000,
+      "totalOfficial": 1307000000,
       "houseCount": 1,
       "isOneHouse": true,
       "resides": true
@@ -1109,7 +1121,7 @@
       "tax": 0,
       "nongteugse": 0,
       "withSurtax": 0,
-      "totalOfficial": 1100000000,
+      "totalOfficial": 1307000000,
       "houseCount": 1,
       "isOneHouse": true,
       "resides": false
@@ -1134,7 +1146,7 @@
       "tax": 0,
       "nongteugse": 0,
       "withSurtax": 0,
-      "totalOfficial": 1100000000,
+      "totalOfficial": 1307000000,
       "houseCount": 1,
       "isOneHouse": true,
       "resides": false
@@ -1144,106 +1156,118 @@
     {
       "year": 2026,
       "law": "현행",
+      "reconstructionStage": "해당 없음 / 조합설립 전",
+      "sibeomPropertyTaxKind": "주택분",
+      "sibeomInJongbuse": true,
       "propertyTax": {
-        "gwacheon": 3336000,
+        "gwacheon": 4106040,
         "sibeom": 1476000,
-        "bothTotal": 4812000
+        "bothTotal": 5582040
       },
       "jongbuse": {
-        "twoHouse_nonresident": 0,
-        "twoHouse_livingInGwacheon": 0,
+        "twoHouse_nonresident": 205440,
+        "twoHouse_livingInGwacheon": 205440,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 1800000000,
         "fairRatio": 0.6,
         "perPerson_twoHouse_nonresident": [
-          0,
-          0
+          102720,
+          102720
         ],
-        "soloIfSingleName_twoHouse_nonresident": 1896000,
-        "jointSaving_twoHouse_nonresident": 1896000
+        "soloIfSingleName_twoHouse_nonresident": 2554440,
+        "jointSaving_twoHouse_nonresident": 2349000
       },
-      "total_twoHouse_nonresident": 4812000,
-      "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 6708000
+      "total_twoHouse_nonresident": 5787480,
+      "total_oneHouse_resident": 4106040,
+      "total_twoHouse_nonresident_ifSingleName": 8136480
     },
     {
       "year": 2027,
       "law": "개편안",
+      "reconstructionStage": "사업시행인가",
+      "sibeomPropertyTaxKind": "주택분",
+      "sibeomInJongbuse": true,
       "propertyTax": {
-        "gwacheon": 3336000,
+        "gwacheon": 4106040,
         "sibeom": 1476000,
-        "bothTotal": 4812000
+        "bothTotal": 5582040
       },
       "jongbuse": {
-        "twoHouse_nonresident": 0,
-        "twoHouse_livingInGwacheon": 0,
+        "twoHouse_nonresident": 2829480,
+        "twoHouse_livingInGwacheon": 944452,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          0,
-          0
+          1414740,
+          1414740
         ],
-        "soloIfSingleName_twoHouse_nonresident": 5992000,
-        "jointSaving_twoHouse_nonresident": 5992000
+        "soloIfSingleName_twoHouse_nonresident": 7614880,
+        "jointSaving_twoHouse_nonresident": 4785400
       },
-      "total_twoHouse_nonresident": 4812000,
-      "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 10804000
+      "total_twoHouse_nonresident": 8411520,
+      "total_oneHouse_resident": 4106040,
+      "total_twoHouse_nonresident_ifSingleName": 13196920
     },
     {
       "year": 2028,
       "law": "개편안",
+      "reconstructionStage": "사업시행인가",
+      "sibeomPropertyTaxKind": "주택분",
+      "sibeomInJongbuse": true,
       "propertyTax": {
-        "gwacheon": 3336000,
+        "gwacheon": 4106040,
         "sibeom": 1476000,
-        "bothTotal": 4812000
+        "bothTotal": 5582040
       },
       "jongbuse": {
-        "twoHouse_nonresident": 0,
-        "twoHouse_livingInGwacheon": 0,
+        "twoHouse_nonresident": 2829480,
+        "twoHouse_livingInGwacheon": 944452,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          0,
-          0
+          1414740,
+          1414740
         ],
-        "soloIfSingleName_twoHouse_nonresident": 5992000,
-        "jointSaving_twoHouse_nonresident": 5992000
+        "soloIfSingleName_twoHouse_nonresident": 7614880,
+        "jointSaving_twoHouse_nonresident": 4785400
       },
-      "total_twoHouse_nonresident": 4812000,
-      "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 10804000
+      "total_twoHouse_nonresident": 8411520,
+      "total_oneHouse_resident": 4106040,
+      "total_twoHouse_nonresident_ifSingleName": 13196920
     },
     {
       "year": 2029,
       "law": "개편안",
+      "reconstructionStage": "관리처분계획인가",
+      "sibeomPropertyTaxKind": "주택분",
+      "sibeomInJongbuse": true,
       "propertyTax": {
-        "gwacheon": 3336000,
+        "gwacheon": 4106040,
         "sibeom": 1476000,
-        "bothTotal": 4812000
+        "bothTotal": 5582040
       },
       "jongbuse": {
-        "twoHouse_nonresident": 0,
-        "twoHouse_livingInGwacheon": 0,
+        "twoHouse_nonresident": 2829480,
+        "twoHouse_livingInGwacheon": 944452,
         "oneHouse_resident": 0,
         "oneHouse_nonresident": 0,
         "basicDeduction_twoHouse_nonresident": 800000000,
         "fairRatio": 0.7,
         "perPerson_twoHouse_nonresident": [
-          0,
-          0
+          1414740,
+          1414740
         ],
-        "soloIfSingleName_twoHouse_nonresident": 5992000,
-        "jointSaving_twoHouse_nonresident": 5992000
+        "soloIfSingleName_twoHouse_nonresident": 7614880,
+        "jointSaving_twoHouse_nonresident": 4785400
       },
-      "total_twoHouse_nonresident": 4812000,
-      "total_oneHouse_resident": 3336000,
-      "total_twoHouse_nonresident_ifSingleName": 10804000
+      "total_twoHouse_nonresident": 8411520,
+      "total_oneHouse_resident": 4106040,
+      "total_twoHouse_nonresident_ifSingleName": 13196920
     }
   ],
   "sale_order_scenarios": {
@@ -1253,16 +1277,16 @@
         "asset": "sibeom",
         "year": 2027,
         "name": "분당 시범한양 14평형",
-        "total": 24204400,
+        "total": 218930800,
         "parts": [
           {
-            "tax": 11002000,
-            "local": 1100200,
-            "total": 12102200,
+            "tax": 99514000,
+            "local": 9951400,
+            "total": 109465400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1274,7 +1298,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1286,35 +1310,35 @@
               ],
               [
                 "= 과세표준 (인별)",
-                57800000
+                277800000
               ],
               [
-                "× 기본세율 24% + 중과 5%p",
-                11002000
+                "× 기본세율 38% + 중과 5%p",
+                99514000
               ],
               [
                 "+ 지방소득세 10%",
-                1100200
+                9951400
               ],
               [
                 "= 1인분 세액",
-                12102200
+                109465400
               ]
             ],
-            "rate_label": "24% + 5%p 중과",
+            "rate_label": "38% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 60300000,
-            "base": 57800000,
+            "taxable": 280300000,
+            "base": 277800000,
             "share": 0.5
           },
           {
-            "tax": 11002000,
-            "local": 1100200,
-            "total": 12102200,
+            "tax": 99514000,
+            "local": 9951400,
+            "total": 109465400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1326,7 +1350,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1338,36 +1362,36 @@
               ],
               [
                 "= 과세표준 (인별)",
-                57800000
+                277800000
               ],
               [
-                "× 기본세율 24% + 중과 5%p",
-                11002000
+                "× 기본세율 38% + 중과 5%p",
+                99514000
               ],
               [
                 "+ 지방소득세 10%",
-                1100200
+                9951400
               ],
               [
                 "= 1인분 세액",
-                12102200
+                109465400
               ]
             ],
-            "rate_label": "24% + 5%p 중과",
+            "rate_label": "38% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 60300000,
-            "base": 57800000,
+            "taxable": 280300000,
+            "base": 277800000,
             "share": 0.5
           }
         ],
         "solo": {
-          "tax": 31800000,
-          "local": 3180000,
-          "total": 34980000,
+          "tax": 226367000,
+          "local": 22636700,
+          "total": 249003700,
           "steps": [
             [
               "양도가액",
-              860000000
+              1300000000.0
             ],
             [
               "− 취득가액",
@@ -1379,7 +1403,7 @@
             ],
             [
               "= 양도차익",
-              120600000
+              560600000
             ],
             [
               "− 장기보유특별공제 (배제)",
@@ -1391,29 +1415,29 @@
             ],
             [
               "= 과세표준 (인별)",
-              118100000
+              558100000
             ],
             [
-              "× 기본세율 35% + 중과 5%p",
-              31800000
+              "× 기본세율 42% + 중과 5%p",
+              226367000
             ],
             [
               "+ 지방소득세 10%",
-              3180000
+              22636700
             ],
             [
               "= 총 예상세액",
-              34980000
+              249003700
             ]
           ],
-          "rate_label": "35% + 5%p 중과",
+          "rate_label": "42% + 5%p 중과",
           "deduction_rate": 0.0,
-          "taxable": 120600000,
-          "base": 118100000,
+          "taxable": 560600000,
+          "base": 558100000,
           "share": 1.0
         },
-        "saving": 10775600,
-        "rate_label": "24% + 5%p 중과",
+        "saving": 30072900,
+        "rate_label": "38% + 5%p 중과",
         "deduction_rate": 0.0
       },
       "second": {
@@ -1421,16 +1445,16 @@
         "year": 2028,
         "name": "과천자이 25평 A형",
         "exemptApplied": true,
-        "total": 12138470,
+        "total": 74898890,
         "parts": [
           {
-            "tax": 5517487,
-            "local": 551748,
-            "total": 6069235,
+            "tax": 34044950,
+            "local": 3404495,
+            "total": 37449445,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1442,15 +1466,15 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
-                "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-                82212500
+                "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+                248078571
               ],
               [
                 "− 장기거주소득공제 42% (거주 5년×6%=30% + 보유 6년×2%=12%)",
-                -34529250
+                -104192999
               ],
               [
                 "− 기본공제 (인별 연 250만)",
@@ -1458,35 +1482,35 @@
               ],
               [
                 "= 과세표준 (인별)",
-                45183250
+                141385572
               ],
               [
-                "× 기본세율 15% (누진공제 적용)",
-                5517487
+                "× 기본세율 35% (누진공제 적용)",
+                34044950
               ],
               [
                 "+ 지방소득세 10%",
-                551748
+                3404495
               ],
               [
                 "= 1인분 세액",
-                6069235
+                37449445
               ]
             ],
-            "rate_label": "15%",
+            "rate_label": "35%",
             "deduction_rate": 0.42,
-            "taxable": 82212500,
-            "base": 45183250,
+            "taxable": 248078571,
+            "base": 141385572,
             "share": 0.5
           },
           {
-            "tax": 5517487,
-            "local": 551748,
-            "total": 6069235,
+            "tax": 34044950,
+            "local": 3404495,
+            "total": 37449445,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1498,15 +1522,15 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
-                "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-                82212500
+                "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+                248078571
               ],
               [
                 "− 장기거주소득공제 42% (거주 5년×6%=30% + 보유 6년×2%=12%)",
-                -34529250
+                -104192999
               ],
               [
                 "− 기본공제 (인별 연 250만)",
@@ -1514,36 +1538,36 @@
               ],
               [
                 "= 과세표준 (인별)",
-                45183250
+                141385572
               ],
               [
-                "× 기본세율 15% (누진공제 적용)",
-                5517487
+                "× 기본세율 35% (누진공제 적용)",
+                34044950
               ],
               [
                 "+ 지방소득세 10%",
-                551748
+                3404495
               ],
               [
                 "= 1인분 세액",
-                6069235
+                37449445
               ]
             ],
-            "rate_label": "15%",
+            "rate_label": "35%",
             "deduction_rate": 0.42,
-            "taxable": 82212500,
-            "base": 45183250,
+            "taxable": 248078571,
+            "base": 141385572,
             "share": 0.5
           }
         ],
         "solo": {
-          "tax": 17063274,
-          "local": 1706327,
-          "total": 18769601,
+          "tax": 88463034,
+          "local": 8846303,
+          "total": 97309337,
           "steps": [
             [
               "양도가액",
-              1600000000
+              2100000000.0
             ],
             [
               "− 취득가액",
@@ -1555,15 +1579,15 @@
             ],
             [
               "= 양도차익",
-              657700000
+              1157700000
             ],
             [
-              "× 고가주택 과세비율 (4.00억/16.00억 = 25.0%)",
-              164425000
+              "× 고가주택 과세비율 (9.00억/21.00억 = 42.9%)",
+              496157142
             ],
             [
               "− 장기거주소득공제 42% (거주 5년×6%=30% + 보유 6년×2%=12%)",
-              -69058500
+              -208385999
             ],
             [
               "− 기본공제 (인별 연 250만)",
@@ -1571,32 +1595,32 @@
             ],
             [
               "= 과세표준 (인별)",
-              92866500
+              285271143
             ],
             [
-              "× 기본세율 35% (누진공제 적용)",
-              17063274
+              "× 기본세율 38% (누진공제 적용)",
+              88463034
             ],
             [
               "+ 지방소득세 10%",
-              1706327
+              8846303
             ],
             [
               "= 총 예상세액",
-              18769601
+              97309337
             ]
           ],
-          "rate_label": "35%",
+          "rate_label": "38%",
           "deduction_rate": 0.42,
-          "taxable": 164425000,
-          "base": 92866500,
+          "taxable": 496157142,
+          "base": 285271143,
           "share": 1.0
         },
-        "saving": 6631131,
-        "rate_label": "15%",
+        "saving": 22410447,
+        "rate_label": "35%",
         "deduction_rate": 0.42
       },
-      "total": 36342870,
+      "total": 293829690,
       "joint": true
     },
     "gwacheon_first_2027_then_sibeom_2029": {
@@ -1605,16 +1629,16 @@
         "asset": "gwacheon",
         "year": 2027,
         "name": "과천자이 25평 A형",
-        "total": 266018500,
+        "total": 516877900,
         "parts": [
           {
-            "tax": 120917500,
-            "local": 12091750,
-            "total": 133009250,
+            "tax": 234944500,
+            "local": 23494450,
+            "total": 258438950,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1626,7 +1650,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1638,35 +1662,35 @@
               ],
               [
                 "= 과세표준 (인별)",
-                326350000
+                576350000
               ],
               [
-                "× 기본세율 40% + 중과 5%p",
-                120917500
+                "× 기본세율 42% + 중과 5%p",
+                234944500
               ],
               [
                 "+ 지방소득세 10%",
-                12091750
+                23494450
               ],
               [
                 "= 1인분 세액",
-                133009250
+                258438950
               ]
             ],
-            "rate_label": "40% + 5%p 중과",
+            "rate_label": "42% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 328850000,
-            "base": 326350000,
+            "taxable": 578850000,
+            "base": 576350000,
             "share": 0.5
           },
           {
-            "tax": 120917500,
-            "local": 12091750,
-            "total": 133009250,
+            "tax": 234944500,
+            "local": 23494450,
+            "total": 258438950,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1678,7 +1702,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1690,36 +1714,36 @@
               ],
               [
                 "= 과세표준 (인별)",
-                326350000
+                576350000
               ],
               [
-                "× 기본세율 40% + 중과 5%p",
-                120917500
+                "× 기본세율 42% + 중과 5%p",
+                234944500
               ],
               [
                 "+ 지방소득세 10%",
-                12091750
+                23494450
               ],
               [
                 "= 1인분 세액",
-                133009250
+                258438950
               ]
             ],
-            "rate_label": "40% + 5%p 중과",
+            "rate_label": "42% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 328850000,
-            "base": 326350000,
+            "taxable": 578850000,
+            "base": 576350000,
             "share": 0.5
           }
         ],
         "solo": {
-          "tax": 272004000,
-          "local": 27200400,
-          "total": 299204400,
+          "tax": 511660000,
+          "local": 51166000,
+          "total": 562826000,
           "steps": [
             [
               "양도가액",
-              1600000000
+              2100000000.0
             ],
             [
               "− 취득가액",
@@ -1731,7 +1755,7 @@
             ],
             [
               "= 양도차익",
-              657700000
+              1157700000
             ],
             [
               "− 장기보유특별공제 (배제)",
@@ -1743,47 +1767,46 @@
             ],
             [
               "= 과세표준 (인별)",
-              655200000
+              1155200000
             ],
             [
-              "× 기본세율 42% + 중과 5%p",
-              272004000
+              "× 기본세율 45% + 중과 5%p",
+              511660000
             ],
             [
               "+ 지방소득세 10%",
-              27200400
+              51166000
             ],
             [
               "= 총 예상세액",
-              299204400
+              562826000
             ]
           ],
-          "rate_label": "42% + 5%p 중과",
+          "rate_label": "45% + 5%p 중과",
           "deduction_rate": 0.0,
-          "taxable": 657700000,
-          "base": 655200000,
+          "taxable": 1157700000,
+          "base": 1155200000,
           "share": 1.0
         },
-        "saving": 33185900,
-        "rate_label": "40% + 5%p 중과",
+        "saving": 45948100,
+        "rate_label": "42% + 5%p 중과",
         "deduction_rate": 0.0
       },
       "second": {
         "asset": "sibeom",
         "year": 2029,
         "name": "분당 시범한양 14평형",
-        "exemptApplied": true,
-        "total": 0,
+        "exemptApplied": false,
+        "total": 188372800,
         "parts": [
           {
-            "tax": 0,
-            "local": 0,
-            "total": 0,
-            "share": 0.5,
+            "tax": 85624000,
+            "local": 8562400,
+            "total": 94186400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1795,27 +1818,47 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
-                "1세대 1주택 비과세 (주택 전체 양도가액 12억 이하)",
+                "− 장기보유특별공제 0% (조합원입주권 — 관리처분인가 후 기간은 장특공제 대상 아님 (시행령 §166①))",
                 0
+              ],
+              [
+                "− 기본공제 (인별 연 250만)",
+                -2500000
+              ],
+              [
+                "= 과세표준 (인별)",
+                277800000
+              ],
+              [
+                "× 기본세율 38% (누진공제 적용)",
+                85624000
+              ],
+              [
+                "+ 지방소득세 10%",
+                8562400
+              ],
+              [
+                "= 1인분 세액",
+                94186400
               ]
             ],
-            "rate_label": "비과세",
-            "deduction_rate": 0,
-            "taxable": 0,
-            "base": 0
+            "rate_label": "38%",
+            "deduction_rate": 0.0,
+            "taxable": 280300000,
+            "base": 277800000,
+            "share": 0.5
           },
           {
-            "tax": 0,
-            "local": 0,
-            "total": 0,
-            "share": 0.5,
+            "tax": 85624000,
+            "local": 8562400,
+            "total": 94186400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1827,28 +1870,48 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
-                "1세대 1주택 비과세 (주택 전체 양도가액 12억 이하)",
+                "− 장기보유특별공제 0% (조합원입주권 — 관리처분인가 후 기간은 장특공제 대상 아님 (시행령 §166①))",
                 0
+              ],
+              [
+                "− 기본공제 (인별 연 250만)",
+                -2500000
+              ],
+              [
+                "= 과세표준 (인별)",
+                277800000
+              ],
+              [
+                "× 기본세율 38% (누진공제 적용)",
+                85624000
+              ],
+              [
+                "+ 지방소득세 10%",
+                8562400
+              ],
+              [
+                "= 1인분 세액",
+                94186400
               ]
             ],
-            "rate_label": "비과세",
-            "deduction_rate": 0,
-            "taxable": 0,
-            "base": 0
+            "rate_label": "38%",
+            "deduction_rate": 0.0,
+            "taxable": 280300000,
+            "base": 277800000,
+            "share": 0.5
           }
         ],
         "solo": {
-          "tax": 0,
-          "local": 0,
-          "total": 0,
-          "share": 1.0,
+          "tax": 198462000,
+          "local": 19846200,
+          "total": 218308200,
           "steps": [
             [
               "양도가액",
-              860000000
+              1300000000.0
             ],
             [
               "− 취득가액",
@@ -1860,23 +1923,44 @@
             ],
             [
               "= 양도차익",
-              120600000
+              560600000
             ],
             [
-              "1세대 1주택 비과세 (주택 전체 양도가액 12억 이하)",
+              "− 장기보유특별공제 0% (조합원입주권 — 관리처분인가 후 기간은 장특공제 대상 아님 (시행령 §166①))",
               0
+            ],
+            [
+              "− 기본공제 (인별 연 250만)",
+              -2500000
+            ],
+            [
+              "= 과세표준 (인별)",
+              558100000
+            ],
+            [
+              "× 기본세율 42% (누진공제 적용)",
+              198462000
+            ],
+            [
+              "+ 지방소득세 10%",
+              19846200
+            ],
+            [
+              "= 총 예상세액",
+              218308200
             ]
           ],
-          "rate_label": "비과세",
-          "deduction_rate": 0,
-          "taxable": 0,
-          "base": 0
+          "rate_label": "42%",
+          "deduction_rate": 0.0,
+          "taxable": 560600000,
+          "base": 558100000,
+          "share": 1.0
         },
-        "saving": 0,
-        "rate_label": "비과세",
-        "deduction_rate": 0
+        "saving": 29935400,
+        "rate_label": "38%",
+        "deduction_rate": 0.0
       },
-      "total": 266018500,
+      "total": 705250700,
       "joint": true
     },
     "sibeom_first_2027_then_gwacheon_2028_nonresident": {
@@ -1885,16 +1969,16 @@
         "asset": "sibeom",
         "year": 2027,
         "name": "분당 시범한양 14평형",
-        "total": 24204400,
+        "total": 218930800,
         "parts": [
           {
-            "tax": 11002000,
-            "local": 1100200,
-            "total": 12102200,
+            "tax": 99514000,
+            "local": 9951400,
+            "total": 109465400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1906,7 +1990,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1918,35 +2002,35 @@
               ],
               [
                 "= 과세표준 (인별)",
-                57800000
+                277800000
               ],
               [
-                "× 기본세율 24% + 중과 5%p",
-                11002000
+                "× 기본세율 38% + 중과 5%p",
+                99514000
               ],
               [
                 "+ 지방소득세 10%",
-                1100200
+                9951400
               ],
               [
                 "= 1인분 세액",
-                12102200
+                109465400
               ]
             ],
-            "rate_label": "24% + 5%p 중과",
+            "rate_label": "38% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 60300000,
-            "base": 57800000,
+            "taxable": 280300000,
+            "base": 277800000,
             "share": 0.5
           },
           {
-            "tax": 11002000,
-            "local": 1100200,
-            "total": 12102200,
+            "tax": 99514000,
+            "local": 9951400,
+            "total": 109465400,
             "steps": [
               [
-                "양도가액 (전체 8.60억 × 지분 50%)",
-                430000000
+                "양도가액 (전체 13.00억 × 지분 50%)",
+                650000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -1958,7 +2042,7 @@
               ],
               [
                 "= 양도차익 (지분)",
-                60300000
+                280300000
               ],
               [
                 "− 장기보유특별공제 (배제)",
@@ -1970,36 +2054,36 @@
               ],
               [
                 "= 과세표준 (인별)",
-                57800000
+                277800000
               ],
               [
-                "× 기본세율 24% + 중과 5%p",
-                11002000
+                "× 기본세율 38% + 중과 5%p",
+                99514000
               ],
               [
                 "+ 지방소득세 10%",
-                1100200
+                9951400
               ],
               [
                 "= 1인분 세액",
-                12102200
+                109465400
               ]
             ],
-            "rate_label": "24% + 5%p 중과",
+            "rate_label": "38% + 5%p 중과",
             "deduction_rate": 0.0,
-            "taxable": 60300000,
-            "base": 57800000,
+            "taxable": 280300000,
+            "base": 277800000,
             "share": 0.5
           }
         ],
         "solo": {
-          "tax": 31800000,
-          "local": 3180000,
-          "total": 34980000,
+          "tax": 226367000,
+          "local": 22636700,
+          "total": 249003700,
           "steps": [
             [
               "양도가액",
-              860000000
+              1300000000.0
             ],
             [
               "− 취득가액",
@@ -2011,7 +2095,7 @@
             ],
             [
               "= 양도차익",
-              120600000
+              560600000
             ],
             [
               "− 장기보유특별공제 (배제)",
@@ -2023,29 +2107,29 @@
             ],
             [
               "= 과세표준 (인별)",
-              118100000
+              558100000
             ],
             [
-              "× 기본세율 35% + 중과 5%p",
-              31800000
+              "× 기본세율 42% + 중과 5%p",
+              226367000
             ],
             [
               "+ 지방소득세 10%",
-              3180000
+              22636700
             ],
             [
               "= 총 예상세액",
-              34980000
+              249003700
             ]
           ],
-          "rate_label": "35% + 5%p 중과",
+          "rate_label": "42% + 5%p 중과",
           "deduction_rate": 0.0,
-          "taxable": 120600000,
-          "base": 118100000,
+          "taxable": 560600000,
+          "base": 558100000,
           "share": 1.0
         },
-        "saving": 10775600,
-        "rate_label": "24% + 5%p 중과",
+        "saving": 30072900,
+        "rate_label": "38% + 5%p 중과",
         "deduction_rate": 0.0
       },
       "second": {
@@ -2053,16 +2137,16 @@
         "year": 2028,
         "name": "과천자이 25평 A형",
         "exemptApplied": false,
-        "total": 201468740,
+        "total": 399993660,
         "parts": [
           {
-            "tax": 91576700,
-            "local": 9157670,
-            "total": 100734370,
+            "tax": 181815300,
+            "local": 18181530,
+            "total": 199996830,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -2074,11 +2158,11 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
                 "− 장기거주소득공제 10% (거주 10% vs 보유 6% 중 높은 쪽)",
-                -32885000
+                -57885000
               ],
               [
                 "− 기본공제 (인별 연 250만)",
@@ -2086,35 +2170,35 @@
               ],
               [
                 "= 과세표준 (인별)",
-                293465000
+                518465000
               ],
               [
-                "× 기본세율 38% (누진공제 적용)",
-                91576700
+                "× 기본세율 42% (누진공제 적용)",
+                181815300
               ],
               [
                 "+ 지방소득세 10%",
-                9157670
+                18181530
               ],
               [
                 "= 1인분 세액",
-                100734370
+                199996830
               ]
             ],
-            "rate_label": "38%",
+            "rate_label": "42%",
             "deduction_rate": 0.1,
-            "taxable": 328850000,
-            "base": 293465000,
+            "taxable": 578850000,
+            "base": 518465000,
             "share": 0.5
           },
           {
-            "tax": 91576700,
-            "local": 9157670,
-            "total": 100734370,
+            "tax": 181815300,
+            "local": 18181530,
+            "total": 199996830,
             "steps": [
               [
-                "양도가액 (전체 16.00억 × 지분 50%)",
-                800000000
+                "양도가액 (전체 21.00억 × 지분 50%)",
+                1050000000
               ],
               [
                 "− 취득가액 (지분)",
@@ -2126,11 +2210,11 @@
               ],
               [
                 "= 양도차익 (지분)",
-                328850000
+                578850000
               ],
               [
                 "− 장기거주소득공제 10% (거주 10% vs 보유 6% 중 높은 쪽)",
-                -32885000
+                -57885000
               ],
               [
                 "− 기본공제 (인별 연 250만)",
@@ -2138,36 +2222,36 @@
               ],
               [
                 "= 과세표준 (인별)",
-                293465000
+                518465000
               ],
               [
-                "× 기본세율 38% (누진공제 적용)",
-                91576700
+                "× 기본세율 42% (누진공제 적용)",
+                181815300
               ],
               [
                 "+ 지방소득세 10%",
-                9157670
+                18181530
               ],
               [
                 "= 1인분 세액",
-                100734370
+                199996830
               ]
             ],
-            "rate_label": "38%",
+            "rate_label": "42%",
             "deduction_rate": 0.1,
-            "taxable": 328850000,
-            "base": 293465000,
+            "taxable": 578850000,
+            "base": 518465000,
             "share": 0.5
           }
         ],
         "solo": {
-          "tax": 211620600,
-          "local": 21162060,
-          "total": 232782660,
+          "tax": 401803500,
+          "local": 40180350,
+          "total": 441983850,
           "steps": [
             [
               "양도가액",
-              1600000000
+              2100000000.0
             ],
             [
               "− 취득가액",
@@ -2179,11 +2263,11 @@
             ],
             [
               "= 양도차익",
-              657700000
+              1157700000
             ],
             [
               "− 장기거주소득공제 10% (거주 10% vs 보유 6% 중 높은 쪽)",
-              -65770000
+              -115770000
             ],
             [
               "− 기본공제 (인별 연 250만)",
@@ -2191,179 +2275,179 @@
             ],
             [
               "= 과세표준 (인별)",
-              589430000
+              1039430000
             ],
             [
-              "× 기본세율 42% (누진공제 적용)",
-              211620600
+              "× 기본세율 45% (누진공제 적용)",
+              401803500
             ],
             [
               "+ 지방소득세 10%",
-              21162060
+              40180350
             ],
             [
               "= 총 예상세액",
-              232782660
+              441983850
             ]
           ],
-          "rate_label": "42%",
+          "rate_label": "45%",
           "deduction_rate": 0.1,
-          "taxable": 657700000,
-          "base": 589430000,
+          "taxable": 1157700000,
+          "base": 1039430000,
           "share": 1.0
         },
-        "saving": 31313920,
-        "rate_label": "38%",
+        "saving": 41990190,
+        "rate_label": "42%",
         "deduction_rate": 0.1
       },
-      "total": 225673140,
+      "total": 618924460,
       "joint": true
     }
   },
   "all_order_combinations": {
     "gwacheon2027_then_sibeom2027": {
-      "total": 266018500,
+      "total": 519826982,
       "first": "gwacheon",
       "firstYear": 2027,
       "second": "sibeom",
       "secondYear": 2027,
-      "firstTax": 266018500,
-      "secondTax": 0,
+      "firstTax": 516877900,
+      "secondTax": 2949082,
       "secondExempt": true,
-      "soloTotal": 299204400,
-      "jointSaving": 33185900
+      "soloTotal": 567573582,
+      "jointSaving": 47746600
     },
     "sibeom2027_then_gwacheon2027": {
-      "total": 41466304,
+      "total": 322296252,
       "first": "sibeom",
       "firstYear": 2027,
       "second": "gwacheon",
       "secondYear": 2027,
-      "firstTax": 24204400,
-      "secondTax": 17261904,
+      "firstTax": 218930800,
+      "secondTax": 103365452,
       "secondExempt": true,
-      "soloTotal": 62612110,
-      "jointSaving": 21145806
+      "soloTotal": 376552282,
+      "jointSaving": 54256030
     },
     "gwacheon2027_then_sibeom2028": {
-      "total": 266018500,
+      "total": 520040440,
       "first": "gwacheon",
       "firstYear": 2027,
       "second": "sibeom",
       "secondYear": 2028,
-      "firstTax": 266018500,
-      "secondTax": 0,
+      "firstTax": 516877900,
+      "secondTax": 3162540,
       "secondExempt": true,
-      "soloTotal": 299204400,
-      "jointSaving": 33185900
+      "soloTotal": 567787041,
+      "jointSaving": 47746601
     },
     "sibeom2027_then_gwacheon2028": {
-      "total": 36342870,
+      "total": 293829690,
       "first": "sibeom",
       "firstYear": 2027,
       "second": "gwacheon",
       "secondYear": 2028,
-      "firstTax": 24204400,
-      "secondTax": 12138470,
+      "firstTax": 218930800,
+      "secondTax": 74898890,
       "secondExempt": true,
-      "soloTotal": 53749601,
-      "jointSaving": 17406731
+      "soloTotal": 346313037,
+      "jointSaving": 52483347
     },
     "gwacheon2027_then_sibeom2029": {
-      "total": 266018500,
+      "total": 705250700,
       "first": "gwacheon",
       "firstYear": 2027,
       "second": "sibeom",
       "secondYear": 2029,
-      "firstTax": 266018500,
-      "secondTax": 0,
-      "secondExempt": true,
-      "soloTotal": 299204400,
-      "jointSaving": 33185900
+      "firstTax": 516877900,
+      "secondTax": 188372800,
+      "secondExempt": false,
+      "soloTotal": 781134200,
+      "jointSaving": 75883500
     },
     "sibeom2027_then_gwacheon2029": {
-      "total": 36885474,
+      "total": 297650100,
       "first": "sibeom",
       "firstYear": 2027,
       "second": "gwacheon",
       "secondYear": 2029,
-      "firstTax": 24204400,
-      "secondTax": 12681074,
+      "firstTax": 218930800,
+      "secondTax": 78719300,
       "secondExempt": true,
-      "soloTotal": 55015675,
-      "jointSaving": 18130201
+      "soloTotal": 350460910,
+      "jointSaving": 52810810
     },
     "gwacheon2028_then_sibeom2028": {
-      "total": 301917000,
+      "total": 583438940,
       "first": "gwacheon",
       "firstYear": 2028,
       "second": "sibeom",
       "secondYear": 2028,
-      "firstTax": 301917000,
-      "secondTax": 0,
+      "firstTax": 580276400,
+      "secondTax": 3162540,
       "secondExempt": true,
-      "soloTotal": 335240400,
-      "jointSaving": 33323400
+      "soloTotal": 631323041,
+      "jointSaving": 47884101
     },
     "sibeom2028_then_gwacheon2028": {
-      "total": 42700870,
+      "total": 324387690,
       "first": "sibeom",
       "firstYear": 2028,
       "second": "gwacheon",
       "secondYear": 2028,
-      "firstTax": 30562400,
-      "secondTax": 12138470,
+      "firstTax": 249488800,
+      "secondTax": 74898890,
       "secondExempt": true,
-      "soloTotal": 60245101,
-      "jointSaving": 17544231
+      "soloTotal": 377008537,
+      "jointSaving": 52620847
     },
     "gwacheon2028_then_sibeom2029": {
-      "total": 301917000,
+      "total": 768649200,
       "first": "gwacheon",
       "firstYear": 2028,
       "second": "sibeom",
       "secondYear": 2029,
-      "firstTax": 301917000,
-      "secondTax": 0,
-      "secondExempt": true,
-      "soloTotal": 335240400,
-      "jointSaving": 33323400
+      "firstTax": 580276400,
+      "secondTax": 188372800,
+      "secondExempt": false,
+      "soloTotal": 844670200,
+      "jointSaving": 76021000
     },
     "sibeom2028_then_gwacheon2029": {
-      "total": 43243474,
+      "total": 328208100,
       "first": "sibeom",
       "firstYear": 2028,
       "second": "gwacheon",
       "secondYear": 2029,
-      "firstTax": 30562400,
-      "secondTax": 12681074,
+      "firstTax": 249488800,
+      "secondTax": 78719300,
       "secondExempt": true,
-      "soloTotal": 61511175,
-      "jointSaving": 18267701
+      "soloTotal": 381156410,
+      "jointSaving": 52948310
     },
     "gwacheon2029_then_sibeom2029": {
-      "total": 356350720,
+      "total": 863864144,
       "first": "gwacheon",
       "firstYear": 2029,
       "second": "sibeom",
       "secondYear": 2029,
-      "firstTax": 356350720,
-      "secondTax": 0,
-      "secondExempt": true,
-      "soloTotal": 389370344,
-      "jointSaving": 33019624
+      "firstTax": 675491344,
+      "secondTax": 188372800,
+      "secondExempt": false,
+      "soloTotal": 938631980,
+      "jointSaving": 74767836
     },
     "sibeom2029_then_gwacheon2029": {
-      "total": 55959474,
+      "total": 389324100,
       "first": "sibeom",
       "firstYear": 2029,
       "second": "gwacheon",
       "secondYear": 2029,
-      "firstTax": 43278400,
-      "secondTax": 12681074,
+      "firstTax": 310604800,
+      "secondTax": 78719300,
       "secondExempt": true,
-      "soloTotal": 74502175,
-      "jointSaving": 18542701
+      "soloTotal": 442547410,
+      "jointSaving": 53223310
     }
   },
   "ownership": {
@@ -2377,331 +2461,331 @@
   },
   "best_order": {
     "key": "sibeom2027_then_gwacheon2028",
-    "total": 36342870,
+    "total": 293829690,
     "first": "sibeom",
     "firstYear": 2027,
     "second": "gwacheon",
     "secondYear": 2028,
-    "firstTax": 24204400,
-    "secondTax": 12138470,
+    "firstTax": 218930800,
+    "secondTax": 74898890,
     "secondExempt": true,
-    "soloTotal": 53749601,
-    "jointSaving": 17406731
+    "soloTotal": 346313037,
+    "jointSaving": 52483347
   },
   "worst_order": {
     "key": "gwacheon2029_then_sibeom2029",
-    "total": 356350720,
+    "total": 863864144,
     "first": "gwacheon",
     "firstYear": 2029,
     "second": "sibeom",
     "secondYear": 2029,
-    "firstTax": 356350720,
-    "secondTax": 0,
-    "secondExempt": true,
-    "soloTotal": 389370344,
-    "jointSaving": 33019624
+    "firstTax": 675491344,
+    "secondTax": 188372800,
+    "secondExempt": false,
+    "soloTotal": 938631980,
+    "jointSaving": 74767836
   },
   "gift_plans": {
     "gwacheon": {
       "assetName": "과천자이 25평 A형",
-      "totalValue": 1600000000,
-      "mySharePerSpouse": 800000000,
+      "totalValue": 2100000000,
+      "mySharePerSpouse": 1050000000,
       "toSpouse": {
-        "value": 800000000,
+        "value": 1050000000,
         "deduction": 600000000,
-        "base": 200000000,
-        "gross": 30000000,
+        "base": 450000000,
+        "gross": 80000000,
         "generationSkipSurcharge": 0,
-        "credit": 900000,
-        "giftTax": 29100000,
-        "acquisitionTax": 28000000,
-        "totalCost": 57100000,
-        "effectiveRate": 0.071375
+        "credit": 2400000,
+        "giftTax": 77600000,
+        "acquisitionTax": 36750000,
+        "totalCost": 114350000,
+        "effectiveRate": 0.10890476190476191
       },
       "toChildrenHalf": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년)",
-            "value": 400000000,
+            "value": 525000000,
             "deduction": 20000000,
             "age": 14,
             "isAdult": false,
             "calc": {
-              "value": 400000000,
+              "value": 525000000,
               "deduction": 20000000,
-              "base": 380000000,
-              "gross": 66000000,
+              "base": 505000000,
+              "gross": 91500000,
               "generationSkipSurcharge": 0,
-              "credit": 1980000,
-              "giftTax": 64020000,
-              "acquisitionTax": 14000000,
-              "totalCost": 78020000,
-              "effectiveRate": 0.19505
+              "credit": 2745000,
+              "giftTax": 88755000,
+              "acquisitionTax": 18375000,
+              "totalCost": 107130000,
+              "effectiveRate": 0.20405714285714285
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년)",
-            "value": 400000000,
+            "value": 525000000,
             "deduction": 20000000,
             "age": 13,
             "isAdult": false,
             "calc": {
-              "value": 400000000,
+              "value": 525000000,
               "deduction": 20000000,
-              "base": 380000000,
-              "gross": 66000000,
+              "base": 505000000,
+              "gross": 91500000,
               "generationSkipSurcharge": 0,
-              "credit": 1980000,
-              "giftTax": 64020000,
-              "acquisitionTax": 14000000,
-              "totalCost": 78020000,
-              "effectiveRate": 0.19505
+              "credit": 2745000,
+              "giftTax": 88755000,
+              "acquisitionTax": 18375000,
+              "totalCost": 107130000,
+              "effectiveRate": 0.20405714285714285
             }
           }
         ],
-        "value": 800000000,
-        "giftTax": 128040000,
-        "acquisitionTax": 28000000,
-        "totalCost": 156040000
+        "value": 1050000000,
+        "giftTax": 177510000,
+        "acquisitionTax": 36750000,
+        "totalCost": 214260000
       },
       "toChildrenAll": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년)",
-            "value": 800000000,
+            "value": 1050000000,
             "deduction": 20000000,
             "age": 14,
             "isAdult": false,
             "calc": {
-              "value": 800000000,
+              "value": 1050000000,
               "deduction": 20000000,
-              "base": 780000000,
-              "gross": 174000000,
+              "base": 1030000000,
+              "gross": 252000000,
               "generationSkipSurcharge": 0,
-              "credit": 5220000,
-              "giftTax": 168780000,
-              "acquisitionTax": 28000000,
-              "totalCost": 196780000,
-              "effectiveRate": 0.245975
+              "credit": 7560000,
+              "giftTax": 244440000,
+              "acquisitionTax": 36750000,
+              "totalCost": 281190000,
+              "effectiveRate": 0.2678
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년)",
-            "value": 800000000,
+            "value": 1050000000,
             "deduction": 20000000,
             "age": 13,
             "isAdult": false,
             "calc": {
-              "value": 800000000,
+              "value": 1050000000,
               "deduction": 20000000,
-              "base": 780000000,
-              "gross": 174000000,
+              "base": 1030000000,
+              "gross": 252000000,
               "generationSkipSurcharge": 0,
-              "credit": 5220000,
-              "giftTax": 168780000,
-              "acquisitionTax": 28000000,
-              "totalCost": 196780000,
-              "effectiveRate": 0.245975
+              "credit": 7560000,
+              "giftTax": 244440000,
+              "acquisitionTax": 36750000,
+              "totalCost": 281190000,
+              "effectiveRate": 0.2678
             }
           }
         ],
-        "value": 1600000000,
-        "giftTax": 337560000,
-        "acquisitionTax": 56000000,
-        "totalCost": 393560000
+        "value": 2100000000,
+        "giftTax": 488880000,
+        "acquisitionTax": 73500000,
+        "totalCost": 562380000
       },
       "toChildrenAfterAdult": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년) → 성년 시점",
-            "value": 400000000,
+            "value": 525000000,
             "deduction": 50000000,
             "calc": {
-              "value": 400000000,
+              "value": 525000000,
               "deduction": 50000000,
-              "base": 350000000,
-              "gross": 60000000,
+              "base": 475000000,
+              "gross": 85000000,
               "generationSkipSurcharge": 0,
-              "credit": 1800000,
-              "giftTax": 58200000,
-              "acquisitionTax": 14000000,
-              "totalCost": 72200000,
-              "effectiveRate": 0.1805
+              "credit": 2550000,
+              "giftTax": 82450000,
+              "acquisitionTax": 18375000,
+              "totalCost": 100825000,
+              "effectiveRate": 0.19204761904761905
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년) → 성년 시점",
-            "value": 400000000,
+            "value": 525000000,
             "deduction": 50000000,
             "calc": {
-              "value": 400000000,
+              "value": 525000000,
               "deduction": 50000000,
-              "base": 350000000,
-              "gross": 60000000,
+              "base": 475000000,
+              "gross": 85000000,
               "generationSkipSurcharge": 0,
-              "credit": 1800000,
-              "giftTax": 58200000,
-              "acquisitionTax": 14000000,
-              "totalCost": 72200000,
-              "effectiveRate": 0.1805
+              "credit": 2550000,
+              "giftTax": 82450000,
+              "acquisitionTax": 18375000,
+              "totalCost": 100825000,
+              "effectiveRate": 0.19204761904761905
             }
           }
         ],
-        "value": 800000000,
-        "giftTax": 116400000,
-        "acquisitionTax": 28000000,
-        "totalCost": 144400000
+        "value": 1050000000,
+        "giftTax": 164900000,
+        "acquisitionTax": 36750000,
+        "totalCost": 201650000
       }
     },
     "sibeom": {
       "assetName": "분당 시범한양 14평형",
-      "totalValue": 860000000,
-      "mySharePerSpouse": 430000000,
+      "totalValue": 1300000000,
+      "mySharePerSpouse": 650000000,
       "toSpouse": {
-        "value": 430000000,
+        "value": 650000000,
         "deduction": 600000000,
-        "base": 0,
-        "gross": 0,
+        "base": 50000000,
+        "gross": 5000000,
         "generationSkipSurcharge": 0,
-        "credit": 0,
-        "giftTax": 0,
-        "acquisitionTax": 15050000,
-        "totalCost": 15050000,
-        "effectiveRate": 0.035
+        "credit": 150000,
+        "giftTax": 4850000,
+        "acquisitionTax": 22750000,
+        "totalCost": 27600000,
+        "effectiveRate": 0.04246153846153846
       },
       "toChildrenHalf": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년)",
-            "value": 215000000,
+            "value": 325000000,
             "deduction": 20000000,
             "age": 14,
             "isAdult": false,
             "calc": {
-              "value": 215000000,
+              "value": 325000000,
               "deduction": 20000000,
-              "base": 195000000,
-              "gross": 29000000,
+              "base": 305000000,
+              "gross": 51000000,
               "generationSkipSurcharge": 0,
-              "credit": 870000,
-              "giftTax": 28130000,
-              "acquisitionTax": 7525000,
-              "totalCost": 35655000,
-              "effectiveRate": 0.1658372093023256
+              "credit": 1530000,
+              "giftTax": 49470000,
+              "acquisitionTax": 11375000,
+              "totalCost": 60845000,
+              "effectiveRate": 0.18721538461538462
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년)",
-            "value": 215000000,
+            "value": 325000000,
             "deduction": 20000000,
             "age": 13,
             "isAdult": false,
             "calc": {
-              "value": 215000000,
+              "value": 325000000,
               "deduction": 20000000,
-              "base": 195000000,
-              "gross": 29000000,
+              "base": 305000000,
+              "gross": 51000000,
               "generationSkipSurcharge": 0,
-              "credit": 870000,
-              "giftTax": 28130000,
-              "acquisitionTax": 7525000,
-              "totalCost": 35655000,
-              "effectiveRate": 0.1658372093023256
+              "credit": 1530000,
+              "giftTax": 49470000,
+              "acquisitionTax": 11375000,
+              "totalCost": 60845000,
+              "effectiveRate": 0.18721538461538462
             }
           }
         ],
-        "value": 430000000,
-        "giftTax": 56260000,
-        "acquisitionTax": 15050000,
-        "totalCost": 71310000
+        "value": 650000000,
+        "giftTax": 98940000,
+        "acquisitionTax": 22750000,
+        "totalCost": 121690000
       },
       "toChildrenAll": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년)",
-            "value": 430000000,
+            "value": 650000000,
             "deduction": 20000000,
             "age": 14,
             "isAdult": false,
             "calc": {
-              "value": 430000000,
+              "value": 650000000,
               "deduction": 20000000,
-              "base": 410000000,
-              "gross": 72000000,
+              "base": 630000000,
+              "gross": 129000000,
               "generationSkipSurcharge": 0,
-              "credit": 2160000,
-              "giftTax": 69840000,
-              "acquisitionTax": 15050000,
-              "totalCost": 84890000,
-              "effectiveRate": 0.1974186046511628
+              "credit": 3870000,
+              "giftTax": 125130000,
+              "acquisitionTax": 22750000,
+              "totalCost": 147880000,
+              "effectiveRate": 0.2275076923076923
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년)",
-            "value": 430000000,
+            "value": 650000000,
             "deduction": 20000000,
             "age": 13,
             "isAdult": false,
             "calc": {
-              "value": 430000000,
+              "value": 650000000,
               "deduction": 20000000,
-              "base": 410000000,
-              "gross": 72000000,
+              "base": 630000000,
+              "gross": 129000000,
               "generationSkipSurcharge": 0,
-              "credit": 2160000,
-              "giftTax": 69840000,
-              "acquisitionTax": 15050000,
-              "totalCost": 84890000,
-              "effectiveRate": 0.1974186046511628
+              "credit": 3870000,
+              "giftTax": 125130000,
+              "acquisitionTax": 22750000,
+              "totalCost": 147880000,
+              "effectiveRate": 0.2275076923076923
             }
           }
         ],
-        "value": 860000000,
-        "giftTax": 139680000,
-        "acquisitionTax": 30100000,
-        "totalCost": 169780000
+        "value": 1300000000,
+        "giftTax": 250260000,
+        "acquisitionTax": 45500000,
+        "totalCost": 295760000
       },
       "toChildrenAfterAdult": {
         "parts": [
           {
             "label": "child1 (2013년생, 만14세, 미성년) → 성년 시점",
-            "value": 215000000,
+            "value": 325000000,
             "deduction": 50000000,
             "calc": {
-              "value": 215000000,
+              "value": 325000000,
               "deduction": 50000000,
-              "base": 165000000,
-              "gross": 23000000,
+              "base": 275000000,
+              "gross": 45000000,
               "generationSkipSurcharge": 0,
-              "credit": 690000,
-              "giftTax": 22310000,
-              "acquisitionTax": 7525000,
-              "totalCost": 29835000,
-              "effectiveRate": 0.1387674418604651
+              "credit": 1350000,
+              "giftTax": 43650000,
+              "acquisitionTax": 11375000,
+              "totalCost": 55025000,
+              "effectiveRate": 0.1693076923076923
             }
           },
           {
             "label": "child2 (2014년생, 만13세, 미성년) → 성년 시점",
-            "value": 215000000,
+            "value": 325000000,
             "deduction": 50000000,
             "calc": {
-              "value": 215000000,
+              "value": 325000000,
               "deduction": 50000000,
-              "base": 165000000,
-              "gross": 23000000,
+              "base": 275000000,
+              "gross": 45000000,
               "generationSkipSurcharge": 0,
-              "credit": 690000,
-              "giftTax": 22310000,
-              "acquisitionTax": 7525000,
-              "totalCost": 29835000,
-              "effectiveRate": 0.1387674418604651
+              "credit": 1350000,
+              "giftTax": 43650000,
+              "acquisitionTax": 11375000,
+              "totalCost": 55025000,
+              "effectiveRate": 0.1693076923076923
             }
           }
         ],
-        "value": 430000000,
-        "giftTax": 44620000,
-        "acquisitionTax": 15050000,
-        "totalCost": 59670000
+        "value": 650000000,
+        "giftTax": 87300000,
+        "acquisitionTax": 22750000,
+        "totalCost": 110050000
       }
     }
   },
@@ -2726,9 +2810,9 @@
     "carryoverWarning": "배우자·직계존비속에게 증여받은 부동산을 10년 내 양도하면 이월과세(소득세법 §97의2)로 취득가액을 증여자의 원래 취득가로 계산한다. 자녀 증여도 동일하게 적용되므로 증여 후 조기 매도는 절세효과가 사라진다."
   },
   "inheritance_reference": {
-    "estateTotal": 2460000000,
+    "estateTotal": 3400000000,
     "deductionAssumed": 1000000000,
-    "taxBase": 1460000000,
+    "taxBase": 2400000000,
     "note": "상속은 선택 가능한 절세 수단이 아님 — 자산 규모가 상속세 과세구간에 있음을 확인하는 용도"
   },
   "verification": {

@@ -104,11 +104,14 @@ def deduction_rate(years_hold, years_reside, year, is_one_house, law="reform"):
 def capital_gains(sale_price, acq_price, expenses, years_hold, years_reside,
                   year, *, exempt_1house, is_one_house, resident=True,
                   law="reform", long_resident_years=0, surcharge_pp=0,
-                  no_long_deduction=False, deduction_cap=None, share=1.0):
+                  no_long_deduction=False, deduction_cap=None, share=1.0,
+                  is_unit_right=False):
     """양도세 계산. exempt_1house=True면 1세대1주택 비과세(고가주택 초과분만 과세).
 
     no_long_deduction: 중과 한시완화 기간 적용 등으로 장특공제 배제되는 경우
     deduction_cap: 개편안 (8)④ 공제한도 ('28년 20억, '29년~ 10억)
+    is_unit_right: 조합원입주권 양도 여부. 관리처분계획인가로 주택이 입주권으로 전환되면
+        인가일 이후 기간은 장기보유특별공제 대상이 아니다 (시행령 §166①).
     share: 지분비율. 부부공동명의 50%면 0.5 — 인별로 1명분 세액을 계산한다.
         고가주택 12억 판정은 주택 전체 양도가액 기준(지분가액이 아님)이고,
         과세표준·누진세율·기본공제는 인별 적용 → 공동명의의 절세효과가 여기서 발생.
@@ -142,6 +145,11 @@ def capital_gains(sale_price, acq_price, expenses, years_hold, years_reside,
     if no_long_deduction:
         rate, detail, ded = 0.0, "중과 한시완화 적용 → 장기보유특별공제 배제", 0
         steps.append(("− 장기보유특별공제 (배제)", 0))
+    elif is_unit_right:
+        detail = "조합원입주권 — 관리처분인가 후 기간은 장특공제 대상 아님 (시행령 §166①)"
+        rate, _ = deduction_rate(years_hold, 0, year, False, law)
+        ded = int(taxable * rate)
+        steps.append((f"− 장기보유특별공제 {rate:.0%} ({detail})", -ded))
     else:
         rate, detail = deduction_rate(years_hold, years_reside + long_resident_years,
                                       year, is_one_house and resident, law)
@@ -209,11 +217,11 @@ GWACHEON = {
     "acquisition_tax_rate": 0.03,        # ✅ 실제 취득세율 3%
     "acquisition_tax": 27_300_000,        # 9.1억 × 3%
     "other_expenses": 5_000_000,         # 취득 부대비용 가정
-    "sale_price": 1_600_000_000,         # ⚠ 입력 대기 (UI에서 입력)
+    "sale_price": 2_100_000_000,         # ✅ 예상 매도가 21억 (사용자 확인)
     "reside_from": "2022-01-20", "reside_to": "2024-07-05",
     "reside_years": 2.46,
     "adjusted_at_acq": True,             # 과천: 2016-11 지정 → 2023-01-05 해제
-    "official_price": 1_100_000_000,     # ⚠ 입력 대기 (공시가격 알리미 조회 필요)
+    "official_price": 1_307_000_000,     # ✅ 2026-01-01 기준 공시가격 (사용자 확인)
 }
 SIBEOM = {
     "name": "분당 시범한양 14평형",
@@ -223,14 +231,41 @@ SIBEOM = {
     "acquisition_tax_rate": 0.08,        # ✅ 실제 취득세율 8% (2주택 중과)
     "acquisition_tax": 54_400_000,        # 6.8억 × 8%
     "other_expenses": 5_000_000,
-    "sale_price": 860_000_000,           # ⚠ 입력 대기
+    "sale_price": 1_300_000_000,         # ✅ 예상 매도가 13억 (사용자 확인)
     "reside_years": 0.0,
     "adjusted_at_acq": True,             # 성남 분당: 2023-01-05 해제
-    "official_price": 600_000_000,       # ⚠ 입력 대기
+    "official_price": 600_000_000,       # ✅ 2026-01-01 기준 공시가격 (사용자 확인)
     "reconstruction": True,              # 재건축 추진 단지
 }
 for a in (GWACHEON, SIBEOM):
     a["expenses"] = a["acquisition_tax"] + a["other_expenses"]
+
+# ── 시범한양 재건축 예정 스케줄 (사용자 입력) ──────────────────────
+# 근거: 소득세법 시행령 §156의2(주택과 조합원입주권 특례), §166①(양도차익 산정),
+#       지방세법 §105·§107(재산세), 종부세법 §8①(주택 범위)
+STAGE_SPEC = {
+    "none":        {"label": "해당 없음 / 조합설립 전", "unit_right": False,
+                    "land_tax": False, "jongbuse": True, "sangsaeng": True, "mult": 1.0},
+    "approval":    {"label": "사업시행인가", "unit_right": False,
+                    "land_tax": False, "jongbuse": True, "sangsaeng": True, "mult": 1.0},
+    "management":  {"label": "관리처분계획인가", "unit_right": True,
+                    "land_tax": False, "jongbuse": True, "sangsaeng": False, "mult": 1.0},
+    "demolished":  {"label": "이주·멸실", "unit_right": True,
+                    "land_tax": True, "jongbuse": False, "sangsaeng": False, "mult": 1.0},
+    "completed":   {"label": "준공·입주 (신축주택)", "unit_right": False,
+                    "land_tax": False, "jongbuse": True, "sangsaeng": False, "mult": 1.8},
+}
+# 사용자 예정: '27년 사업시행인가 → '29년 관리처분계획인가
+SIBEOM_SCHEDULE = {2026: "none", 2027: "approval", 2028: "approval", 2029: "management"}
+
+
+def stage_at(year, schedule=SIBEOM_SCHEDULE):
+    """해당 연도에 유효한 재건축 단계 (가장 최근에 도달한 단계)."""
+    cur = "none"
+    for y in sorted(schedule):
+        if y <= year:
+            cur = schedule[y]
+    return STAGE_SPEC[cur]
 
 
 def hold_years(acq_date, year, month=7):
@@ -255,17 +290,13 @@ results = {
         "gwacheon_acq_tax": "취득세율 3% → 2,730만원 (사용자 확인)",
         "sibeom_acq_price": "실제 매수가 6.8억 (사용자 확인)",
         "sibeom_acq_tax": "취득세율 8% → 5,440만원 (사용자 확인, 2주택 중과세율)",
+        "gwacheon_official_price": "2026-01-01 기준 공시가격 13.07억 (사용자 확인)",
+        "sibeom_official_price": "2026-01-01 기준 공시가격 6.00억 (사용자 확인)",
+        "gwacheon_sale_price": "예상 매도가 21억 (사용자 입력)",
+        "sibeom_sale_price": "예상 매도가 13억 (사용자 입력) — 재건축 기대가 반영된 가격",
+        "reconstructionSchedule": "시범한양: 2027년 사업시행인가, 2029년 관리처분계획인가 (사용자 예정)",
     },
-    "pendingInputs": [
-        {"field": "gwacheon.sale_price", "label": "과천자이 예상 매도가", "assumed": 1_600_000_000},
-        {"field": "sibeom.sale_price", "label": "시범한양 예상 매도가", "assumed": 860_000_000},
-        {"field": "gwacheon.official_price", "label": "과천자이 공시가격",
-         "assumed": 1_100_000_000,
-         "howTo": "부동산공시가격 알리미(realtyprice.kr) → 공동주택 공시가격 → 경기 과천시 해당 단지 조회 (동·호수는 기록하지 않음)"},
-        {"field": "sibeom.official_price", "label": "시범한양 공시가격",
-         "assumed": 600_000_000,
-         "howTo": "부동산공시가격 알리미(realtyprice.kr) → 공동주택 공시가격 → 경기 성남시 분당구 해당 단지 조회 (동·호수는 기록하지 않음)"},
-    ],
+    "pendingInputs": [],
 }
 
 # ── 시나리오 1: 과천자이 — 1주택 + 거주자 상태, 연도별 ────────────
@@ -308,18 +339,31 @@ for year in (2027, 2028, 2029):
 sib = []
 for year in (2027, 2028, 2029):
     pp = SURCHARGE_2HOUSE[year]
-    r = capital_gains(SIBEOM["sale_price"], SIBEOM["acq_price"], SIBEOM["expenses"],
+    st = stage_at(year)
+    r = capital_gains(SIBEOM["sale_price"] * st["mult"], SIBEOM["acq_price"], SIBEOM["expenses"],
                       hold_years(SIBEOM["acq_date"], year), 0, year,
                       exempt_1house=False, is_one_house=False, resident=True,
-                      surcharge_pp=pp, no_long_deduction=(year in (2027, 2028)))
-    sib.append({"year": year, "reform": r, "surchargePp": pp})
+                      surcharge_pp=pp, no_long_deduction=(year in (2027, 2028)),
+                      is_unit_right=st["unit_right"])
+    sib.append({"year": year, "reform": r, "surchargePp": pp, "stage": st["label"]})
 results["sibeom_taxed"] = sib
 
 # ── 시나리오 5: 시범한양 — 1주택 + 상생임대 거주요건 면제 비과세 ──
+# ★ 재건축 스케줄이 이 경로를 좌우한다. 상생임대 양도기한은 2029-07-31이지만
+#   2029년에 관리처분계획인가가 나면 주택이 조합원입주권으로 전환되어 상생임대 경로가 닫힌다.
+#   → 인가 전(2028년 또는 2029년 인가일 전)에 양도를 완료해야 한다.
+sangsaeng_years = [y for y in (2027, 2028, 2029) if stage_at(y)["sangsaeng"]]
 sib_ex = capital_gains(SIBEOM["sale_price"], SIBEOM["acq_price"], SIBEOM["expenses"],
-                       hold_years(SIBEOM["acq_date"], 2029), 0, 2029,
+                       hold_years(SIBEOM["acq_date"], max(sangsaeng_years)), 0,
+                       max(sangsaeng_years),
                        exempt_1house=True, is_one_house=True, resident=True)
-results["sibeom_sangsaeng_exempt"] = {"deadline": "2029-07-31", **sib_ex}
+results["sibeom_sangsaeng_exempt"] = {
+    "deadline": "2029-07-31",
+    "lastYearAvailable": max(sangsaeng_years),
+    "blockedFrom": min((y for y in (2027, 2028, 2029) if not stage_at(y)["sangsaeng"]), default=None),
+    "note": ("상생임대 양도기한은 2029-07-31이나 2029년 관리처분계획인가로 주택이 조합원입주권으로 "
+             "전환되면 경로가 닫힌다. 실질 기한은 인가일이며, 안전하게는 2028년 내 양도."),
+    **sib_ex}
 
 # ── 시나리오 6: 시범한양 재건축 단계별 세제 변화 ───────────────────
 # 근거: 소득세법 시행령 §156의2(주택과 조합원입주권 특례), §166(양도차익 산정),
@@ -537,9 +581,22 @@ def jongbuse_joint(official_prices, year, *, shares=(0.5, 0.5), **kw):
             "totalOfficial": sum(official_prices), "houseCount": house_count}
 
 
-def property_tax(official_price, *, one_house_under_900m=False):
-    """재산세(주택분) 개산. 지방세법 §111, 공정시장가액비율 60%(1주택 특례 43~45% 별도).
-    도시지역분·지방교육세 포함 개산치."""
+def property_tax(official_price, *, one_house_under_900m=False, as_land=False):
+    """재산세 개산. 지방세법 §111, 공정시장가액비율 60%(1주택 특례 43~45% 별도).
+    도시지역분·지방교육세 포함 개산치.
+
+    as_land: 재건축 멸실 후. 건물이 없어지면 주택분이 아니라 토지분으로 과세된다
+        (지방세법 §105·§107) → 별도합산 0.2~0.4% 개산, 공정비율 70%."""
+    if official_price <= 0:
+        return {"taxBase": 0, "propertyTax": 0, "eduTax": 0, "cityTax": 0,
+                "total": 0, "kind": "없음"}
+    if as_land:
+        base = int(official_price * 0.70)
+        tax = int(base * 0.002)
+        edu = int(tax * 0.2)
+        city = int(base * 0.0014)
+        return {"taxBase": base, "propertyTax": tax, "eduTax": edu, "cityTax": city,
+                "total": tax + edu + city, "kind": "토지분"}
     fair = 0.60
     base = int(official_price * fair)
     tiers = [(60_000_000, .001, 0), (150_000_000, .0015, 30_000),
@@ -551,7 +608,7 @@ def property_tax(official_price, *, one_house_under_900m=False):
     edu = int(tax * 0.2)            # 지방교육세 20%
     city = int(base * 0.0014)       # 도시지역분 0.14%
     return {"taxBase": base, "propertyTax": tax, "eduTax": edu, "cityTax": city,
-            "total": tax + edu + city}
+            "total": tax + edu + city, "kind": "주택분"}
 
 
 OFFICIAL = [GWACHEON["official_price"], SIBEOM["official_price"]]
@@ -568,20 +625,38 @@ results["jongbuse"] = {
 
 # ── 보유세 연도별 타임라인 (재산세 + 종부세) ──────────────────────
 holding_timeline = []
+# 세부담 상한(개편안 7, §10·§15)은 직전연도 보유세에 의존하므로 연도를 순차 계산한다
+prior = {"two": 0, "one": 0, "solo": 0}
 for year in (2026, 2027, 2028, 2029):
     law = "current" if year == 2026 else "reform"
-    # 종부세는 인별 과세 → 부부공동명의는 각자 지분·각자 기본공제로 계산해 합산
-    two_j = jongbuse_joint(OFFICIAL, year, resident_house_price=0, law=law)
-    two_res_j = jongbuse_joint(OFFICIAL, year, resident_house_price=OFFICIAL[0], law=law)
-    one_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
-                           resident_house_price=OFFICIAL[0], law=law)
-    one_nr_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
-                              resident_house_price=0, law=law)
+    st = stage_at(year)
+    # 재건축 단계에 따라 시범한양의 재산세 종류·종부세 합산 여부가 달라진다
+    s_off = SIBEOM["official_price"] * st["mult"]
     pt_g = property_tax(GWACHEON["official_price"])
-    pt_s = property_tax(SIBEOM["official_price"])
+    pt_s = property_tax(s_off, as_land=st["land_tax"])
+    pt_both = pt_g["total"] + pt_s["total"]
+    prices = [OFFICIAL[0], s_off] if st["jongbuse"] else [OFFICIAL[0]]
+    # 종부세는 인별 과세 → 부부공동명의는 각자 지분·각자 기본공제로 계산해 합산
+    jbkw = dict(law=law, prior_holding_tax=prior["two"], property_tax_this_year=pt_both)
+    two_j = jongbuse_joint(prices, year, resident_house_price=0, **jbkw)
+    two_res_j = jongbuse_joint(prices, year, resident_house_price=OFFICIAL[0], **jbkw)
+    # 세부담 상한은 납세자별로 판정된다 → 단독명의 비교값은 단독명의의 직전연도를 써야 한다
+    # (공동명의 직전연도를 쓰면 단독 세액이 잘못 깎인다)
+    two_solo = jongbuse_joint(prices, year, resident_house_price=0, law=law,
+                              prior_holding_tax=prior["solo"],
+                              property_tax_this_year=pt_both)["solo"]
+    one_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
+                           resident_house_price=OFFICIAL[0], law=law,
+                           prior_holding_tax=prior["one"], property_tax_this_year=pt_g["total"])
+    one_nr_j = jongbuse_joint([OFFICIAL[0]], year, one_house=True,
+                              resident_house_price=0, law=law,
+                              prior_holding_tax=prior["one"], property_tax_this_year=pt_g["total"])
     holding_timeline.append({
         "year": year,
         "law": "현행" if law == "current" else "개편안",
+        "reconstructionStage": st["label"],
+        "sibeomPropertyTaxKind": pt_s["kind"],
+        "sibeomInJongbuse": st["jongbuse"],
         # 재산세는 물건별 과세라 공동명의여도 총액이 동일 (납부만 지분대로 안분)
         "propertyTax": {"gwacheon": pt_g["total"], "sibeom": pt_s["total"],
                         "bothTotal": pt_g["total"] + pt_s["total"]},
@@ -593,14 +668,15 @@ for year in (2026, 2027, 2028, 2029):
             "basicDeduction_twoHouse_nonresident": two_j["basicDeduction"],
             "fairRatio": two_j["fairRatio"],
             "perPerson_twoHouse_nonresident": [p["tax"] for p in two_j["parts"]],
-            "soloIfSingleName_twoHouse_nonresident": two_j["solo"]["tax"],
-            "jointSaving_twoHouse_nonresident": two_j["saving"],
+            "soloIfSingleName_twoHouse_nonresident": two_solo["tax"],
+            "jointSaving_twoHouse_nonresident": two_solo["tax"] - two_j["tax"],
         },
-        "total_twoHouse_nonresident": pt_g["total"] + pt_s["total"] + two_j["tax"],
+        "total_twoHouse_nonresident": pt_both + two_j["tax"],
         "total_oneHouse_resident": pt_g["total"] + one_j["tax"],
-        "total_twoHouse_nonresident_ifSingleName":
-            pt_g["total"] + pt_s["total"] + two_j["solo"]["tax"],
+        "total_twoHouse_nonresident_ifSingleName": pt_both + two_solo["tax"],
     })
+    prior = {"two": pt_both + two_j["tax"], "one": pt_g["total"] + one_j["tax"],
+             "solo": pt_both + two_solo["tax"]}
 results["holding_tax_timeline"] = holding_timeline
 
 
@@ -617,20 +693,28 @@ def order_scenario(first, second, first_year, second_year, *, resident,
     a, b = (GWACHEON, SIBEOM) if first == "gwacheon" else (SIBEOM, GWACHEON)
     pp = SURCHARGE_2HOUSE[first_year]
     calc = (lambda **kw: capital_gains_joint(shares=SHARES, **kw)) if joint else capital_gains
-    t1 = calc(sale_price=a["sale_price"], acq_price=a["acq_price"], expenses=a["expenses"],
+    # 시범한양만 재건축 대상 — 해당 연도 단계에 따라 입주권 전환·가액배수가 달라진다
+    st1 = stage_at(first_year) if first == "sibeom" else STAGE_SPEC["none"]
+    st2 = stage_at(second_year) if second == "sibeom" else STAGE_SPEC["none"]
+    t1 = calc(sale_price=a["sale_price"] * st1["mult"], acq_price=a["acq_price"],
+              expenses=a["expenses"],
               years_hold=hold_years(a["acq_date"], first_year),
               years_reside=a["reside_years"], year=first_year,
               exempt_1house=False, is_one_house=False, resident=resident,
-              surcharge_pp=pp, no_long_deduction=(first_year in (2027, 2028)))
+              surcharge_pp=pp, no_long_deduction=(first_year in (2027, 2028)),
+              is_unit_right=st1["unit_right"])
     bonus = 3.0 if (second == "gwacheon" and second_year >= 2028) else 0.0
     cap = None if second_year < 2028 else (2_000_000_000 if second_year == 2028 else 1_000_000_000)
-    # 두 번째는 1주택 상태 → 비과세 가능 (거주요건 충족 또는 상생임대 면제)
-    exempt = resident and (b["reside_years"] >= 2 or sangsaeng_ok)
-    t2 = calc(sale_price=b["sale_price"], acq_price=b["acq_price"], expenses=b["expenses"],
+    # 두 번째는 1주택 상태 → 비과세 가능 (거주요건 충족 또는 상생임대 면제).
+    # 단 시범한양은 관리처분계획인가 후에는 상생임대 경로가 닫힌다.
+    exempt = resident and (b["reside_years"] >= 2 or (sangsaeng_ok and st2["sangsaeng"]))
+    t2 = calc(sale_price=b["sale_price"] * st2["mult"], acq_price=b["acq_price"],
+              expenses=b["expenses"],
               years_hold=hold_years(b["acq_date"], second_year),
               years_reside=b["reside_years"], year=second_year,
               exempt_1house=exempt, is_one_house=True, resident=resident,
-              law="reform", long_resident_years=bonus, deduction_cap=cap)
+              law="reform", long_resident_years=bonus, deduction_cap=cap,
+              is_unit_right=st2["unit_right"])
     return {"first": {"asset": first, "year": first_year, "name": a["name"], **t1},
             "second": {"asset": second, "year": second_year, "name": b["name"],
                        "exemptApplied": exempt, **t2},
